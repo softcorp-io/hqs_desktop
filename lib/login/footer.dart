@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-const List<Color> aquaGradients = [
+const List<Color> blueGradients = [
   Color(0xFF2979FF),
   Colors.blue,
   Colors.lightBlue,
@@ -14,7 +14,7 @@ class WavyFooter extends StatelessWidget {
       child: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
-              colors: aquaGradients,
+              colors: blueGradients,
               begin: Alignment.center,
               end: Alignment.bottomRight),
         ),

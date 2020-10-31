@@ -6,20 +6,22 @@ import 'package:hqs_desktop/service/hqs_service.dart';
 class LogIn extends StatefulWidget {
   final HqsService service;
   final Function onSignUpSelected;
+  final Function onLogIn;
 
-  LogIn({this.service, @required this.onSignUpSelected});
+  LogIn({@required this.service, @required this.onSignUpSelected, @required this.onLogIn});
 
   @override
-  _LogInState createState() => _LogInState( service: service );
+  _LogInState createState() => _LogInState(service: service, onLogIn: onLogIn);
 }
 
 class _LogInState extends State<LogIn> {
   final HqsService service;
-  
+  final Function onLogIn;
+
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
 
-   _LogInState({@required this.service});
+   _LogInState({@required this.service, @required this.onLogIn});
 
   @override
   Widget build(BuildContext context) {
@@ -134,10 +136,14 @@ class _LogInState extends State<LogIn> {
                                       
                                       // otherwise.
                                       if (_formKey.currentState.validate()){
-                                        print("we are here"),
-                                        print(service),
-                                        service.authenticate(_emailController.text, _passwordController.text),
-                                        Scaffold.of(context).showSnackBar(SnackBar(content: Text("Processing data..."))),
+                                        service.authenticate(_emailController.text, _passwordController.text).then((token) => {
+                                          if(token.token == "" ){
+                                            Scaffold.of(context).showSnackBar(SnackBar(content: Text("Your password or email was invalid"))),
+                                          } else {
+                                            // User is allowed to log in
+                                            onLogIn(),
+                                          }
+                                        }),
                                       }
                                 },
                                 child: Text("Submit"),
@@ -186,7 +192,6 @@ class _LogInState extends State<LogIn> {
                                   Icons.arrow_forward,
                                   color: kPrimaryColor,
                                 ),
-                                
                               ],
                             ),
                           ),

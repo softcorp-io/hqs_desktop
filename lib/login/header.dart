@@ -34,7 +34,7 @@ class LoginWavyHeader extends StatelessWidget {
         ),
         decoration: BoxDecoration(
           gradient: LinearGradient(
-              colors: orangeGradients,
+              colors: blueGradients,
               begin: Alignment.topLeft,
               end: Alignment.center),
         ),
@@ -88,7 +88,7 @@ class LoginTopWaveClipper extends CustomClipper<Path> {
 }
 
   
-  const List<Color> orangeGradients = [
+  const List<Color> blueGradients = [
   Colors.lightBlue,
   Colors.blue,
   Color(0xFF2979FF),

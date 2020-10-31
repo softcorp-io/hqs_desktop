@@ -13,19 +13,13 @@ class HqsService {
         )
       )
     );
-
-    //authenticate("root@softcorp.io", "Ud0FycGKEäDPLnW0å2e0Qz");
   }
 
 
   // methods to call on server
   Future<Token> authenticate(String email, String password) async {
-      print("recieved authentication attempt with email:"+email+" and password: "+password);
-      Token token = Token();
+      token.clearToken();
       
-      print("client");
-      print(client);
-
       User authUser = User()..email=email..password=password;
 
       // validate
@@ -34,10 +28,9 @@ class HqsService {
       }
 
       try{
-        print("Trying to authenticate...");
-        token = await client.auth(authUser)/* .then((val) {print(val); return val;}) */;
-        print("Authentication success");
-      } catch(e){
+        token = await client.auth(authUser).then((val) {print(val); return val;});
+      }
+      catch(e){
         print('Caught error: $e');
       }
       return token;

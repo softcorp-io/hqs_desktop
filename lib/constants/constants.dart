@@ -6,3 +6,7 @@ Color kLoginColor = Color(0xFFFFCC80);
 enum Option {
   LogIn, SignUp
 }
+
+enum AuthStatus {
+  LoggedIn, LoggedOut
+}

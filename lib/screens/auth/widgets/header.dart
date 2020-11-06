@@ -38,7 +38,7 @@ class LoginWavyHeader extends StatelessWidget {
               begin: Alignment.topLeft,
               end: Alignment.center),
         ),
-        height: MediaQuery.of(context).size.height / 2.5,
+        height: MediaQuery.of(context).size.height / 3.5,
       ),
     );
   }

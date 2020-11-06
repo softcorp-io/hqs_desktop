@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:hqs_desktop/service/hqs_service.dart';
 import 'package:window_size/window_size.dart';
 import 'dart:io';
-import 'package:hqs_desktop/login/loginpage.dart';
+import 'package:hqs_desktop/screens/auth/authpage.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hqs_desktop/constants/constants.dart';
-import 'package:hqs_desktop/home/home.dart';
+import 'package:hqs_desktop/screens/home/home.dart';
 
 
 void main() {
@@ -38,7 +38,7 @@ class _MyAppState extends State<MyApp> {
       ),
       debugShowCheckedModeBanner: false,
       home: authStatus == AuthStatus.LoggedOut
-      ? LoginPage(service: service, onLogIn: () {
+      ? AuthPage(service: service, onLogIn: () {
         setState(() {
           authStatus = AuthStatus.LoggedIn;
         });

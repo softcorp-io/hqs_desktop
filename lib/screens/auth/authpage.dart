@@ -1,27 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:hqs_desktop/service/hqs_service.dart';
-import 'package:hqs_desktop/login/login.dart';
-import 'package:hqs_desktop/signup/signup.dart';
+import 'package:hqs_desktop/screens/auth/widgets/login_form.dart';
+import 'package:hqs_desktop/screens/auth/widgets/signup_form.dart';
 import 'package:hqs_desktop/constants/constants.dart';
-import 'package:hqs_desktop/login/header.dart';
-import 'package:hqs_desktop/login/footer.dart';
+import 'package:hqs_desktop/screens/auth/widgets/header.dart';
+import 'package:hqs_desktop/screens/auth/widgets/footer.dart';
 
 
-class LoginPage extends StatefulWidget {
+class AuthPage extends StatefulWidget {
   final HqsService service;
   final Function onLogIn;
 
-  LoginPage({@required this.service, @required this.onLogIn});
+  AuthPage({@required this.service, @required this.onLogIn});
 
   @override
-  _LoginPageState createState() => _LoginPageState(service: service, onLogIn: onLogIn);
+  _AuthPageState createState() => _AuthPageState(service: service, onLogIn: onLogIn);
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _AuthPageState extends State<AuthPage> {
     final HqsService service;
     final Function onLogIn;
 
-  _LoginPageState({@required this.service, @required this.onLogIn});
+  _AuthPageState({@required this.service, @required this.onLogIn});
 
   Option selectedOption = Option.LogIn;
 
@@ -59,7 +59,9 @@ class _LoginPageState extends State<LoginPage> {
             // Welcome to the platform
             Align(
               alignment: Alignment.centerLeft,
-              child: Padding(
+              child: size.width > 600
+              ?
+              Padding(
                 padding: EdgeInsets.all(32),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -85,6 +87,10 @@ class _LoginPageState extends State<LoginPage> {
 
                   ],
                 ),
+              )
+              :
+              Padding(
+                padding: EdgeInsets.zero,
               ),
             ),
 

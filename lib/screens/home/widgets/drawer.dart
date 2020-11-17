@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:hqs_desktop/screens/auth/widgets/header.dart';
 
 class HomeDrawer extends StatelessWidget {
   @override

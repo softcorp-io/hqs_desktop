@@ -66,6 +66,7 @@ class _SignUpState extends State<SignUp> {
                       SizedBox(
                         height: 32,
                       ),
+                    
 
                       TextField(
                         decoration: InputDecoration(

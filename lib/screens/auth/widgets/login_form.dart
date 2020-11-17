@@ -8,7 +8,10 @@ class LogIn extends StatefulWidget {
   final Function onSignUpSelected;
   final Function onLogIn;
 
-  LogIn({@required this.service, @required this.onSignUpSelected, @required this.onLogIn});
+  LogIn({@required this.service, @required this.onSignUpSelected, @required this.onLogIn})
+  : assert(HqsService != null),
+    assert(onSignUpSelected != null),
+    assert(onLogIn != null);
 
   @override
   _LogInState createState() => _LogInState(service: service, onLogIn: onLogIn);
@@ -136,11 +139,10 @@ class _LogInState extends State<LogIn> {
                                           
                                           // otherwise.
                                           if (_formKey.currentState.validate()){
-                                            service.authenticate(_emailController.text, _passwordController.text).then((token) => {
+                                            service.authenticate(context, _emailController.text, _passwordController.text).then((token) => {
                                               if(token.token == "" ){
                                                 _emailController.text = "",
                                                 _passwordController.text = "",
-                                                Scaffold.of(context).showSnackBar(SnackBar(content: Text("Your password or email was invalid"))),
                                               } else {
                                                 // User is allowed to log in
                                                 onLogIn(),

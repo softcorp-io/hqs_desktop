@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:hqs_desktop/service/hqs_service.dart';
 import 'package:window_size/window_size.dart';
 import 'dart:io';
-import 'package:hqs_desktop/screens/auth/authpage.dart';
+import 'package:hqs_desktop/screens/auth/auth_page.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hqs_desktop/constants/constants.dart';
 import 'package:hqs_desktop/screens/home/home.dart';
@@ -12,7 +12,7 @@ void main() {
   WidgetsFlutterBinding.ensureInitialized();
   if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
     setWindowTitle("Headquarters");
-    setWindowMinSize(Size(800, 800));
+    setWindowMinSize(Size(1000, 800));
   }
   runApp(MyApp());
 }
@@ -45,7 +45,7 @@ class _MyAppState extends State<MyApp> {
       },
       )
       :
-      MyHomePage(title: "Home Page!",),
+      HomePage(service: service),
     );
   }
 }

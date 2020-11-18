@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:hqs_desktop/constants/constants.dart';
 import 'package:hqs_desktop/generated/hqs-user-service/proto/hqs-user-service.pb.dart';
@@ -8,20 +10,26 @@ class ProfileCard extends StatefulWidget {
   final HqsService service;
   final User user;
   final double profileImageRadius;
-  ProfileCard({@required this.service, @required this.user, @required this.profileImageRadius})
+  ProfileCard(
+      {@required this.service,
+      @required this.user,
+      @required this.profileImageRadius})
       : assert(service != null),
         assert(profileImageRadius != null);
 
   @override
-  _ProfileCardState createState() =>
-      _ProfileCardState(service: service, user: user, profileImageRadius:profileImageRadius);
+  _ProfileCardState createState() => _ProfileCardState(
+      service: service, user: user, profileImageRadius: profileImageRadius);
 }
 
 class _ProfileCardState extends State<ProfileCard> {
   final HqsService service;
   final User user;
   final double profileImageRadius;
-  _ProfileCardState({@required this.service, @required this.user, @required this.profileImageRadius})
+  _ProfileCardState(
+      {@required this.service,
+      @required this.user,
+      @required this.profileImageRadius})
       : assert(service != null),
         assert(user != null),
         assert(profileImageRadius != null);
@@ -70,8 +78,8 @@ class _ProfileCardState extends State<ProfileCard> {
                             : user.description,
                         style: GoogleFonts.poppins(
                           fontSize: 16,
-                          fontWeight: FontWeight.normal,
-                          color: Colors.grey,
+                          fontWeight: FontWeight.w300,
+                          color: Colors.grey[800],
                         ),
                         textAlign: TextAlign.center,
                       ),
@@ -140,7 +148,7 @@ class _ProfileCardState extends State<ProfileCard> {
                       ),
                     ),
                     SizedBox(
-                      height: 80.0,
+                      height: 100.0,
                     ),
                   ],
                 )),
@@ -149,23 +157,25 @@ class _ProfileCardState extends State<ProfileCard> {
 
         ///Image Avatar
         Container(
-            width: profileImageRadius,
-            height: profileImageRadius,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: Colors.white,
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black26,
-                  blurRadius: 8.0,
-                  offset: Offset(0.0, 5.0),
-                ),
-              ],
-            ),
-            child: CircleAvatar(
-              backgroundImage: NetworkImage(user.image),
-              backgroundColor: Colors.white,
-            )),
+          width: profileImageRadius,
+          height: profileImageRadius,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: Colors.white,
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black26,
+                blurRadius: 8.0,
+                offset: Offset(0.0, 5.0),
+              ),
+            ],
+          ),
+          child: CircleAvatar(
+            radius: profileImageRadius,
+            backgroundImage: NetworkImage(user.image),
+            backgroundColor: Colors.grey[800],
+          ),
+        ),
       ],
     );
   }

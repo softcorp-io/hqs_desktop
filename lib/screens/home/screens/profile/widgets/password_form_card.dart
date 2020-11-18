@@ -6,13 +6,13 @@ import 'package:hqs_desktop/service/hqs_service.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:country_code_picker/country_code_picker.dart';
 
-class ProfileFormCard extends StatefulWidget {
+class PasswordFormCard extends StatefulWidget {
   final HqsService service;
   final User user;
   final Function onUpdate;
   final double profileImageRadius;
 
-  ProfileFormCard(
+  PasswordFormCard(
       {@required this.service,
       @required this.user,
       @required this.onUpdate,
@@ -21,14 +21,14 @@ class ProfileFormCard extends StatefulWidget {
         assert(profileImageRadius != null);
 
   @override
-  _ProfileFormCardState createState() => _ProfileFormCardState(
+  _PasswordFormCardState createState() => _PasswordFormCardState(
       service: service,
       user: user,
       onUpdate: onUpdate,
       profileImageRadius: profileImageRadius);
 }
 
-class _ProfileFormCardState extends State<ProfileFormCard> {
+class _PasswordFormCardState extends State<PasswordFormCard> {
   // form controllers
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
@@ -60,7 +60,7 @@ class _ProfileFormCardState extends State<ProfileFormCard> {
     ));
   }
 
-  _ProfileFormCardState(
+  _PasswordFormCardState(
       {@required this.service,
       @required this.user,
       @required this.onUpdate,

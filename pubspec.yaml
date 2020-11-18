@@ -33,7 +33,7 @@ dependencies:
   protobuf: ^1.1.0
   grpc: ^2.3.0
   flushbar: ^1.10.4
-  country_code_picker: ^1.6.2 
+  country_code_picker: ^1.6.2
   window_size:
     git:
       url: git://github.com/google/flutter-desktop-embedding.git
@@ -58,7 +58,6 @@ flutter:
   assets:
     - assets/images/login-background.png
     - assets/images/logo-white.png
-    - assets/images/cover.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

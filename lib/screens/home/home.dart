@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:grpc/grpc.dart';
 import 'package:hqs_desktop/screens/home/widgets/drawer.dart';
 import 'package:hqs_desktop/screens/home/screens/profile/profile_page.dart';
 import 'package:hqs_desktop/service/hqs_service.dart';
+import 'package:hqs_desktop/screens/home/widgets/appbar.dart';
 
 class HomePage extends StatefulWidget {
   final HqsService service;
@@ -25,10 +25,7 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       drawer: HomeDrawer(),
-      appBar: AppBar(
-        iconTheme: new IconThemeData(color: Colors.black),
-        backgroundColor: Colors.white,
-      ),
+      appBar: CustomAppBar("Home"),
       body: ProfilePage(service: service),
     );
   }

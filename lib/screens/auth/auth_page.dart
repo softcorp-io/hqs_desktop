@@ -30,9 +30,6 @@ class _AuthPageState extends State<AuthPage> {
 
     Size size = MediaQuery.of(context).size;
 
-    print(size.height);
-    print(size.width);
-
     return Scaffold(
     body: Container(
         width: size.width,

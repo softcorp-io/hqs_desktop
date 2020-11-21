@@ -1,6 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:hqs_desktop/screens/home/screens/departments/departments_page.dart';
+import 'package:hqs_desktop/screens/home/screens/profile/profile_page.dart';
+import 'package:hqs_desktop/service/hqs_service.dart';
+import 'package:page_transition/page_transition.dart';
 
 class HomeDrawer extends StatelessWidget {
+  final HqsService service;
+
+  HomeDrawer({@required this.service}) : assert(service != null);
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -41,12 +49,29 @@ class HomeDrawer extends StatelessWidget {
                 ),
               ),
               ListTile(
-                title: Text('Item 1'),
+                title: Text('Profile'),
                 onTap: () {
-                  // Update the state of the app
-                  // ...
-                  // Then close the drawer
-                  Navigator.pop(context);
+                  Navigator.pushReplacement(
+                    context,
+                    PageTransition(
+                        type: PageTransitionType.fade,
+                        child: ProfilePage(
+                          service: service,
+                        )),
+                  );
+                },
+              ),
+              ListTile(
+                title: Text('Departments'),
+                onTap: () {
+                  Navigator.pushReplacement(
+                    context,
+                    PageTransition(
+                        type: PageTransitionType.fade,
+                        child: DepartmentsPage(
+                          service: service,
+                        )),
+                  );
                 },
               ),
             ],

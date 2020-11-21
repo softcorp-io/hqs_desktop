@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hqs_desktop/constants/constants.dart';
-import 'package:hqs_desktop/service/hqs_service.dart';
+import 'package:hqs_desktop/service/hqs_service.dart' as hqs;
 
 class LogIn extends StatefulWidget {
-  final HqsService service;
+  final hqs.HqsService service;
   final Function onSignUpSelected;
   final Function onLogIn;
 
   LogIn({@required this.service, @required this.onSignUpSelected, @required this.onLogIn})
-  : assert(HqsService != null),
+  : assert(hqs.HqsService != null),
     assert(onSignUpSelected != null),
     assert(onLogIn != null);
 
@@ -18,7 +18,7 @@ class LogIn extends StatefulWidget {
 }
 
 class _LogInState extends State<LogIn> {
-  final HqsService service;
+  final hqs.HqsService service;
   final Function onLogIn;
 
   final _emailController = TextEditingController();

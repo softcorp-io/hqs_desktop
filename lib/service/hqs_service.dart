@@ -163,4 +163,44 @@ class HqsService {
     curUser = response.user;
     return response;
   }
+
+  Future<userService.Response> updateCurrentUserPassword(
+    BuildContext context,
+    String oldPassword,
+    String newPassword,
+  ) async {
+    userService.Response response = userService.Response();
+    if (token == null || token.token.isEmpty) {
+      token.clearToken();
+      // logout or maybe authenticate again...
+    }
+    try {
+      var metadata = {"token": token.token};
+      CallOptions callOptions = CallOptions(metadata: metadata);
+      userService.UpdatePasswordRequest updatePasswordRequest =
+          userService.UpdatePasswordRequest()
+            ..oldPassword = oldPassword
+            ..newPassword = newPassword;
+      response = await client
+          .updatePassword(updatePasswordRequest, options: callOptions)
+          .then((rep) {
+        Flushbar(
+          title: "User successfully updated",
+          icon: Icon(
+            Icons.check_circle,
+            size: 28.0,
+            color: Colors.green,
+          ),
+          flushbarPosition: FlushbarPosition.TOP,
+          message: "The user has successfully been updated.",
+          margin: EdgeInsets.all(8),
+          borderRadius: 8,
+          duration: Duration(seconds: 5),
+        )..show(context);
+        return rep;
+      });
+    } on GrpcError catch (e) {} catch (e) {}
+    curUser = response.user;
+    return response;
+  }
 }

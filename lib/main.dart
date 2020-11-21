@@ -12,7 +12,7 @@ void main() {
   WidgetsFlutterBinding.ensureInitialized();
   if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
     setWindowTitle("Headquarters");
-    setWindowMinSize(Size(1000, 800));
+    setWindowMinSize(Size(1000, 900));
   }
   runApp(MyApp());
 }

@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:hqs_desktop/constants/constants.dart';
 
-class CustomAppBar extends StatelessWidget with PreferredSizeWidget {
+class ProfileAppBar extends StatelessWidget with PreferredSizeWidget {
   @override
   final Size preferredSize;
 
   final String title;
 
-  CustomAppBar(
+  ProfileAppBar(
     this.title, {
     Key key,
   })  : assert(title != null),

@@ -8,10 +8,13 @@ class LogIn extends StatefulWidget {
   final Function onSignUpSelected;
   final Function onLogIn;
 
-  LogIn({@required this.service, @required this.onSignUpSelected, @required this.onLogIn})
-  : assert(hqs.HqsService != null),
-    assert(onSignUpSelected != null),
-    assert(onLogIn != null);
+  LogIn(
+      {@required this.service,
+      @required this.onSignUpSelected,
+      @required this.onLogIn})
+      : assert(hqs.HqsService != null),
+        assert(onSignUpSelected != null),
+        assert(onLogIn != null);
 
   @override
   _LogInState createState() => _LogInState(service: service, onLogIn: onLogIn);
@@ -24,18 +27,21 @@ class _LogInState extends State<LogIn> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
 
-   _LogInState({@required this.service, @required this.onLogIn});
+  _LogInState({@required this.service, @required this.onLogIn});
 
   @override
   Widget build(BuildContext context) {
-
     Size size = MediaQuery.of(context).size;
     final _formKey = GlobalKey<FormState>();
 
     return Stack(
       children: [
         Padding(
-          padding: EdgeInsets.all(size.height > 770 ? 64 : size.height > 670 ? 32 : 16),
+          padding: EdgeInsets.all(size.height > 770
+              ? 64
+              : size.height > 670
+                  ? 32
+                  : 16),
           child: Center(
             child: Card(
               elevation: 4,
@@ -47,7 +53,12 @@ class _LogInState extends State<LogIn> {
               ),
               child: AnimatedContainer(
                 duration: Duration(milliseconds: 200),
-                height: size.height * (size.height > 770 ? 0.7 : size.height > 670 ? 0.8 : 0.9),
+                height: size.height *
+                    (size.height > 770
+                        ? 0.7
+                        : size.height > 670
+                            ? 0.8
+                            : 0.9),
                 width: 600,
                 color: Colors.white,
                 child: Center(
@@ -57,7 +68,6 @@ class _LogInState extends State<LogIn> {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-
                           Text(
                             "Sign in",
                             style: GoogleFonts.poppins(
@@ -66,11 +76,9 @@ class _LogInState extends State<LogIn> {
                               color: Colors.grey[700],
                             ),
                           ),
-
                           SizedBox(
                             height: 8,
                           ),
-
                           Container(
                             width: 30,
                             child: Divider(
@@ -78,8 +86,6 @@ class _LogInState extends State<LogIn> {
                               thickness: 2,
                             ),
                           ),
-
-          
                           Form(
                             key: _formKey,
                             child: Column(
@@ -91,12 +97,14 @@ class _LogInState extends State<LogIn> {
                                     hintText: 'Email',
                                     labelText: 'Email',
                                     suffixIcon: Icon(
-                                    Icons.mail_outline,
+                                      Icons.mail_outline,
                                     ),
                                   ),
                                   validator: (value) {
-                                    var validEmail = RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+").hasMatch(value);
-                                    if (!validEmail){
+                                    var validEmail = RegExp(
+                                            r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
+                                        .hasMatch(value);
+                                    if (!validEmail) {
                                       return "Please enter a valid email";
                                     }
                                     return null;
@@ -106,22 +114,23 @@ class _LogInState extends State<LogIn> {
                                   padding: EdgeInsets.all(10),
                                 ),
                                 TextFormField(
-                                  obscureText: true,
+                                  // todo on backslash password don't update correct when obscure text is true... wait for fix and set to false for now
+                                  obscureText: false,
                                   controller: _passwordController,
                                   decoration: InputDecoration(
                                     hintText: 'Password',
                                     labelText: 'Password',
                                     suffixIcon: Icon(
-                                    Icons.lock_outline,
+                                      Icons.lock_outline,
                                     ),
                                   ),
                                   validator: (value) {
-                                    if (value.isEmpty){
+                                    if (value.isEmpty) {
                                       return "Please enter a valid password";
                                     }
                                     return null;
                                   },
-                                ), 
+                                ),
                                 Padding(
                                   padding: EdgeInsets.all(60),
                                 ),
@@ -129,30 +138,41 @@ class _LogInState extends State<LogIn> {
                                     width: double.infinity,
                                     height: 50.0,
                                     child: RaisedButton(
-                                        color: kPrimaryColor,
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(18.0),
-                                        ),
-                                        textColor: Colors.white,
-                                        onPressed: () async => {
-                                          // Validate returns true if the form is valid, or false
-                                          
-                                          // otherwise.
-                                          if (_formKey.currentState.validate()){
-                                            service.authenticate(context, _emailController.text, _passwordController.text).then((token) => {
-                                              if(token.token == "" ){
-                                                _emailController.text = "",
-                                                _passwordController.text = "",
-                                              } else {
-                                                // User is allowed to log in
-                                                onLogIn(),
-                                              }
-                                            }),
+                                      color: kPrimaryColor,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(18.0),
+                                      ),
+                                      textColor: Colors.white,
+                                      onPressed: () async => {
+                                        // Validate returns true if the form is valid, or false
+
+                                        // otherwise.
+                                        if (_formKey.currentState.validate())
+                                          {
+                                            service
+                                                .authenticate(
+                                                    context,
+                                                    _emailController.text,
+                                                    _passwordController.text)
+                                                .then((token) => {
+                                                      if (token.token == "")
+                                                        {
+                                                          _emailController
+                                                              .text = "",
+                                                          _passwordController
+                                                              .text = "",
+                                                        }
+                                                      else
+                                                        {
+                                                          // User is allowed to log in
+                                                          onLogIn(),
+                                                        }
+                                                    }),
                                           }
-                                    },
-                                    child: Text("Submit"),
-                                  )
-                                ),
+                                      },
+                                      child: Text("Submit"),
+                                    )),
                               ],
                             ),
                           ),
@@ -178,7 +198,6 @@ class _LogInState extends State<LogIn> {
                                 },
                                 child: Row(
                                   children: [
-
                                     Text(
                                       "Sign Up",
                                       style: TextStyle(
@@ -187,11 +206,9 @@ class _LogInState extends State<LogIn> {
                                         fontWeight: FontWeight.bold,
                                       ),
                                     ),
-
                                     SizedBox(
                                       width: 8,
                                     ),
-
                                     Icon(
                                       Icons.arrow_forward,
                                       color: kPrimaryColor,

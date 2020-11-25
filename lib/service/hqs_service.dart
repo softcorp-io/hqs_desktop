@@ -41,9 +41,42 @@ class HqsService {
     if (email.isEmpty || password.isEmpty) {
       return token;
     }
+    // get longitude & latitude
+    var metadata = new Map<String, String>();
+
+    /*   try {
+      Location location = new Location();
+      bool _serviceEnabled;
+      PermissionStatus _permissionGranted;
+      LocationData _locationData;
+      _serviceEnabled = await location.serviceEnabled();
+      if (!_serviceEnabled) {
+        _serviceEnabled = await location.requestService();
+        if (_serviceEnabled) {
+          _permissionGranted = await location.hasPermission();
+          if (_permissionGranted == PermissionStatus.denied) {
+            _permissionGranted = await location.requestPermission();
+            if (_permissionGranted == PermissionStatus.granted) {
+              _locationData = await location.getLocation();
+              metadata = {
+                "latitude": _locationData.latitude.toString(),
+                "longotude": _locationData.longitude.toString()
+              };
+            }
+          }
+        }
+      }
+    } catch (e) {
+      // todo maybe do something
+      print("we get in here...");
+      print(e);
+    } 
+    add location on login attempt
+    */
 
     try {
-      token = await client.auth(authUser).then((val) {
+      CallOptions callOptions = CallOptions(metadata: metadata);
+      token = await client.auth(authUser, options: callOptions).then((val) {
         return val;
       });
     } on GrpcError catch (e) {
@@ -144,22 +177,59 @@ class HqsService {
         ..description = description;
       response =
           await client.updateProfile(user, options: callOptions).then((rep) {
+        return rep;
+      });
+    } on GrpcError catch (e) {
+      if ("UNAVAILABLE" == e.codeName) {
+        retry();
         Flushbar(
-          title: "User successfully updated",
+          title: "The service is unaviable",
           icon: Icon(
-            Icons.check_circle,
+            Icons.info_outline,
             size: 28.0,
-            color: Colors.green,
+            color: Colors.blue[300],
           ),
           flushbarPosition: FlushbarPosition.TOP,
-          message: "The user has successfully been updated.",
+          message:
+              "We could not connect to the service. Please check that you're connected to the internet.",
           margin: EdgeInsets.all(8),
           borderRadius: 8,
           duration: Duration(seconds: 5),
         )..show(context);
-        return rep;
-      });
-    } on GrpcError catch (e) {} catch (e) {}
+      } else if ("UNKNOWN" == e.codeName) {
+        //to do logout
+        token.clearToken();
+        Flushbar(
+          title: "Could not authenticate",
+          icon: Icon(
+            Icons.info_outline,
+            size: 28.0,
+            color: Colors.blue[300],
+          ),
+          flushbarPosition: FlushbarPosition.TOP,
+          message:
+              "We could not authenticate you. Your token might have expired. Try loggin out and in again.",
+          margin: EdgeInsets.all(8),
+          borderRadius: 8,
+          duration: Duration(seconds: 5),
+        )..show(context);
+      }
+    } catch (e) {
+      token.clearToken();
+      Flushbar(
+        title: "Unknown error",
+        icon: Icon(
+          Icons.warning,
+          size: 28.0,
+          color: Colors.blue[300],
+        ),
+        flushbarPosition: FlushbarPosition.TOP,
+        message: "An unkown error occured... please try again.",
+        margin: EdgeInsets.all(8),
+        borderRadius: 8,
+        duration: Duration(seconds: 5),
+      )..show(context);
+    }
     curUser = response.user;
     return response;
   }
@@ -185,22 +255,87 @@ class HqsService {
           .updatePassword(updatePasswordRequest, options: callOptions)
           .then((rep) {
         Flushbar(
-          title: "User successfully updated",
+          title: "Password successfully updated",
           icon: Icon(
             Icons.check_circle,
             size: 28.0,
             color: Colors.green,
           ),
           flushbarPosition: FlushbarPosition.TOP,
-          message: "The user has successfully been updated.",
+          message: "Your password has successfully been updated.",
           margin: EdgeInsets.all(8),
           borderRadius: 8,
           duration: Duration(seconds: 5),
         )..show(context);
         return rep;
       });
-    } on GrpcError catch (e) {} catch (e) {}
+    } on GrpcError catch (e) {
+      if ("UNAVAILABLE" == e.codeName) {
+        retry();
+        Flushbar(
+          title: "The service is unaviable",
+          icon: Icon(
+            Icons.info_outline,
+            size: 28.0,
+            color: Colors.blue[300],
+          ),
+          flushbarPosition: FlushbarPosition.TOP,
+          message:
+              "We could not connect to the service. Please check that you're connected to the internet.",
+          margin: EdgeInsets.all(8),
+          borderRadius: 8,
+          duration: Duration(seconds: 5),
+        )..show(context);
+      } else if ("UNKNOWN" == e.codeName) {
+        //to do logout
+        token.clearToken();
+        Flushbar(
+          title: "Could not validate password",
+          icon: Icon(
+            Icons.info_outline,
+            size: 28.0,
+            color: Colors.red[500],
+          ),
+          flushbarPosition: FlushbarPosition.TOP,
+          message:
+              "Please make sure that your old password is correct and that your new matches the criterias.",
+          margin: EdgeInsets.all(8),
+          borderRadius: 8,
+          duration: Duration(seconds: 5),
+        )..show(context);
+      }
+    } catch (e) {
+      token.clearToken();
+      Flushbar(
+        title: "Unknown error",
+        icon: Icon(
+          Icons.warning,
+          size: 28.0,
+          color: Colors.blue[300],
+        ),
+        flushbarPosition: FlushbarPosition.TOP,
+        message: "An unkown error occured... please try again.",
+        margin: EdgeInsets.all(8),
+        borderRadius: 8,
+        duration: Duration(seconds: 5),
+      )..show(context);
+    }
     curUser = response.user;
     return response;
+  }
+
+  Future<userService.AuthHistory> getCurrentUserAuthHistory() async {
+    userService.AuthHistory authHistory = userService.AuthHistory();
+    if (token == null || token.token.isEmpty) {
+      token.clearToken();
+      // logout
+    }
+    try {
+      var metadata = {"token": token.token};
+      CallOptions callOptions = CallOptions(metadata: metadata);
+      authHistory = await client
+          .getAuthHistory(userService.Request(), options: callOptions);
+    } on GrpcError catch (e) {} catch (e) {}
+    return authHistory;
   }
 }

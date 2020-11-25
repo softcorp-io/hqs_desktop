@@ -5,6 +5,7 @@ import 'package:hqs_desktop/generated/hqs-user-service/proto/hqs-user-service.pb
 import 'package:hqs_desktop/service/hqs_service.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:country_code_picker/country_code_picker.dart';
+import 'package:hqs_desktop/screens/home/widgets/custom_text_form_field.dart';
 
 class ProfileFormCard extends StatefulWidget {
   final HqsService service;
@@ -115,56 +116,38 @@ class _ProfileFormCardState extends State<ProfileFormCard> {
                       key: _formKey,
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.start,
                         children: <Widget>[
                           Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.start,
                             children: <Widget>[
-                              Flexible(
-                                child: TextFormField(
+                              Expanded(
+                                child: CustomTextFormField(
                                   controller: _nameController,
-                                  decoration: new InputDecoration(
-                                    focusedBorder: OutlineInputBorder(
-                                      borderSide: BorderSide(
-                                          color: kPrimaryColor, width: 1.0),
-                                    ),
-                                    enabledBorder: OutlineInputBorder(
-                                      borderSide: BorderSide(
-                                          color: Colors.grey[300], width: 1.0),
-                                    ),
-                                    hintText: 'Name',
-                                    labelText: 'Name',
-                                    suffixIcon: Icon(
-                                      Icons.person_outline_rounded,
-                                    ),
-                                  ),
                                   validator: (value) {
                                     if (value.isEmpty) {
                                       return "Please specify a valid name";
                                     }
                                     return null;
                                   },
+                                  icon: Icon(Icons.person_outline),
+                                  hintText: "Full Name",
+                                  labelText: "Full Name",
+                                  obscure: false,
                                 ),
                               ),
                               Padding(
                                 padding: EdgeInsets.all(12),
                               ),
-                              Flexible(
-                                child: TextFormField(
+                              Expanded(
+                                child: CustomTextFormField(
                                   controller: _emailController,
-                                  keyboardType: TextInputType.emailAddress,
-                                  decoration: InputDecoration(
-                                    focusedBorder: OutlineInputBorder(
-                                      borderSide: BorderSide(
-                                          color: kPrimaryColor, width: 1.0),
-                                    ),
-                                    enabledBorder: OutlineInputBorder(
-                                      borderSide: BorderSide(
-                                          color: Colors.grey[300], width: 1.0),
-                                    ),
-                                    hintText: 'Email',
-                                    labelText: 'Email',
-                                    suffixIcon: Icon(
-                                      Icons.mail_outline_rounded,
-                                    ),
+                                  hintText: 'Email',
+                                  labelText: 'Email',
+                                  obscure: false,
+                                  icon: Icon(
+                                    Icons.mail_outline_rounded,
                                   ),
                                   validator: (value) {
                                     var validEmail = RegExp(
@@ -284,7 +267,7 @@ class _ProfileFormCardState extends State<ProfileFormCard> {
                                 borderSide: BorderSide(
                                     color: Colors.grey[300], width: 1.0),
                               ),
-                              hintText: 'Phone',
+                              hintText: 'Description',
                               labelText: 'Description',
                               suffixIcon: Icon(
                                 Icons.description,

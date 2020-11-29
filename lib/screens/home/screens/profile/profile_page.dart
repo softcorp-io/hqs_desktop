@@ -45,14 +45,13 @@ class _ProfilePageState extends State<ProfilePage> {
 
   @override
   Widget build(BuildContext context) {
-
     Size size = MediaQuery.of(context).size;
 
     return Scaffold(
       drawer: HomeDrawer(
         service: service,
       ),
-      appBar: HomeAppBar("Profile", false),
+      appBar: HomeAppBar(title: "Profile", shadow: true, service: service,),
       body: FutureBuilder<Response>(
           future: userResponse,
           builder: (BuildContext context, AsyncSnapshot<Response> snapshot) {
@@ -66,107 +65,64 @@ class _ProfilePageState extends State<ProfilePage> {
                     ),
                     alignment: Alignment.center);
               case ConnectionState.done:
-                return MaterialApp(
-                    debugShowCheckedModeBanner: false,
-                    home: DefaultTabController(
-                        length: 3,
-                        child: Scaffold(
-                            appBar: AppBar(
-                              backgroundColor: kDarkColor,
-                              automaticallyImplyLeading: true,
-                              iconTheme: new IconThemeData(color: Colors.white),
-                              bottom: TabBar(
-                                tabs: [
-                                  Tab(icon: Icon(Icons.person), text: "Profile",),
-                                  Tab(icon: Icon(Icons.lock), text: "Password",),
-                                  Tab(icon: Icon(Icons.lock_clock), text: "Auth History"),
-                                ],
+                return Container(
+                    color: Colors.grey[100],
+                    child: SingleChildScrollView(
+                      child: Column(
+                        children: <Widget>[
+                          // Profile card and form information
+                          Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
+                                Flexible(
+                                  child: Padding(
+                                    padding: EdgeInsets.all(16),
+                                    child: ProfileFormCard(
+                                      onUpdate: () {
+                                        setState(() {
+                                          reload();
+                                        });
+                                      },
+                                      service: service,
+                                      user: user,
+                                      profileImageRadius: profileImageRadius,
+                                    ),
+                                  ),
+                                ),
+                                Flexible(
+                                  child: Padding(
+                                    padding: EdgeInsets.all(16),
+                                    child: ProfileCard(
+                                      profileImageRadius: profileImageRadius,
+                                      service: service,
+                                      user: user,
+                                    ),
+                                  ),
+                                ),
+                              ]),
+                          // Password card and form information
+                          Padding(
+                            padding: EdgeInsets.all(16),
+                            child: ProfilePasswordCard(
+                              service: service,
+                              profileImageRadius: profileImageRadius,
+                            ),
+                          ),
+                          // Users auth history
+                          SizedBox(height: 32),
+                          SingleChildScrollView(
+                            child: Container(
+                              color: Colors.grey[100],
+                              child: ProfileAuthHistory(
+                                service: service,
+                                profileImageRadius: profileImageRadius,
                               ),
                             ),
-                            body: TabBarView(children: [
-                              Container(
-                                  color: Colors.grey[100],
-                                  child: SingleChildScrollView(
-                                    child: Column(
-                                      children: <Widget>[
-                                        Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.start,
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: <Widget>[
-                                              Flexible(
-                                                child: Padding(
-                                                  padding: EdgeInsets.all(16),
-                                                  child: ProfileFormCard(
-                                                    onUpdate: () {
-                                                      setState(() {
-                                                        reload();
-                                                      });
-                                                    },
-                                                    service: service,
-                                                    user: user,
-                                                    profileImageRadius:
-                                                        profileImageRadius,
-                                                  ),
-                                                ),
-                                              ),
-                                              Flexible(
-                                                child: Padding(
-                                                  padding: EdgeInsets.all(16),
-                                                  child: ProfileCard(
-                                                    profileImageRadius:
-                                                        profileImageRadius,
-                                                    service: service,
-                                                    user: user,
-                                                  ),
-                                                ),
-                                              ),
-                                            ]),
-                                      ],
-                                    ),
-                                  )),
-                              Container(
-                                color: Colors.grey[100],
-                                child: SingleChildScrollView(
-                                  child: Column(
-                                    children: <Widget>[
-                                      Container(
-                                        height: 620,
-                                        child: Padding(
-                                          padding: EdgeInsets.all(16),
-                                          child: ProfilePasswordCard(
-                                            service: service,
-                                            profileImageRadius:
-                                                profileImageRadius,
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                              Container(
-                                color: Colors.grey[100],
-                                child: SingleChildScrollView(
-                                  child: Column(
-                                    children: <Widget>[
-                                      Container(
-                                        height: size.height/1.3,
-                                        child: Padding(
-                                          padding: EdgeInsets.all(16),
-                                          child: ProfileAuthHistory(
-                                            service: service,
-                                            profileImageRadius:
-                                                profileImageRadius,
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ]))));
+                          ),
+                        ],
+                      ),
+                    ));
             }
           }),
     );

@@ -1,10 +1,5 @@
 import 'package:flutter/material.dart';
-
-const List<Color> blueGradients = [
-  Color(0xFF2979FF),
-  Colors.blue,
-  Colors.lightBlue,
-];
+import 'package:hqs_desktop/constants/constants.dart';
 
 class WavyFooter extends StatelessWidget {
   @override
@@ -13,17 +8,17 @@ class WavyFooter extends StatelessWidget {
       clipper: FooterWaveClipper(),
       child: Container(
         decoration: BoxDecoration(
-          gradient: LinearGradient(
-              colors: blueGradients,
-              begin: Alignment.center,
-              end: Alignment.bottomRight),
+          gradient: LinearGradient(colors: [
+            kBlueOne,
+            kBlueTwo,
+            kBlueThree,
+          ], begin: Alignment.center, end: Alignment.bottomRight),
         ),
         height: MediaQuery.of(context).size.height / 3,
       ),
     );
   }
 }
-
 
 class TopWaveClipper extends CustomClipper<Path> {
   @override

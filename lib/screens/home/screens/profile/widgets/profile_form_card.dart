@@ -6,6 +6,7 @@ import 'package:hqs_desktop/service/hqs_service.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:country_code_picker/country_code_picker.dart';
 import 'package:hqs_desktop/screens/home/widgets/custom_text_form_field.dart';
+import 'package:flushbar/flushbar.dart';
 
 class ProfileFormCard extends StatefulWidget {
   final HqsService service;
@@ -90,7 +91,7 @@ class _ProfileFormCardState extends State<ProfileFormCard> {
             clipBehavior: Clip.antiAlias,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.all(
-                Radius.circular(25),
+                Radius.circular(cardBorderRadius),
               ),
             ),
             child: SingleChildScrollView(
@@ -124,6 +125,7 @@ class _ProfileFormCardState extends State<ProfileFormCard> {
                             children: <Widget>[
                               Expanded(
                                 child: CustomTextFormField(
+                                  defaultBorderColor: Colors.grey[300],
                                   controller: _nameController,
                                   validator: (value) {
                                     if (value.isEmpty) {
@@ -142,6 +144,7 @@ class _ProfileFormCardState extends State<ProfileFormCard> {
                               ),
                               Expanded(
                                 child: CustomTextFormField(
+                                  defaultBorderColor: Colors.grey[300],
                                   controller: _emailController,
                                   hintText: 'Email',
                                   labelText: 'Email',
@@ -274,7 +277,7 @@ class _ProfileFormCardState extends State<ProfileFormCard> {
                               ),
                             ),
                             minLines: 3,
-                            maxLength: 200,
+                            maxLength: 300,
                             maxLines: 3,
                           ),
                           Padding(
@@ -288,7 +291,8 @@ class _ProfileFormCardState extends State<ProfileFormCard> {
                                   child: RaisedButton(
                                     color: kPrimaryColor,
                                     shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(18.0),
+                                      borderRadius: BorderRadius.circular(
+                                          buttonBorderRadius),
                                     ),
                                     textColor: Colors.white,
                                     onPressed: () async => {
@@ -304,9 +308,43 @@ class _ProfileFormCardState extends State<ProfileFormCard> {
                                                   dialCode,
                                                   _selectedGender,
                                                   _descriptionController.text)
-                                              .then((value) {
+                                              .catchError((error) {
+                                            Flushbar(
+                                              title: "Something went wrong",
+                                              maxWidth: 800,
+                                              icon: Icon(
+                                                Icons.error_outline,
+                                                size: 28.0,
+                                                color: Colors.red[600],
+                                              ),
+                                              flushbarPosition:
+                                                  FlushbarPosition.TOP,
+                                              message:
+                                                  "We could not update your profile information. Please make sure you have a valid wifi connection.",
+                                              margin: EdgeInsets.all(8),
+                                              borderRadius: 8,
+                                              duration: Duration(seconds: 5),
+                                            )..show(context);
+                                          }).then((value) {
                                             if (value != null) {
                                               onUpdate();
+                                              Flushbar(
+                                                maxWidth: 800,
+                                                title:
+                                                    "Successfully updated your profile",
+                                                icon: Icon(
+                                                  Icons.info_outline,
+                                                  size: 28.0,
+                                                  color: Colors.green[500],
+                                                ),
+                                                flushbarPosition:
+                                                    FlushbarPosition.TOP,
+                                                message:
+                                                    "Your profile was successfully updated.",
+                                                margin: EdgeInsets.all(8),
+                                                borderRadius: 8,
+                                                duration: Duration(seconds: 5),
+                                              )..show(context);
                                             }
                                           })
                                         }

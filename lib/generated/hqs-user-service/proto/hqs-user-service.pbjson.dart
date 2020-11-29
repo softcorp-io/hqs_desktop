@@ -55,9 +55,10 @@ const Auth$json = const {
     const {'1': 'userID', '3': 2, '4': 1, '5': 9, '10': 'userID'},
     const {'1': 'longitude', '3': 3, '4': 1, '5': 1, '10': 'longitude'},
     const {'1': 'latitude', '3': 4, '4': 1, '5': 1, '10': 'latitude'},
-    const {'1': 'success', '3': 5, '4': 1, '5': 8, '10': 'success'},
+    const {'1': 'valid', '3': 5, '4': 1, '5': 8, '10': 'valid'},
     const {'1': 'createdAt', '3': 6, '4': 1, '5': 11, '6': '.google.protobuf.Timestamp', '10': 'createdAt'},
     const {'1': 'expiresAt', '3': 7, '4': 1, '5': 11, '6': '.google.protobuf.Timestamp', '10': 'expiresAt'},
+    const {'1': 'lastUsedAt', '3': 8, '4': 1, '5': 11, '6': '.google.protobuf.Timestamp', '10': 'lastUsedAt'},
   ],
 };
 
@@ -67,6 +68,7 @@ const Response$json = const {
     const {'1': 'user', '3': 1, '4': 1, '5': 11, '6': '.UserService.User', '10': 'user'},
     const {'1': 'users', '3': 3, '4': 3, '5': 11, '6': '.UserService.User', '10': 'users'},
     const {'1': 'errors', '3': 4, '4': 3, '5': 11, '6': '.UserService.Error', '10': 'errors'},
+    const {'1': 'Success', '3': 5, '4': 1, '5': 8, '10': 'Success'},
   ],
 };
 

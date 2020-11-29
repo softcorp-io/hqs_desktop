@@ -80,6 +80,10 @@ class UserServiceClient extends $grpc.Client {
           '/UserService.UserService/BlockTokenByID',
           ($0.BlockTokenRequest value) => value.writeToBuffer(),
           ($core.List<$core.int> value) => $0.Token.fromBuffer(value));
+  static final _$blockUsersTokens = $grpc.ClientMethod<$0.Request, $0.Response>(
+      '/UserService.UserService/BlockUsersTokens',
+      ($0.Request value) => value.writeToBuffer(),
+      ($core.List<$core.int> value) => $0.Response.fromBuffer(value));
   static final _$getAuthHistory =
       $grpc.ClientMethod<$0.Request, $0.AuthHistory>(
           '/UserService.UserService/GetAuthHistory',
@@ -218,6 +222,14 @@ class UserServiceClient extends $grpc.Client {
     return $grpc.ResponseFuture(call);
   }
 
+  $grpc.ResponseFuture<$0.Response> blockUsersTokens($0.Request request,
+      {$grpc.CallOptions options}) {
+    final call = $createCall(
+        _$blockUsersTokens, $async.Stream.fromIterable([request]),
+        options: options);
+    return $grpc.ResponseFuture(call);
+  }
+
   $grpc.ResponseFuture<$0.AuthHistory> getAuthHistory($0.Request request,
       {$grpc.CallOptions options}) {
     final call = $createCall(
@@ -351,6 +363,13 @@ abstract class UserServiceBase extends $grpc.Service {
         false,
         ($core.List<$core.int> value) => $0.BlockTokenRequest.fromBuffer(value),
         ($0.Token value) => value.writeToBuffer()));
+    $addMethod($grpc.ServiceMethod<$0.Request, $0.Response>(
+        'BlockUsersTokens',
+        blockUsersTokens_Pre,
+        false,
+        false,
+        ($core.List<$core.int> value) => $0.Request.fromBuffer(value),
+        ($0.Response value) => value.writeToBuffer()));
     $addMethod($grpc.ServiceMethod<$0.Request, $0.AuthHistory>(
         'GetAuthHistory',
         getAuthHistory_Pre,
@@ -449,6 +468,11 @@ abstract class UserServiceBase extends $grpc.Service {
     return blockTokenByID(call, await request);
   }
 
+  $async.Future<$0.Response> blockUsersTokens_Pre(
+      $grpc.ServiceCall call, $async.Future<$0.Request> request) async {
+    return blockUsersTokens(call, await request);
+  }
+
   $async.Future<$0.AuthHistory> getAuthHistory_Pre(
       $grpc.ServiceCall call, $async.Future<$0.Request> request) async {
     return getAuthHistory(call, await request);
@@ -479,6 +503,8 @@ abstract class UserServiceBase extends $grpc.Service {
   $async.Future<$0.Token> blockToken($grpc.ServiceCall call, $0.Token request);
   $async.Future<$0.Token> blockTokenByID(
       $grpc.ServiceCall call, $0.BlockTokenRequest request);
+  $async.Future<$0.Response> blockUsersTokens(
+      $grpc.ServiceCall call, $0.Request request);
   $async.Future<$0.AuthHistory> getAuthHistory(
       $grpc.ServiceCall call, $0.Request request);
   $async.Future<$0.UploadImageResponse> uploadImage(

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:hqs_desktop/constants/constants.dart';
 
 class LoginWavyHeader extends StatelessWidget {
   @override
@@ -14,7 +15,7 @@ class LoginWavyHeader extends StatelessWidget {
             child: Row(
               children: [
                 Image(
-                  image: AssetImage('assets/images/logo-white.png'),  
+                  image: AssetImage('assets/images/logo-white.png'),
                   width: 64,
                 ),
                 Padding(
@@ -26,24 +27,24 @@ class LoginWavyHeader extends StatelessWidget {
                     color: Colors.white,
                     fontSize: 32,
                     fontWeight: FontWeight.w500,
-                      ),
-                    ),
+                  ),
+                ),
               ],
             ),
           ),
         ),
         decoration: BoxDecoration(
-          gradient: LinearGradient(
-              colors: blueGradients,
-              begin: Alignment.topLeft,
-              end: Alignment.center),
+          gradient: LinearGradient(colors: [
+            kBlueOne,
+            kBlueTwo,
+            kBlueThree,
+          ], begin: Alignment.topLeft, end: Alignment.center),
         ),
         height: MediaQuery.of(context).size.height / 3.5,
       ),
     );
   }
 }
-
 
 class LoginTopWaveClipper extends CustomClipper<Path> {
   @override
@@ -62,19 +63,21 @@ class LoginTopWaveClipper extends CustomClipper<Path> {
     //creating second curver near center
     var secondControlPoint = Offset(size.width / 5, size.height / 4);
     var secondEndPoint = Offset(size.width / 1.5, size.height / 5);
-    
+
     path.quadraticBezierTo(secondControlPoint.dx, secondControlPoint.dy,
         secondEndPoint.dx, secondEndPoint.dy);
 
     //creating third curver near top right corner
-    var thirdControlPoint = Offset(size.width - (size.width / 9), size.height / 6);
+    var thirdControlPoint =
+        Offset(size.width - (size.width / 9), size.height / 6);
     var thirdEndPoint = Offset(size.width, 0.0);
-    
+
     path.quadraticBezierTo(thirdControlPoint.dx, thirdControlPoint.dy,
         thirdEndPoint.dx, thirdEndPoint.dy);
 
     ///move to top right corner
     path.lineTo(size.width, 0.0);
+
     ///finally close the path by reaching start point from top right corner
     path.close();
     return path;
@@ -84,12 +87,4 @@ class LoginTopWaveClipper extends CustomClipper<Path> {
   bool shouldReclip(CustomClipper<Path> oldClipper) {
     return false;
   }
-
 }
-
-  
-  const List<Color> blueGradients = [
-  Colors.lightBlue,
-  Colors.blue,
-  Color(0xFF2979FF),
-];

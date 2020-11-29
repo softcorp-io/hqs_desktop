@@ -352,9 +352,10 @@ class Auth extends $pb.GeneratedMessage {
     ..aOS(2, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'userID', protoName: 'userID')
     ..a<$core.double>(3, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'longitude', $pb.PbFieldType.OD)
     ..a<$core.double>(4, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'latitude', $pb.PbFieldType.OD)
-    ..aOB(5, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'success')
+    ..aOB(5, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'valid')
     ..aOM<$1.Timestamp>(6, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'createdAt', protoName: 'createdAt', subBuilder: $1.Timestamp.create)
     ..aOM<$1.Timestamp>(7, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'expiresAt', protoName: 'expiresAt', subBuilder: $1.Timestamp.create)
+    ..aOM<$1.Timestamp>(8, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'lastUsedAt', protoName: 'lastUsedAt', subBuilder: $1.Timestamp.create)
     ..hasRequiredFields = false
   ;
 
@@ -418,13 +419,13 @@ class Auth extends $pb.GeneratedMessage {
   void clearLatitude() => clearField(4);
 
   @$pb.TagNumber(5)
-  $core.bool get success => $_getBF(4);
+  $core.bool get valid => $_getBF(4);
   @$pb.TagNumber(5)
-  set success($core.bool v) { $_setBool(4, v); }
+  set valid($core.bool v) { $_setBool(4, v); }
   @$pb.TagNumber(5)
-  $core.bool hasSuccess() => $_has(4);
+  $core.bool hasValid() => $_has(4);
   @$pb.TagNumber(5)
-  void clearSuccess() => clearField(5);
+  void clearValid() => clearField(5);
 
   @$pb.TagNumber(6)
   $1.Timestamp get createdAt => $_getN(5);
@@ -447,6 +448,17 @@ class Auth extends $pb.GeneratedMessage {
   void clearExpiresAt() => clearField(7);
   @$pb.TagNumber(7)
   $1.Timestamp ensureExpiresAt() => $_ensure(6);
+
+  @$pb.TagNumber(8)
+  $1.Timestamp get lastUsedAt => $_getN(7);
+  @$pb.TagNumber(8)
+  set lastUsedAt($1.Timestamp v) { setField(8, v); }
+  @$pb.TagNumber(8)
+  $core.bool hasLastUsedAt() => $_has(7);
+  @$pb.TagNumber(8)
+  void clearLastUsedAt() => clearField(8);
+  @$pb.TagNumber(8)
+  $1.Timestamp ensureLastUsedAt() => $_ensure(7);
 }
 
 class Response extends $pb.GeneratedMessage {
@@ -454,6 +466,7 @@ class Response extends $pb.GeneratedMessage {
     ..aOM<User>(1, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'user', subBuilder: User.create)
     ..pc<User>(3, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'users', $pb.PbFieldType.PM, subBuilder: User.create)
     ..pc<Error>(4, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'errors', $pb.PbFieldType.PM, subBuilder: Error.create)
+    ..aOB(5, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'Success', protoName: 'Success')
     ..hasRequiredFields = false
   ;
 
@@ -496,6 +509,15 @@ class Response extends $pb.GeneratedMessage {
 
   @$pb.TagNumber(4)
   $core.List<Error> get errors => $_getList(2);
+
+  @$pb.TagNumber(5)
+  $core.bool get success => $_getBF(3);
+  @$pb.TagNumber(5)
+  set success($core.bool v) { $_setBool(3, v); }
+  @$pb.TagNumber(5)
+  $core.bool hasSuccess() => $_has(3);
+  @$pb.TagNumber(5)
+  void clearSuccess() => clearField(5);
 }
 
 class UploadImageResponse extends $pb.GeneratedMessage {

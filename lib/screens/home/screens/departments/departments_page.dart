@@ -24,7 +24,7 @@ class Main extends StatelessWidget {
       drawer: HomeDrawer(
         service: service,
       ),
-      appBar: HomeAppBar("Profile", true),
+      appBar: HomeAppBar(title: "Profile", shadow: true, service: service,),
       body: Center(child: Text('See your messages here!')),
     );
   }

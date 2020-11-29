@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:hqs_desktop/generated/hqs-user-service/proto/hqs-user-service.pbgrpc.dart'
     as userService;
 import 'package:grpc/grpc.dart';
-import 'package:flushbar/flushbar.dart';
+import 'package:file_picker_cross/file_picker_cross.dart';
 
 class HqsService {
   userService.UserServiceClient client;
@@ -11,13 +11,21 @@ class HqsService {
 
   final String addr;
   final int port;
+  Function onLogout;
 
-  HqsService(this.addr, this.port) {
+  HqsService({@required this.addr, @required this.port}) {
+    assert(addr != null);
+    assert(port != null);
+
     client = userService.UserServiceClient(ClientChannel(addr,
         port: port,
         options: const ChannelOptions(
           credentials: ChannelCredentials.insecure(),
         )));
+  }
+
+  void setLogout(Function logout) {
+    onLogout = logout;
   }
 
   void retry() {
@@ -42,8 +50,10 @@ class HqsService {
       return token;
     }
     // get longitude & latitude
-    var metadata = new Map<String, String>();
-
+    var metadata = {
+      "latitude": "0.0",
+      "longitude": "0.0",
+    };
     /*   try {
       Location location = new Location();
       bool _serviceEnabled;
@@ -79,54 +89,8 @@ class HqsService {
       token = await client.auth(authUser, options: callOptions).then((val) {
         return val;
       });
-    } on GrpcError catch (e) {
-      if ("UNAVAILABLE" == e.codeName) {
-        retry();
-        Flushbar(
-          title: "The service is unaviable",
-          icon: Icon(
-            Icons.info_outline,
-            size: 28.0,
-            color: Colors.blue[300],
-          ),
-          flushbarPosition: FlushbarPosition.TOP,
-          message:
-              "We could not connect to the service. Please check that you're connected to the internet.",
-          margin: EdgeInsets.all(8),
-          borderRadius: 8,
-          duration: Duration(seconds: 5),
-        )..show(context);
-      } else if ("UNKNOWN" == e.codeName) {
-        token.clearToken();
-        Flushbar(
-          title: "Could not authenticate",
-          icon: Icon(
-            Icons.info_outline,
-            size: 28.0,
-            color: Colors.blue[300],
-          ),
-          flushbarPosition: FlushbarPosition.TOP,
-          message: "The email or password that you provided are not valid",
-          margin: EdgeInsets.all(8),
-          borderRadius: 8,
-          duration: Duration(seconds: 5),
-        )..show(context);
-      }
     } catch (e) {
-      token.clearToken();
-      Flushbar(
-        title: "Unknown error",
-        icon: Icon(
-          Icons.warning,
-          size: 28.0,
-          color: Colors.blue[300],
-        ),
-        flushbarPosition: FlushbarPosition.TOP,
-        message: "An unkown error occured... please try again.",
-        margin: EdgeInsets.all(8),
-        borderRadius: 8,
-        duration: Duration(seconds: 5),
-      )..show(context);
+      throw GrpcError;
     }
     return token;
   }
@@ -179,56 +143,8 @@ class HqsService {
           await client.updateProfile(user, options: callOptions).then((rep) {
         return rep;
       });
-    } on GrpcError catch (e) {
-      if ("UNAVAILABLE" == e.codeName) {
-        retry();
-        Flushbar(
-          title: "The service is unaviable",
-          icon: Icon(
-            Icons.info_outline,
-            size: 28.0,
-            color: Colors.blue[300],
-          ),
-          flushbarPosition: FlushbarPosition.TOP,
-          message:
-              "We could not connect to the service. Please check that you're connected to the internet.",
-          margin: EdgeInsets.all(8),
-          borderRadius: 8,
-          duration: Duration(seconds: 5),
-        )..show(context);
-      } else if ("UNKNOWN" == e.codeName) {
-        //to do logout
-        token.clearToken();
-        Flushbar(
-          title: "Could not authenticate",
-          icon: Icon(
-            Icons.info_outline,
-            size: 28.0,
-            color: Colors.blue[300],
-          ),
-          flushbarPosition: FlushbarPosition.TOP,
-          message:
-              "We could not authenticate you. Your token might have expired. Try loggin out and in again.",
-          margin: EdgeInsets.all(8),
-          borderRadius: 8,
-          duration: Duration(seconds: 5),
-        )..show(context);
-      }
     } catch (e) {
-      token.clearToken();
-      Flushbar(
-        title: "Unknown error",
-        icon: Icon(
-          Icons.warning,
-          size: 28.0,
-          color: Colors.blue[300],
-        ),
-        flushbarPosition: FlushbarPosition.TOP,
-        message: "An unkown error occured... please try again.",
-        margin: EdgeInsets.all(8),
-        borderRadius: 8,
-        duration: Duration(seconds: 5),
-      )..show(context);
+      throw GrpcError;
     }
     curUser = response.user;
     return response;
@@ -251,74 +167,10 @@ class HqsService {
           userService.UpdatePasswordRequest()
             ..oldPassword = oldPassword
             ..newPassword = newPassword;
-      response = await client
-          .updatePassword(updatePasswordRequest, options: callOptions)
-          .then((rep) {
-        Flushbar(
-          title: "Password successfully updated",
-          icon: Icon(
-            Icons.check_circle,
-            size: 28.0,
-            color: Colors.green,
-          ),
-          flushbarPosition: FlushbarPosition.TOP,
-          message: "Your password has successfully been updated.",
-          margin: EdgeInsets.all(8),
-          borderRadius: 8,
-          duration: Duration(seconds: 5),
-        )..show(context);
-        return rep;
-      });
-    } on GrpcError catch (e) {
-      if ("UNAVAILABLE" == e.codeName) {
-        retry();
-        Flushbar(
-          title: "The service is unaviable",
-          icon: Icon(
-            Icons.info_outline,
-            size: 28.0,
-            color: Colors.blue[300],
-          ),
-          flushbarPosition: FlushbarPosition.TOP,
-          message:
-              "We could not connect to the service. Please check that you're connected to the internet.",
-          margin: EdgeInsets.all(8),
-          borderRadius: 8,
-          duration: Duration(seconds: 5),
-        )..show(context);
-      } else if ("UNKNOWN" == e.codeName) {
-        //to do logout
-        token.clearToken();
-        Flushbar(
-          title: "Could not validate password",
-          icon: Icon(
-            Icons.info_outline,
-            size: 28.0,
-            color: Colors.red[500],
-          ),
-          flushbarPosition: FlushbarPosition.TOP,
-          message:
-              "Please make sure that your old password is correct and that your new matches the criterias.",
-          margin: EdgeInsets.all(8),
-          borderRadius: 8,
-          duration: Duration(seconds: 5),
-        )..show(context);
-      }
+      response = await client.updatePassword(updatePasswordRequest,
+          options: callOptions);
     } catch (e) {
-      token.clearToken();
-      Flushbar(
-        title: "Unknown error",
-        icon: Icon(
-          Icons.warning,
-          size: 28.0,
-          color: Colors.blue[300],
-        ),
-        flushbarPosition: FlushbarPosition.TOP,
-        message: "An unkown error occured... please try again.",
-        margin: EdgeInsets.all(8),
-        borderRadius: 8,
-        duration: Duration(seconds: 5),
-      )..show(context);
+      throw GrpcError;
     }
     curUser = response.user;
     return response;
@@ -333,9 +185,79 @@ class HqsService {
     try {
       var metadata = {"token": token.token};
       CallOptions callOptions = CallOptions(metadata: metadata);
-      authHistory = await client
-          .getAuthHistory(userService.Request(), options: callOptions);
-    } on GrpcError catch (e) {} catch (e) {}
+      authHistory = await client.getAuthHistory(userService.Request(),
+          options: callOptions);
+    } catch (e) {
+      throw GrpcError;
+    }
     return authHistory;
+  }
+
+  Future<userService.Token> blockTokenByID(String tokenID) async {
+    userService.Token responseToken = userService.Token();
+    if (token == null || token.token.isEmpty) {
+      token.clearToken();
+      // logout
+    }
+    try {
+      var metadata = {"token": token.token};
+      CallOptions callOptions = CallOptions(metadata: metadata);
+      userService.BlockTokenRequest request = userService.BlockTokenRequest()
+        ..tokenID = tokenID;
+      responseToken =
+          await client.blockTokenByID(request, options: callOptions);
+    } catch (e) {
+      throw GrpcError;
+    }
+    return responseToken;
+  }
+
+  Future<userService.Response> blockAllUsersTokens() async {
+    userService.Response response = userService.Response();
+    if (token == null || token.token.isEmpty) {
+      token.clearToken();
+      // logout
+    }
+    try {
+      var metadata = {"token": token.token};
+      CallOptions callOptions = CallOptions(metadata: metadata);
+      response = await client.blockUsersTokens(userService.Request(),
+          options: callOptions);
+      token.clearToken();
+      onLogout();
+    } catch (e) {
+      throw GrpcError;
+    }
+    return response;
+  }
+
+  Future<userService.Token> logout() async {
+    userService.Token resToken = userService.Token();
+    try {
+      var metadata = {"token": token.token};
+      CallOptions callOptions = CallOptions(metadata: metadata);
+      resToken = await client.blockToken(token, options: callOptions);
+    } catch (e) {
+      throw GrpcError;
+    }
+    token.clearToken();
+    onLogout();
+    return resToken;
+  }
+
+  Future<userService.Token> uploadUserImage() async {
+    userService.Token resToken = userService.Token();
+    // show a dialog to open a file
+    try{
+    FilePickerCross file = await FilePickerCross.importFromStorage(
+        type: FileTypeCross
+            .any, // Available: `any`, `audio`, `image`, `video`, `custom`. Note: not available using FDE
+/*         fileExtension:
+            '.jpeg, .jpg, .png' // Only if FileTypeCross.custom . May be any file extension like `.dot`, `.ppt,.pptx,.odp` */
+        );
+    } on FileSelectionCanceledError catch(e){
+
+    }
+    return resToken;
   }
 }

@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:hqs_desktop/constants/constants.dart';
 import 'package:hqs_desktop/generated/hqs-user-service/proto/hqs-user-service.pb.dart';
@@ -44,114 +42,186 @@ class _ProfileCardState extends State<ProfileCard> {
             top: profileImageRadius / 2.0,
           ),
 
-          ///here we create space for the circle avatar to get ut of the box
+          //here we create space for the circle avatar to get ut of the box
           child: Card(
             clipBehavior: Clip.antiAlias,
+            color: kBlueOne,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.all(
-                Radius.circular(25),
+                Radius.circular(cardBorderRadius),
               ),
             ),
-            //height: 350.0,
             elevation: 4,
-            //width: double.infinity,
-            child: Padding(
-                padding: const EdgeInsets.only(top: 15.0, bottom: 15.0),
-                child: Column(
-                  children: <Widget>[
-                    SizedBox(
-                      height: profileImageRadius / 2,
-                    ),
-                    Text(
-                      user.name,
-                      style: GoogleFonts.poppins(
-                        fontSize: 26,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.black,
-                      ),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.all(18),
-                      child: Text(
-                        user.description.isEmpty
-                            ? "No decription added yet."
-                            : user.description,
-                        style: GoogleFonts.poppins(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w300,
-                          color: Colors.grey[800],
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-                    SizedBox(
-                      height: 30.0,
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 32.0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: <Widget>[
-                          Column(
-                            children: <Widget>[
-                              Text(
-                                'Email',
-                                style: TextStyle(
-                                  fontSize: 16.0,
-                                  color: Colors.black87,
+            child: Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                    colors: [kBlueOne, kBlueTwoHalf],
+                    begin: Alignment.topLeft,
+                    end: Alignment.center),
+              ),
+              child: Padding(
+                  padding: const EdgeInsets.only(top: 15.0, bottom: 15.0),
+                  child: Column(
+                    children: <Widget>[
+                      Align(
+                        alignment: Alignment.topRight,
+                        child: Padding(
+                          padding: EdgeInsets.only(right: 16),
+                          child: Container(
+                            width: 55,
+                            height: 35,
+                            decoration: BoxDecoration(
+                                borderRadius:
+                                    BorderRadius.circular(cardBorderRadius),
+                                color: Colors.white),
+                            child: Align(
+                              child: Text(
+                                "Profile",
+                                style: GoogleFonts.poppins(
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.grey[900],
                                 ),
                               ),
-                              SelectableText(
-                                user.email,
-                                style: TextStyle(
-                                    fontSize: 18.0,
-                                    color: kPrimaryColor,
-                                    fontFamily: ''),
-                              ),
-                            ],
+                              alignment: Alignment.center,
+                            ),
                           ),
-                          Column(
-                            children: <Widget>[
-                              Text(
-                                'Phone',
-                                style: TextStyle(
-                                    fontSize: 16.0, color: Colors.black87),
-                              ),
-                              SelectableText(
-                                user.phone.isEmpty
-                                    ? "No number specified"
-                                    : user.dialCode + " " + user.phone,
-                                style: TextStyle(
-                                    fontSize: 18.0,
-                                    color: kPrimaryColor,
-                                    fontFamily: ''),
-                              ),
-                            ],
-                          ),
-                          Column(
-                            children: <Widget>[
-                              Text(
-                                'Gender',
-                                style: TextStyle(
-                                    fontSize: 16.0, color: Colors.black87),
-                              ),
-                              SelectableText(
-                                user.gender == false ? "Male" : "Female",
-                                style: TextStyle(
-                                    fontSize: 18.0,
-                                    color: kPrimaryColor,
-                                    fontFamily: ''),
-                              ),
-                            ],
-                          ),
-                        ],
+                        ),
                       ),
-                    ),
-                    SizedBox(
-                      height: 100.0,
-                    ),
-                  ],
-                )),
+                      SizedBox(
+                        height: profileImageRadius / 2,
+                      ),
+                      Text(
+                        user.name,
+                        style: GoogleFonts.poppins(
+                          fontSize: 26,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.white,
+                        ),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.all(18),
+                        child: Text(
+                          user.description.isEmpty
+                              ? "No decription added yet."
+                              : user.description,
+                          style: GoogleFonts.poppins(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w400,
+                            color: Colors.white,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                      SizedBox(
+                        height: 30.0,
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 32.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: <Widget>[
+                            Column(
+                              children: <Widget>[
+                                Container(
+                                  height: 60,
+                                  width: 60,
+                                  child: CircleAvatar(
+                                    child: Container(
+                                      width: 60,
+                                      height: 60,
+                                      child: LinearGradientMask(
+                                          child: Icon(
+                                        Icons.email,
+                                        size: 35,
+                                      )),
+                                      decoration: BoxDecoration(
+                                          shape: BoxShape.circle,
+                                          color: Colors.white),
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(height: 12),
+                                SelectableText(
+                                  user.email,
+                                  style: TextStyle(
+                                      fontSize: 18.0,
+                                      color: Colors.white,
+                                      fontFamily: ''),
+                                ),
+                              ],
+                            ),
+                            Column(
+                              children: <Widget>[
+                                Container(
+                                  height: 60,
+                                  width: 60,
+                                  child: CircleAvatar(
+                                    child: Container(
+                                      width: 60,
+                                      height: 60,
+                                      child: LinearGradientMask(
+                                          child: Icon(
+                                        Icons.phone_android,
+                                        size: 35,
+                                      )),
+                                      decoration: BoxDecoration(
+                                          shape: BoxShape.circle,
+                                          color: Colors.white),
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(height: 12),
+                                SelectableText(
+                                  user.phone.isEmpty
+                                      ? "No number specified"
+                                      : user.dialCode + " " + user.phone,
+                                  style: TextStyle(
+                                      fontSize: 18.0,
+                                      color: Colors.white,
+                                      fontFamily: ''),
+                                ),
+                              ],
+                            ),
+                            Column(
+                              children: <Widget>[
+                                Container(
+                                  height: 60,
+                                  width: 60,
+                                  child: CircleAvatar(
+                                    child: Container(
+                                      width: 60,
+                                      height: 60,
+                                      child: LinearGradientMask(
+                                          child: Icon(
+                                        Icons.person,
+                                        size: 35,
+                                      )),
+                                      decoration: BoxDecoration(
+                                          shape: BoxShape.circle,
+                                          color: Colors.white),
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(height: 12),
+                                SelectableText(
+                                  user.gender == false ? "Male" : "Female",
+                                  style: TextStyle(
+                                      fontSize: 18.0,
+                                      color: Colors.white,
+                                      fontFamily: ''),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                      SizedBox(
+                        height: 100.0,
+                      ),
+                    ],
+                  )),
+            ),
           ),
         ),
 
@@ -162,21 +232,54 @@ class _ProfileCardState extends State<ProfileCard> {
           decoration: BoxDecoration(
             shape: BoxShape.circle,
             color: Colors.white,
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black26,
-                blurRadius: 8.0,
-                offset: Offset(0.0, 5.0),
+          ),
+          child: Stack(children: [
+            CircleAvatar(
+                radius: profileImageRadius,
+                backgroundImage: NetworkImage(user.image),
+                backgroundColor: Colors.amber[100]),
+            Align(
+              alignment: Alignment.bottomRight,
+              child: Container(
+                width: 33,
+                height: 33,
+                child: IconButton(
+                  onPressed: () {
+                    service.uploadUserImage();
+                  },
+                  icon: Icon(
+                    Icons.edit,
+                    color: kPrimaryColor,
+                    size: 19,
+                  ),
+                ),
+                decoration:
+                    BoxDecoration(shape: BoxShape.circle, color: Colors.white),
               ),
-            ],
-          ),
-          child: CircleAvatar(
-            radius: profileImageRadius,
-            backgroundImage: NetworkImage(user.image),
-            backgroundColor: Colors.grey[800],
-          ),
+            ),
+          ]),
         ),
       ],
+    );
+  }
+}
+
+class LinearGradientMask extends StatelessWidget {
+  LinearGradientMask({this.child});
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return ShaderMask(
+      shaderCallback: (bounds) {
+        return RadialGradient(
+          center: Alignment.topLeft,
+          radius: 1,
+          colors: [kBlueOne, kBlueTwo, kBlueThree],
+          tileMode: TileMode.mirror,
+        ).createShader(bounds);
+      },
+      child: child,
     );
   }
 }

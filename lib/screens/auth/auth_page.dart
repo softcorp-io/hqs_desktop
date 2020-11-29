@@ -42,7 +42,7 @@ class _AuthPageState extends State<AuthPage> {
                 Container(
                   height: double.infinity,
                   width: size.width,
-                  color: Colors.orange,
+                  color: kDarkBlue,
                 ),
               ],
             ),

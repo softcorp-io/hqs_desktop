@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hqs_desktop/constants/constants.dart';
 import 'package:hqs_desktop/service/hqs_service.dart' as hqs;
+import 'package:flushbar/flushbar.dart';
 
 class LogIn extends StatefulWidget {
   final hqs.HqsService service;
@@ -48,7 +49,7 @@ class _LogInState extends State<LogIn> {
               clipBehavior: Clip.antiAlias,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.all(
-                  Radius.circular(25),
+                  Radius.circular(cardBorderRadius),
                 ),
               ),
               child: AnimatedContainer(
@@ -115,7 +116,7 @@ class _LogInState extends State<LogIn> {
                                 ),
                                 TextFormField(
                                   // todo on backslash password don't update correct when obscure text is true... wait for fix and set to false for now
-                                  obscureText: false,
+                                  obscureText: true,
                                   controller: _passwordController,
                                   decoration: InputDecoration(
                                     hintText: 'Password',
@@ -135,44 +136,76 @@ class _LogInState extends State<LogIn> {
                                   padding: EdgeInsets.all(60),
                                 ),
                                 SizedBox(
+                                    child: RaisedButton(
+                                  shape: StadiumBorder(),
+                                  padding: EdgeInsets.all(0.0),
+                                  textColor: Colors.white,
+                                  onPressed: () async => {
+                                    if (_formKey.currentState.validate())
+                                      {
+                                        service
+                                            .authenticate(
+                                                context,
+                                                _emailController.text,
+                                                _passwordController.text)
+                                            .catchError((error) {
+                                          Flushbar(
+                                            title: "Something went wrong",
+                                            maxWidth: 800,
+                                            icon: Icon(
+                                              Icons.error_outline,
+                                              size: 28.0,
+                                              color: Colors.red[600],
+                                            ),
+                                            flushbarPosition:
+                                                FlushbarPosition.TOP,
+                                            message:
+                                                "We could not authenticate you. Please make sure your email & password are correct and that you have a valid wifi connection.",
+                                            margin: EdgeInsets.all(8),
+                                            borderRadius: 8,
+                                            duration: Duration(seconds: 5),
+                                          )..show(context);
+                                        }).then((token) => {
+                                                  if (token.token == "")
+                                                    {
+                                                      _emailController.text =
+                                                          "",
+                                                      _passwordController.text =
+                                                          "",
+                                                    }
+                                                  else
+                                                    {
+                                                      // User is allowed to log in
+                                                      onLogIn(),
+                                                    }
+                                                }),
+                                      }
+                                  },
+                                  child: Container(
                                     width: double.infinity,
                                     height: 50.0,
-                                    child: RaisedButton(
-                                      color: kPrimaryColor,
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(18.0),
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(
+                                          buttonBorderRadius),
+                                      gradient: LinearGradient(
+                                        colors: <Color>[
+                                          kBlueOne,
+                                          kBlueTwo,
+                                          kBlueThree,
+                                        ],
                                       ),
-                                      textColor: Colors.white,
-                                      onPressed: () async => {
-                                        // Validate returns true if the form is valid, or false
-
-                                        // otherwise.
-                                        if (_formKey.currentState.validate())
-                                          {
-                                            service
-                                                .authenticate(
-                                                    context,
-                                                    _emailController.text,
-                                                    _passwordController.text)
-                                                .then((token) => {
-                                                      if (token.token == "")
-                                                        {
-                                                          _emailController
-                                                              .text = "",
-                                                          _passwordController
-                                                              .text = "",
-                                                        }
-                                                      else
-                                                        {
-                                                          // User is allowed to log in
-                                                          onLogIn(),
-                                                        }
-                                                    }),
-                                          }
-                                      },
-                                      child: Text("Submit"),
-                                    )),
+                                    ),
+                                    child: Align(
+                                      alignment: Alignment.center,
+                                      child: Text(
+                                        'Submit',
+                                        style: TextStyle(fontSize: 15.0),
+                                      ),
+                                    ),
+                                    padding: EdgeInsets.symmetric(
+                                        horizontal: 70.0, vertical: 15.0),
+                                  ),
+                                )),
                               ],
                             ),
                           ),

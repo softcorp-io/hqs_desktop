@@ -9,16 +9,19 @@ class CustomTextFormField extends StatelessWidget {
   final String hintText;
   final String labelText;
   final bool obscure;
+  final Color defaultBorderColor;
 
   CustomTextFormField(
       {@required this.controller,
       @required this.validator,
       @required this.hintText,
       @required this.labelText,
+      @required this.defaultBorderColor,
       this.onChange,
       this.icon,
       @required this.obscure}) {
     assert(controller != null);
+    assert(defaultBorderColor != null);
     assert(obscure != null);
   }
   @override
@@ -40,7 +43,7 @@ class CustomTextFormField extends StatelessWidget {
           borderSide: BorderSide(color: kPrimaryColor, width: 1.0),
         ),
         enabledBorder: OutlineInputBorder(
-          borderSide: BorderSide(color: Colors.grey[300], width: 1.0),
+          borderSide: BorderSide(color: defaultBorderColor, width: 1.0),
         ),
         errorBorder: OutlineInputBorder(
           borderSide: BorderSide(color: Colors.red[600], width: 1.0),

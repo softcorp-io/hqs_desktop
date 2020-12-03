@@ -49,7 +49,7 @@ class _ProfilePasswordCardState extends State<ProfilePasswordCard> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: EdgeInsets.only(top: 120 / 2),
+          padding: EdgeInsets.only(top: profileImageRadius / 4),
           child: Container(
               width: size.width / 2 - 32,
               child: Card(
@@ -229,7 +229,7 @@ class _ProfilePasswordCardState extends State<ProfilePasswordCard> {
               )),
         ),
         Padding(
-            padding: EdgeInsets.only(top: 120 / 2, left: 32),
+            padding: EdgeInsets.only(top: profileImageRadius / 4, left: 32),
             child: Container(
                 width: size.width / 2 - 32,
                 height: 250,

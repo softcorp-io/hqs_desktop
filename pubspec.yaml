@@ -35,9 +35,13 @@ dependencies:
   protobuf: ^1.1.0
   grpc: ^2.3.0
   google_maps: ">=3.0.0 <4.0.0"
+  datetime_picker_formfield: ^1.0.0
+  clipboard: ^0.1.2+8 
   page_transition: ^1.1.7+2
+  flutter_datetime_picker: ^1.4.0 
   flushbar: ^1.10.4
   country_code_picker: ^1.6.2
+  # syncfusion_flutter_datepicker: ^18.3.52-beta 
   window_size:
     git:
       url: git://github.com/google/flutter-desktop-embedding.git
@@ -62,6 +66,7 @@ flutter:
   assets:
     - assets/images/login-background.png
     - assets/images/logo-white.png
+    - assets/images/logo-blue.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

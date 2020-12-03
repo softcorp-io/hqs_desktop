@@ -51,7 +51,7 @@ class _ProfileAuthHistoryState extends State<ProfileAuthHistory> {
                 case ConnectionState.none:
                 case ConnectionState.waiting:
                   return Padding(
-                      padding: EdgeInsets.only(top: 120),
+                      padding: EdgeInsets.only(top: profileImageRadius/2),
                       child: Align(
                           child: Container(
                             child: CircularProgressIndicator(),

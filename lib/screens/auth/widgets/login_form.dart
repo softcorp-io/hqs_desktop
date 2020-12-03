@@ -165,6 +165,8 @@ class _LogInState extends State<LogIn> {
                                             borderRadius: 8,
                                             duration: Duration(seconds: 5),
                                           )..show(context);
+                                          _emailController.text = "";
+                                          _passwordController.text = "";
                                         }).then((token) => {
                                                   if (token.token == "")
                                                     {

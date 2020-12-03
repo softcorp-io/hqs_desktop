@@ -3,7 +3,6 @@ import 'package:hqs_desktop/generated/hqs-user-service/proto/hqs-user-service.pb
 import 'dart:async';
 import 'package:intl/intl.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:hqs_desktop/constants/constants.dart';
 
 typedef OnRowSelect = void Function(int index);
 
@@ -38,7 +37,7 @@ class AuthHistorySource extends DataTableSource {
     DateTime lastUsedAt = auth.lastUsedAt.toDateTime();
     String formatlastUsedAt = DateFormat('yyyy-MM-dd-kk:mm').format(lastUsedAt);
 
-    String address = "Unknown Location";
+    String address = "Unknown";
     if (auth.latitude != 0.0 && auth.longitude != 0.0) {
       getAddress(auth.latitude, auth.longitude).then((addr) {
         // set address to addr

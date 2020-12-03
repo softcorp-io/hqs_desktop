@@ -3,33 +3,23 @@ import 'package:hqs_desktop/constants/constants.dart';
 import 'package:hqs_desktop/generated/hqs-user-service/proto/hqs-user-service.pb.dart';
 import 'package:hqs_desktop/service/hqs_service.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
+import 'package:flushbar/flushbar.dart';
 
-class ProfileCard extends StatefulWidget {
+class ProfileCard extends StatelessWidget {
   final HqsService service;
-  final User user;
   final double profileImageRadius;
+  final Function onUpdate;
+  final User user;
+
   ProfileCard(
       {@required this.service,
+      @required this.profileImageRadius,
       @required this.user,
-      @required this.profileImageRadius})
-      : assert(service != null),
-        assert(profileImageRadius != null);
-
-  @override
-  _ProfileCardState createState() => _ProfileCardState(
-      service: service, user: user, profileImageRadius: profileImageRadius);
-}
-
-class _ProfileCardState extends State<ProfileCard> {
-  final HqsService service;
-  final User user;
-  final double profileImageRadius;
-  _ProfileCardState(
-      {@required this.service,
-      @required this.user,
-      @required this.profileImageRadius})
+      @required this.onUpdate})
       : assert(service != null),
         assert(user != null),
+        assert(onUpdate != null),
         assert(profileImageRadius != null);
 
   @override
@@ -56,8 +46,8 @@ class _ProfileCardState extends State<ProfileCard> {
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                     colors: [kBlueOne, kBlueTwoHalf],
-                    begin: Alignment.topLeft,
-                    end: Alignment.center),
+                    begin: Alignment.bottomLeft,
+                    end: Alignment.topRight),
               ),
               child: Padding(
                   padding: const EdgeInsets.only(top: 15.0, bottom: 15.0),
@@ -99,6 +89,14 @@ class _ProfileCardState extends State<ProfileCard> {
                           color: Colors.white,
                         ),
                       ),
+                      Text(
+                        user.title.isEmpty ? "No title specified" : user.title,
+                        style: GoogleFonts.poppins(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.amber[300],
+                        ),
+                      ),
                       Padding(
                         padding: EdgeInsets.all(18),
                         child: Text(
@@ -108,7 +106,7 @@ class _ProfileCardState extends State<ProfileCard> {
                           style: GoogleFonts.poppins(
                             fontSize: 16,
                             fontWeight: FontWeight.w400,
-                            color: Colors.white,
+                            color: Colors.white70,
                           ),
                           textAlign: TextAlign.center,
                         ),
@@ -194,7 +192,7 @@ class _ProfileCardState extends State<ProfileCard> {
                                       height: 60,
                                       child: LinearGradientMask(
                                           child: Icon(
-                                        Icons.person,
+                                        Icons.date_range,
                                         size: 35,
                                       )),
                                       decoration: BoxDecoration(
@@ -205,7 +203,8 @@ class _ProfileCardState extends State<ProfileCard> {
                                 ),
                                 SizedBox(height: 12),
                                 SelectableText(
-                                  user.gender == false ? "Male" : "Female",
+                                  DateFormat('yyyy-MM-dd')
+                                      .format(user.birthDate.toDateTime()),
                                   style: TextStyle(
                                       fontSize: 18.0,
                                       color: Colors.white,
@@ -231,13 +230,20 @@ class _ProfileCardState extends State<ProfileCard> {
           height: profileImageRadius,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            color: Colors.white,
+            color: Colors.transparent,
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black38,
+                blurRadius: 6.0,
+                offset: Offset(0.0, 3.0),
+              ),
+            ],
           ),
           child: Stack(children: [
             CircleAvatar(
                 radius: profileImageRadius,
                 backgroundImage: NetworkImage(user.image),
-                backgroundColor: Colors.amber[100]),
+                backgroundColor: Colors.grey[800]),
             Align(
               alignment: Alignment.bottomRight,
               child: Container(
@@ -245,7 +251,26 @@ class _ProfileCardState extends State<ProfileCard> {
                 height: 33,
                 child: IconButton(
                   onPressed: () {
-                    service.uploadUserImage();
+                    service.uploadUserImage().then((value) {
+                      if (value != null) {
+                        Flushbar(
+                          maxWidth: 800,
+                          title: "Successfully uploaded your image",
+                          icon: Icon(
+                            Icons.info_outline,
+                            size: 28.0,
+                            color: Colors.green[500],
+                          ),
+                          flushbarPosition: FlushbarPosition.TOP,
+                          message:
+                              "Your profile image was successfully updated.",
+                          margin: EdgeInsets.all(8),
+                          borderRadius: 8,
+                          duration: Duration(seconds: 5),
+                        )..show(context);
+                        onUpdate();
+                      }
+                    });
                   },
                   icon: Icon(
                     Icons.edit,

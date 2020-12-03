@@ -22,15 +22,17 @@ class User extends $pb.GeneratedMessage {
     ..aOS(7, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'dialCode', protoName: 'dialCode')
     ..aOS(8, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'image')
     ..aOS(9, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'description')
-    ..aOB(10, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'gender')
-    ..aOB(11, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'allowView', protoName: 'allowView')
-    ..aOB(12, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'allowCreate', protoName: 'allowCreate')
-    ..aOB(13, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'allowPermission', protoName: 'allowPermission')
-    ..aOB(14, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'allowDelete', protoName: 'allowDelete')
-    ..aOB(15, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'allowBlock', protoName: 'allowBlock')
-    ..aOB(16, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'blocked')
-    ..aOM<$1.Timestamp>(17, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'createdAt', protoName: 'createdAt', subBuilder: $1.Timestamp.create)
-    ..aOM<$1.Timestamp>(18, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'updatedAt', protoName: 'updatedAt', subBuilder: $1.Timestamp.create)
+    ..aOS(10, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'title')
+    ..aOB(11, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'gender')
+    ..aOB(12, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'allowView', protoName: 'allowView')
+    ..aOB(13, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'allowCreate', protoName: 'allowCreate')
+    ..aOB(14, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'allowPermission', protoName: 'allowPermission')
+    ..aOB(15, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'allowDelete', protoName: 'allowDelete')
+    ..aOB(16, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'allowBlock', protoName: 'allowBlock')
+    ..aOB(17, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'blocked')
+    ..aOM<$1.Timestamp>(18, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'createdAt', protoName: 'createdAt', subBuilder: $1.Timestamp.create)
+    ..aOM<$1.Timestamp>(19, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'updatedAt', protoName: 'updatedAt', subBuilder: $1.Timestamp.create)
+    ..aOM<$1.Timestamp>(20, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'birthDate', protoName: 'birthDate', subBuilder: $1.Timestamp.create)
     ..hasRequiredFields = false
   ;
 
@@ -139,158 +141,109 @@ class User extends $pb.GeneratedMessage {
   void clearDescription() => clearField(9);
 
   @$pb.TagNumber(10)
-  $core.bool get gender => $_getBF(9);
+  $core.String get title => $_getSZ(9);
   @$pb.TagNumber(10)
-  set gender($core.bool v) { $_setBool(9, v); }
+  set title($core.String v) { $_setString(9, v); }
   @$pb.TagNumber(10)
-  $core.bool hasGender() => $_has(9);
+  $core.bool hasTitle() => $_has(9);
   @$pb.TagNumber(10)
-  void clearGender() => clearField(10);
+  void clearTitle() => clearField(10);
 
   @$pb.TagNumber(11)
-  $core.bool get allowView => $_getBF(10);
+  $core.bool get gender => $_getBF(10);
   @$pb.TagNumber(11)
-  set allowView($core.bool v) { $_setBool(10, v); }
+  set gender($core.bool v) { $_setBool(10, v); }
   @$pb.TagNumber(11)
-  $core.bool hasAllowView() => $_has(10);
+  $core.bool hasGender() => $_has(10);
   @$pb.TagNumber(11)
-  void clearAllowView() => clearField(11);
+  void clearGender() => clearField(11);
 
   @$pb.TagNumber(12)
-  $core.bool get allowCreate => $_getBF(11);
+  $core.bool get allowView => $_getBF(11);
   @$pb.TagNumber(12)
-  set allowCreate($core.bool v) { $_setBool(11, v); }
+  set allowView($core.bool v) { $_setBool(11, v); }
   @$pb.TagNumber(12)
-  $core.bool hasAllowCreate() => $_has(11);
+  $core.bool hasAllowView() => $_has(11);
   @$pb.TagNumber(12)
-  void clearAllowCreate() => clearField(12);
+  void clearAllowView() => clearField(12);
 
   @$pb.TagNumber(13)
-  $core.bool get allowPermission => $_getBF(12);
+  $core.bool get allowCreate => $_getBF(12);
   @$pb.TagNumber(13)
-  set allowPermission($core.bool v) { $_setBool(12, v); }
+  set allowCreate($core.bool v) { $_setBool(12, v); }
   @$pb.TagNumber(13)
-  $core.bool hasAllowPermission() => $_has(12);
+  $core.bool hasAllowCreate() => $_has(12);
   @$pb.TagNumber(13)
-  void clearAllowPermission() => clearField(13);
+  void clearAllowCreate() => clearField(13);
 
   @$pb.TagNumber(14)
-  $core.bool get allowDelete => $_getBF(13);
+  $core.bool get allowPermission => $_getBF(13);
   @$pb.TagNumber(14)
-  set allowDelete($core.bool v) { $_setBool(13, v); }
+  set allowPermission($core.bool v) { $_setBool(13, v); }
   @$pb.TagNumber(14)
-  $core.bool hasAllowDelete() => $_has(13);
+  $core.bool hasAllowPermission() => $_has(13);
   @$pb.TagNumber(14)
-  void clearAllowDelete() => clearField(14);
+  void clearAllowPermission() => clearField(14);
 
   @$pb.TagNumber(15)
-  $core.bool get allowBlock => $_getBF(14);
+  $core.bool get allowDelete => $_getBF(14);
   @$pb.TagNumber(15)
-  set allowBlock($core.bool v) { $_setBool(14, v); }
+  set allowDelete($core.bool v) { $_setBool(14, v); }
   @$pb.TagNumber(15)
-  $core.bool hasAllowBlock() => $_has(14);
+  $core.bool hasAllowDelete() => $_has(14);
   @$pb.TagNumber(15)
-  void clearAllowBlock() => clearField(15);
+  void clearAllowDelete() => clearField(15);
 
   @$pb.TagNumber(16)
-  $core.bool get blocked => $_getBF(15);
+  $core.bool get allowBlock => $_getBF(15);
   @$pb.TagNumber(16)
-  set blocked($core.bool v) { $_setBool(15, v); }
+  set allowBlock($core.bool v) { $_setBool(15, v); }
   @$pb.TagNumber(16)
-  $core.bool hasBlocked() => $_has(15);
+  $core.bool hasAllowBlock() => $_has(15);
   @$pb.TagNumber(16)
-  void clearBlocked() => clearField(16);
+  void clearAllowBlock() => clearField(16);
 
   @$pb.TagNumber(17)
-  $1.Timestamp get createdAt => $_getN(16);
+  $core.bool get blocked => $_getBF(16);
   @$pb.TagNumber(17)
-  set createdAt($1.Timestamp v) { setField(17, v); }
+  set blocked($core.bool v) { $_setBool(16, v); }
   @$pb.TagNumber(17)
-  $core.bool hasCreatedAt() => $_has(16);
+  $core.bool hasBlocked() => $_has(16);
   @$pb.TagNumber(17)
-  void clearCreatedAt() => clearField(17);
-  @$pb.TagNumber(17)
-  $1.Timestamp ensureCreatedAt() => $_ensure(16);
+  void clearBlocked() => clearField(17);
 
   @$pb.TagNumber(18)
-  $1.Timestamp get updatedAt => $_getN(17);
+  $1.Timestamp get createdAt => $_getN(17);
   @$pb.TagNumber(18)
-  set updatedAt($1.Timestamp v) { setField(18, v); }
+  set createdAt($1.Timestamp v) { setField(18, v); }
   @$pb.TagNumber(18)
-  $core.bool hasUpdatedAt() => $_has(17);
+  $core.bool hasCreatedAt() => $_has(17);
   @$pb.TagNumber(18)
-  void clearUpdatedAt() => clearField(18);
+  void clearCreatedAt() => clearField(18);
   @$pb.TagNumber(18)
-  $1.Timestamp ensureUpdatedAt() => $_ensure(17);
-}
+  $1.Timestamp ensureCreatedAt() => $_ensure(17);
 
-class Allowances extends $pb.GeneratedMessage {
-  static final $pb.BuilderInfo _i = $pb.BuilderInfo(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'Allowances', package: const $pb.PackageName(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'UserService'), createEmptyInstance: create)
-    ..aOB(1, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'allowView', protoName: 'allowView')
-    ..aOB(2, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'allowCreate', protoName: 'allowCreate')
-    ..aOB(3, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'allowPermission', protoName: 'allowPermission')
-    ..aOB(4, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'allowDelete', protoName: 'allowDelete')
-    ..hasRequiredFields = false
-  ;
+  @$pb.TagNumber(19)
+  $1.Timestamp get updatedAt => $_getN(18);
+  @$pb.TagNumber(19)
+  set updatedAt($1.Timestamp v) { setField(19, v); }
+  @$pb.TagNumber(19)
+  $core.bool hasUpdatedAt() => $_has(18);
+  @$pb.TagNumber(19)
+  void clearUpdatedAt() => clearField(19);
+  @$pb.TagNumber(19)
+  $1.Timestamp ensureUpdatedAt() => $_ensure(18);
 
-  Allowances._() : super();
-  factory Allowances() => create();
-  factory Allowances.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
-  factory Allowances.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
-  @$core.Deprecated(
-  'Using this can add significant overhead to your binary. '
-  'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
-  'Will be removed in next major version')
-  Allowances clone() => Allowances()..mergeFromMessage(this);
-  @$core.Deprecated(
-  'Using this can add significant overhead to your binary. '
-  'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
-  'Will be removed in next major version')
-  Allowances copyWith(void Function(Allowances) updates) => super.copyWith((message) => updates(message as Allowances)); // ignore: deprecated_member_use
-  $pb.BuilderInfo get info_ => _i;
-  @$core.pragma('dart2js:noInline')
-  static Allowances create() => Allowances._();
-  Allowances createEmptyInstance() => create();
-  static $pb.PbList<Allowances> createRepeated() => $pb.PbList<Allowances>();
-  @$core.pragma('dart2js:noInline')
-  static Allowances getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<Allowances>(create);
-  static Allowances _defaultInstance;
-
-  @$pb.TagNumber(1)
-  $core.bool get allowView => $_getBF(0);
-  @$pb.TagNumber(1)
-  set allowView($core.bool v) { $_setBool(0, v); }
-  @$pb.TagNumber(1)
-  $core.bool hasAllowView() => $_has(0);
-  @$pb.TagNumber(1)
-  void clearAllowView() => clearField(1);
-
-  @$pb.TagNumber(2)
-  $core.bool get allowCreate => $_getBF(1);
-  @$pb.TagNumber(2)
-  set allowCreate($core.bool v) { $_setBool(1, v); }
-  @$pb.TagNumber(2)
-  $core.bool hasAllowCreate() => $_has(1);
-  @$pb.TagNumber(2)
-  void clearAllowCreate() => clearField(2);
-
-  @$pb.TagNumber(3)
-  $core.bool get allowPermission => $_getBF(2);
-  @$pb.TagNumber(3)
-  set allowPermission($core.bool v) { $_setBool(2, v); }
-  @$pb.TagNumber(3)
-  $core.bool hasAllowPermission() => $_has(2);
-  @$pb.TagNumber(3)
-  void clearAllowPermission() => clearField(3);
-
-  @$pb.TagNumber(4)
-  $core.bool get allowDelete => $_getBF(3);
-  @$pb.TagNumber(4)
-  set allowDelete($core.bool v) { $_setBool(3, v); }
-  @$pb.TagNumber(4)
-  $core.bool hasAllowDelete() => $_has(3);
-  @$pb.TagNumber(4)
-  void clearAllowDelete() => clearField(4);
+  @$pb.TagNumber(20)
+  $1.Timestamp get birthDate => $_getN(19);
+  @$pb.TagNumber(20)
+  set birthDate($1.Timestamp v) { setField(20, v); }
+  @$pb.TagNumber(20)
+  $core.bool hasBirthDate() => $_has(19);
+  @$pb.TagNumber(20)
+  void clearBirthDate() => clearField(20);
+  @$pb.TagNumber(20)
+  $1.Timestamp ensureBirthDate() => $_ensure(19);
 }
 
 class Token extends $pb.GeneratedMessage {

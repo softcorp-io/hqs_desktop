@@ -7,16 +7,17 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:country_code_picker/country_code_picker.dart';
 import 'package:hqs_desktop/screens/home/widgets/custom_text_form_field.dart';
 import 'package:flushbar/flushbar.dart';
+// import 'package:syncfusion_flutter_datepicker/datepicker.dart';
+import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
+import 'package:intl/intl.dart';
 
 class ProfileFormCard extends StatefulWidget {
   final HqsService service;
-  final User user;
   final Function onUpdate;
   final double profileImageRadius;
 
   ProfileFormCard(
       {@required this.service,
-      @required this.user,
       @required this.onUpdate,
       @required this.profileImageRadius})
       : assert(service != null),
@@ -25,7 +26,6 @@ class ProfileFormCard extends StatefulWidget {
   @override
   _ProfileFormCardState createState() => _ProfileFormCardState(
       service: service,
-      user: user,
       onUpdate: onUpdate,
       profileImageRadius: profileImageRadius);
 }
@@ -37,12 +37,14 @@ class _ProfileFormCardState extends State<ProfileFormCard> {
   final _emailController = TextEditingController();
   final _descriptionController = TextEditingController();
   final _phoneController = TextEditingController();
+  final _titleController = TextEditingController();
   String countryCode = "";
   String dialCode = "";
-
+  DateTime birthDate;
+  String birthDateString = "";
   // constructor parameters
   final HqsService service;
-  final User user;
+  User user;
   final Function onUpdate;
   final double profileImageRadius;
 
@@ -64,19 +66,23 @@ class _ProfileFormCardState extends State<ProfileFormCard> {
 
   _ProfileFormCardState(
       {@required this.service,
-      @required this.user,
       @required this.onUpdate,
       @required this.profileImageRadius}) {
     assert(service != null);
-    assert(user != null);
     assert(profileImageRadius != null);
+
+    this.user = service.curUser;
+
     _nameController.text = user.name;
     _emailController.text = user.email;
     _descriptionController.text = user.description;
     _selectedGender = user.gender;
     _phoneController.text = user.phone;
+    _titleController.text = user.title;
     countryCode = user.countryCode;
     dialCode = user.dialCode;
+    birthDate = user.birthDate.toDateTime();
+    birthDateString = DateFormat('yyyy-MM-dd').format(birthDate);
   }
 
   @override
@@ -85,7 +91,7 @@ class _ProfileFormCardState extends State<ProfileFormCard> {
     return Stack(
       children: [
         Padding(
-          padding: EdgeInsets.only(top: 120 / 2),
+          padding: EdgeInsets.only(top: profileImageRadius / 2),
           child: Card(
             elevation: 4,
             clipBehavior: Clip.antiAlias,
@@ -123,7 +129,7 @@ class _ProfileFormCardState extends State<ProfileFormCard> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: <Widget>[
-                              Expanded(
+                              Flexible(
                                 child: CustomTextFormField(
                                   defaultBorderColor: Colors.grey[300],
                                   controller: _nameController,
@@ -142,7 +148,7 @@ class _ProfileFormCardState extends State<ProfileFormCard> {
                               Padding(
                                 padding: EdgeInsets.all(12),
                               ),
-                              Expanded(
+                              Flexible(
                                 child: CustomTextFormField(
                                   defaultBorderColor: Colors.grey[300],
                                   controller: _emailController,
@@ -215,7 +221,7 @@ class _ProfileFormCardState extends State<ProfileFormCard> {
                                       padding:
                                           EdgeInsets.only(right: 6, left: 6),
                                     ),
-                                    Expanded(
+                                    Flexible(
                                       child: TextFormField(
                                         controller: _phoneController,
                                         inputFormatters: <TextInputFormatter>[
@@ -258,6 +264,64 @@ class _ProfileFormCardState extends State<ProfileFormCard> {
                           SizedBox(
                             height: 26,
                           ),
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: <Widget>[
+                              Flexible(
+                                child: CustomTextFormField(
+                                  defaultBorderColor: Colors.grey[300],
+                                  controller: _titleController,
+                                  validator: (value) {
+                                    return null;
+                                  },
+                                  icon: Icon(Icons.badge),
+                                  hintText: "Title",
+                                  labelText: "Title",
+                                  obscure: false,
+                                ),
+                              ),
+                              Padding(
+                                padding: EdgeInsets.all(12),
+                              ),
+                              Flexible(
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    color: Colors.grey[100],
+                                    borderRadius:
+                                        BorderRadius.circular(cardBorderRadius),
+                                  ),
+                                  width: 500,
+                                  height: 50,
+                                  child: TextButton(
+                                    child: Text(
+                                      birthDateString,
+                                    ),
+                                    onPressed: () {
+                                      DatePicker.showDatePicker(context,
+                                          showTitleActions: true,
+                                          onConfirm: (date) {
+                                        setState(() {
+                                          birthDate = date;
+                                          birthDateString =
+                                              DateFormat('yyyy-MM-dd')
+                                                  .format(date);
+                                        });
+                                      },
+                                          currentTime: DateTime(
+                                            birthDate.year,
+                                            birthDate.month,
+                                            birthDate.day,
+                                          ));
+                                    },
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          SizedBox(
+                            height: 26,
+                          ),
                           TextFormField(
                             keyboardType: TextInputType.multiline,
                             controller: _descriptionController,
@@ -277,7 +341,7 @@ class _ProfileFormCardState extends State<ProfileFormCard> {
                               ),
                             ),
                             minLines: 3,
-                            maxLength: 300,
+                            maxLength: 500,
                             maxLines: 3,
                           ),
                           Padding(
@@ -300,14 +364,17 @@ class _ProfileFormCardState extends State<ProfileFormCard> {
                                         {
                                           service
                                               .updateCurrentUser(
-                                                  context,
-                                                  _nameController.text,
-                                                  _emailController.text,
-                                                  _phoneController.text,
-                                                  countryCode,
-                                                  dialCode,
-                                                  _selectedGender,
-                                                  _descriptionController.text)
+                                            context,
+                                            _nameController.text,
+                                            _emailController.text,
+                                            _phoneController.text,
+                                            countryCode,
+                                            dialCode,
+                                            _titleController.text,
+                                            _selectedGender,
+                                            _descriptionController.text,
+                                            birthDate,
+                                          )
                                               .catchError((error) {
                                             Flushbar(
                                               title: "Something went wrong",

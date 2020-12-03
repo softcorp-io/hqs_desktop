@@ -1,4 +1,7 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
+import 'package:hqs_desktop/generated/google/protobuf/timestamp.pbserver.dart';
 import 'package:hqs_desktop/generated/hqs-user-service/proto/hqs-user-service.pbgrpc.dart'
     as userService;
 import 'package:grpc/grpc.dart';
@@ -89,6 +92,7 @@ class HqsService {
       token = await client.auth(authUser, options: callOptions).then((val) {
         return val;
       });
+      getCurrentUser();
     } catch (e) {
       throw GrpcError;
     }
@@ -114,6 +118,24 @@ class HqsService {
     return response;
   }
 
+  Future<userService.Response> getAllUsers() async {
+    userService.Response response = userService.Response();
+    if (token == null || token.token.isEmpty) {
+      token.clearToken();
+      // logout
+    }
+    try {
+      var metadata = {"token": token.token};
+      CallOptions callOptions = CallOptions(metadata: metadata);
+      response = await client
+          .getAll(userService.Request(), options: callOptions)
+          .then((rep) {
+        return rep;
+      });
+    } on GrpcError catch (e) {} catch (e) {}
+    return response;
+  }
+
   Future<userService.Response> updateCurrentUser(
       BuildContext context,
       String name,
@@ -121,8 +143,11 @@ class HqsService {
       String phone,
       String countryCode,
       String dialCode,
+      String title,
       bool gender,
-      String description) async {
+      String description,
+      DateTime birthDate
+      ) async {
     userService.Response response = userService.Response();
     if (token == null || token.token.isEmpty) {
       token.clearToken();
@@ -130,6 +155,7 @@ class HqsService {
     }
     try {
       var metadata = {"token": token.token};
+
       CallOptions callOptions = CallOptions(metadata: metadata);
       userService.User user = userService.User()
         ..name = name
@@ -138,6 +164,8 @@ class HqsService {
         ..dialCode = dialCode
         ..gender = gender
         ..countryCode = countryCode
+        ..title = title
+        ..birthDate = Timestamp.fromDateTime(birthDate.add(Duration(hours:9)))
         ..description = description;
       response =
           await client.updateProfile(user, options: callOptions).then((rep) {
@@ -146,7 +174,15 @@ class HqsService {
     } catch (e) {
       throw GrpcError;
     }
-    curUser = response.user;
+    curUser.name = response.user.name;
+    curUser.email = response.user.email;
+    curUser.phone = response.user.phone;
+    curUser.countryCode = response.user.countryCode;
+    curUser.dialCode = response.user.dialCode;
+    curUser.gender = response.user.gender;
+    curUser.description = response.user.description;
+    curUser.title = response.user.title;
+    curUser.birthDate = response.user.birthDate;
     return response;
   }
 
@@ -231,6 +267,23 @@ class HqsService {
     return response;
   }
 
+/*   Future<userService.Token> generateSignupToken() async {
+    userService.Token tokenResponse = userService.Token();
+    if (token == null || token.token.isEmpty) {
+      token.clearToken();
+      // logout
+    }
+    try {
+      var metadata = {"token": token.token};
+      CallOptions callOptions = CallOptions(metadata: metadata);
+      tokenResponse = await client.generateSignupToken(userService.Request(),
+          options: callOptions);
+    } catch (e) {
+      throw GrpcError;
+    }
+    return response;
+  } */
+
   Future<userService.Token> logout() async {
     userService.Token resToken = userService.Token();
     try {
@@ -245,19 +298,35 @@ class HqsService {
     return resToken;
   }
 
+  Stream<userService.UploadImageRequest> generateUploadStream(
+      Uint8List fileInBytes) async* {
+    final tokenReq = userService.UploadImageRequest()..token = token.token;
+    yield tokenReq;
+    int size = 1024;
+    for (var i = 0; i < fileInBytes.length; i += size) {
+      final dataReq = userService.UploadImageRequest()
+        ..chunkData = fileInBytes.sublist(
+            i, i + size > fileInBytes.length ? fileInBytes.length : i + size);
+      yield dataReq;
+    }
+  }
+
   Future<userService.Token> uploadUserImage() async {
     userService.Token resToken = userService.Token();
     // show a dialog to open a file
-    try{
-    FilePickerCross file = await FilePickerCross.importFromStorage(
+    try {
+      FilePickerCross file = await FilePickerCross.importFromStorage(
         type: FileTypeCross
             .any, // Available: `any`, `audio`, `image`, `video`, `custom`. Note: not available using FDE
 /*         fileExtension:
             '.jpeg, .jpg, .png' // Only if FileTypeCross.custom . May be any file extension like `.dot`, `.ppt,.pptx,.odp` */
-        );
-    } on FileSelectionCanceledError catch(e){
+      );
+      
+      Uint8List fileToBytes = file.toUint8List();
 
-    }
+      await client.uploadImage(generateUploadStream(fileToBytes));
+
+    } on FileSelectionCanceledError catch (e) {return null;}
     return resToken;
   }
 }

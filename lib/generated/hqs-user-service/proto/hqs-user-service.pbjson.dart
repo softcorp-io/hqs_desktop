@@ -17,25 +17,17 @@ const User$json = const {
     const {'1': 'dialCode', '3': 7, '4': 1, '5': 9, '10': 'dialCode'},
     const {'1': 'image', '3': 8, '4': 1, '5': 9, '10': 'image'},
     const {'1': 'description', '3': 9, '4': 1, '5': 9, '10': 'description'},
-    const {'1': 'gender', '3': 10, '4': 1, '5': 8, '10': 'gender'},
-    const {'1': 'allowView', '3': 11, '4': 1, '5': 8, '10': 'allowView'},
-    const {'1': 'allowCreate', '3': 12, '4': 1, '5': 8, '10': 'allowCreate'},
-    const {'1': 'allowPermission', '3': 13, '4': 1, '5': 8, '10': 'allowPermission'},
-    const {'1': 'allowDelete', '3': 14, '4': 1, '5': 8, '10': 'allowDelete'},
-    const {'1': 'allowBlock', '3': 15, '4': 1, '5': 8, '10': 'allowBlock'},
-    const {'1': 'blocked', '3': 16, '4': 1, '5': 8, '10': 'blocked'},
-    const {'1': 'createdAt', '3': 17, '4': 1, '5': 11, '6': '.google.protobuf.Timestamp', '10': 'createdAt'},
-    const {'1': 'updatedAt', '3': 18, '4': 1, '5': 11, '6': '.google.protobuf.Timestamp', '10': 'updatedAt'},
-  ],
-};
-
-const Allowances$json = const {
-  '1': 'Allowances',
-  '2': const [
-    const {'1': 'allowView', '3': 1, '4': 1, '5': 8, '10': 'allowView'},
-    const {'1': 'allowCreate', '3': 2, '4': 1, '5': 8, '10': 'allowCreate'},
-    const {'1': 'allowPermission', '3': 3, '4': 1, '5': 8, '10': 'allowPermission'},
-    const {'1': 'allowDelete', '3': 4, '4': 1, '5': 8, '10': 'allowDelete'},
+    const {'1': 'title', '3': 10, '4': 1, '5': 9, '10': 'title'},
+    const {'1': 'gender', '3': 11, '4': 1, '5': 8, '10': 'gender'},
+    const {'1': 'allowView', '3': 12, '4': 1, '5': 8, '10': 'allowView'},
+    const {'1': 'allowCreate', '3': 13, '4': 1, '5': 8, '10': 'allowCreate'},
+    const {'1': 'allowPermission', '3': 14, '4': 1, '5': 8, '10': 'allowPermission'},
+    const {'1': 'allowDelete', '3': 15, '4': 1, '5': 8, '10': 'allowDelete'},
+    const {'1': 'allowBlock', '3': 16, '4': 1, '5': 8, '10': 'allowBlock'},
+    const {'1': 'blocked', '3': 17, '4': 1, '5': 8, '10': 'blocked'},
+    const {'1': 'createdAt', '3': 18, '4': 1, '5': 11, '6': '.google.protobuf.Timestamp', '10': 'createdAt'},
+    const {'1': 'updatedAt', '3': 19, '4': 1, '5': 11, '6': '.google.protobuf.Timestamp', '10': 'updatedAt'},
+    const {'1': 'birthDate', '3': 20, '4': 1, '5': 11, '6': '.google.protobuf.Timestamp', '10': 'birthDate'},
   ],
 };
 

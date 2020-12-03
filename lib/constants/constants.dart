@@ -20,6 +20,10 @@ Color kBlueInfo = Color(int.parse("0xff4069ae"));
 Color kSecondary = Color(int.parse("0xff172b4d"));
 Color kCardColor = Color(int.parse("0xff5e72e4"));
 
+Color kValidColor = Colors.green[600];
+Color kInvalidColor = Colors.red[600];
+
+
 double cardBorderRadius = 6;
 double buttonBorderRadius = 12;
 

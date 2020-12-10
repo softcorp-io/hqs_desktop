@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hqs_desktop/constants/constants.dart';
 import 'package:hqs_desktop/generated/hqs-user-service/proto/hqs-user-service.pb.dart';
+import 'package:hqs_desktop/screens/home/screens/profile/constants/constants.dart';
 import 'package:hqs_desktop/service/hqs_service.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
@@ -8,22 +9,23 @@ import 'package:flushbar/flushbar.dart';
 
 class ProfileCard extends StatelessWidget {
   final HqsService service;
-  final double profileImageRadius;
   final Function onUpdate;
   final User user;
 
   ProfileCard(
       {@required this.service,
-      @required this.profileImageRadius,
       @required this.user,
       @required this.onUpdate})
       : assert(service != null),
         assert(user != null),
-        assert(onUpdate != null),
-        assert(profileImageRadius != null);
+        assert(onUpdate != null);
 
   @override
   Widget build(BuildContext context) {
+    Size size = MediaQuery.of(context).size;
+    double screenSplitSize =
+        size.width / (size.width > screenSplit ? windowSplit : 1) -
+            railSize;
     return Stack(
       alignment: Alignment.topCenter,
       children: <Widget>[
@@ -43,6 +45,7 @@ class ProfileCard extends StatelessWidget {
             ),
             elevation: 4,
             child: Container(
+              width: screenSplitSize,
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                     colors: [kBlueOne, kBlueTwoHalf],
@@ -116,8 +119,11 @@ class ProfileCard extends StatelessWidget {
                       ),
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 32.0),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        child: Wrap(
+                          alignment: WrapAlignment.spaceEvenly,
+                          direction: Axis.horizontal,
+                          runSpacing: 20,
+                          spacing: 75,
                           children: <Widget>[
                             Column(
                               children: <Widget>[
@@ -172,7 +178,7 @@ class ProfileCard extends StatelessWidget {
                                 SizedBox(height: 12),
                                 SelectableText(
                                   user.phone.isEmpty
-                                      ? "No number specified"
+                                      ? "Not specified"
                                       : user.dialCode + " " + user.phone,
                                   style: TextStyle(
                                       fontSize: 18.0,
@@ -243,7 +249,7 @@ class ProfileCard extends StatelessWidget {
             CircleAvatar(
                 radius: profileImageRadius,
                 backgroundImage: NetworkImage(user.image),
-                backgroundColor: Colors.grey[800]),
+                backgroundColor: Colors.grey[100]),
             Align(
               alignment: Alignment.bottomRight,
               child: Container(

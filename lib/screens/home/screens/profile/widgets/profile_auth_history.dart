@@ -2,35 +2,31 @@ import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:hqs_desktop/constants/constants.dart';
 import 'package:hqs_desktop/generated/hqs-user-service/proto/hqs-user-service.pb.dart';
+import 'package:hqs_desktop/screens/home/screens/profile/constants/constants.dart';
 import 'package:hqs_desktop/screens/home/screens/profile/utils/auth_source.dart';
 import 'package:hqs_desktop/service/hqs_service.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class ProfileAuthHistory extends StatefulWidget {
   final HqsService service;
-  final double profileImageRadius;
 
-  ProfileAuthHistory(
-      {@required this.service, @required this.profileImageRadius})
-      : assert(service != null),
-        assert(profileImageRadius != null);
-
+  ProfileAuthHistory({@required this.service}) : assert(service != null);
   @override
   _ProfileAuthHistoryState createState() => _ProfileAuthHistoryState(
-      service: service, profileImageRadius: profileImageRadius);
+        service: service,
+      );
 }
 
 class _ProfileAuthHistoryState extends State<ProfileAuthHistory> {
   // constructor parameters
   final HqsService service;
-  final double profileImageRadius;
   Future<AuthHistory> authHistoryResponse;
   AuthHistory authHistory;
 
-  _ProfileAuthHistoryState(
-      {@required this.service, @required this.profileImageRadius}) {
+  _ProfileAuthHistoryState({
+    @required this.service,
+  }) {
     assert(service != null);
-    assert(profileImageRadius != null);
     this.authHistoryResponse =
         service.getCurrentUserAuthHistory().then((authHistory) {
       this.authHistory = authHistory;
@@ -51,7 +47,7 @@ class _ProfileAuthHistoryState extends State<ProfileAuthHistory> {
                 case ConnectionState.none:
                 case ConnectionState.waiting:
                   return Padding(
-                      padding: EdgeInsets.only(top: profileImageRadius/2),
+                      padding: EdgeInsets.only(top: profileImageRadius / 2),
                       child: Align(
                           child: Container(
                             child: CircularProgressIndicator(),
@@ -66,40 +62,38 @@ class _ProfileAuthHistoryState extends State<ProfileAuthHistory> {
                   return Container(
                       width: size.width,
                       height: 650,
-                      child: Padding(
-                          padding: EdgeInsets.all(16),
-                          child: PaginatedDataTable(
-                            actions: [
-                              SizedBox(
-                                  width: 130,
-                                  height: 35.0,
-                                  child: RaisedButton(
-                                    onPressed: () {
-                                      _blockAllTokensDetails(context);
-                                    },
-                                    color: Colors.red[800],
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(
-                                          cardBorderRadius),
-                                    ),
-                                    child: Text("Block all tokens"),
-                                    textColor: Colors.white,
-                                  )),
-                            ],
-                            headingRowHeight: 80,
-                            dataRowHeight: 80,
-                            rowsPerPage: 5,
-                            source: authSource,
-                            header: Text(
-                              "Login History",
-                              style: GoogleFonts.poppins(
-                                fontSize: 24,
-                                fontWeight: FontWeight.w700,
-                                color: Colors.black,
-                              ),
-                            ),
-                            columns: _colGen(authSource),
-                          )));
+                      child: PaginatedDataTable(
+                        actions: [
+                          SizedBox(
+                              width: 130,
+                              height: 35.0,
+                              child: RaisedButton(
+                                onPressed: () {
+                                  _blockAllTokensDetails(context);
+                                },
+                                color: Colors.red[800],
+                                shape: RoundedRectangleBorder(
+                                  borderRadius:
+                                      BorderRadius.circular(cardBorderRadius),
+                                ),
+                                child: Text("Block all tokens"),
+                                textColor: Colors.white,
+                              )),
+                        ],
+                        headingRowHeight: 80,
+                        dataRowHeight: 80,
+                        rowsPerPage: 5,
+                        source: authSource,
+                        header: Text(
+                          "Login History",
+                          style: GoogleFonts.poppins(
+                            fontSize: 24,
+                            fontWeight: FontWeight.w700,
+                            color: Colors.black,
+                          ),
+                        ),
+                        columns: _colGen(authSource),
+                      ));
               }
               ;
             }));

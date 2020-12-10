@@ -101,10 +101,7 @@ class HqsService {
 
   Future<userService.Response> getCurrentUser() async {
     userService.Response response = userService.Response();
-    if (token == null || token.token.isEmpty) {
-      token.clearToken();
-      // logout
-    }
+
     try {
       var metadata = {"token": token.token};
       CallOptions callOptions = CallOptions(metadata: metadata);
@@ -118,12 +115,91 @@ class HqsService {
     return response;
   }
 
+  Future<userService.Response> createUser(
+      String name,
+      String email,
+      String password,
+      bool allowView,
+      bool allowCreate,
+      bool allowPermission,
+      bool allowDelete,
+      bool allowBlock) async {
+    userService.Response response = userService.Response();
+
+    try {
+      var metadata = {"token": token.token};
+      CallOptions callOptions = CallOptions(metadata: metadata);
+      response = await client
+          .create(
+              userService.User()
+                ..name = name
+                ..email = email
+                ..password = password
+                ..allowView = allowView
+                ..allowCreate = allowCreate
+                ..allowPermission = allowPermission
+                ..allowDelete = allowDelete
+                ..allowBlock = allowBlock,
+              options: callOptions)
+          .then((rep) {
+        return rep;
+      });
+    } on GrpcError catch (e) {} catch (e) {}
+    return response;
+  }
+
+  Future<userService.Response> blockUser(userService.User user) async {
+    userService.Response response = userService.Response();
+
+    try {
+      var metadata = {"token": token.token};
+      CallOptions callOptions = CallOptions(metadata: metadata);
+      response = await client
+          .updateBlockUser(
+              userService.User()
+                ..blocked = !user.blocked
+                ..id = user.id,
+              options: callOptions)
+          .then((rep) {
+        return rep;
+      });
+    } on GrpcError catch (e) {} catch (e) {}
+    return response;
+  }
+
+  Future<userService.Response> updateUsersPermissions(
+    String id,
+    bool allowView,
+    bool allowCreate,
+    bool allowPermissions,
+    bool allowDelete,
+    bool allowBlock,
+  ) async {
+    userService.Response response = userService.Response();
+    try {
+      var metadata = {"token": token.token};
+      CallOptions callOptions = CallOptions(metadata: metadata);
+      response = await client
+          .updateAllowances(
+              userService.User()
+                ..id = id
+                ..allowView = allowView
+                ..allowCreate = allowCreate
+                ..allowPermission = allowPermissions
+                ..allowDelete = allowDelete
+                ..allowBlock = allowBlock,
+              options: callOptions)
+          .then((rep) {
+        getCurrentUser();
+        return rep;
+      });
+    } on GrpcError catch (e) {} catch (e) {}
+    return response;
+  }
+
   Future<userService.Response> getAllUsers() async {
     userService.Response response = userService.Response();
-    if (token == null || token.token.isEmpty) {
-      token.clearToken();
-      // logout
-    }
+
     try {
       var metadata = {"token": token.token};
       CallOptions callOptions = CallOptions(metadata: metadata);
@@ -146,8 +222,7 @@ class HqsService {
       String title,
       bool gender,
       String description,
-      DateTime birthDate
-      ) async {
+      DateTime birthDate) async {
     userService.Response response = userService.Response();
     if (token == null || token.token.isEmpty) {
       token.clearToken();
@@ -165,7 +240,7 @@ class HqsService {
         ..gender = gender
         ..countryCode = countryCode
         ..title = title
-        ..birthDate = Timestamp.fromDateTime(birthDate.add(Duration(hours:9)))
+        ..birthDate = Timestamp.fromDateTime(birthDate.add(Duration(hours: 9)))
         ..description = description;
       response =
           await client.updateProfile(user, options: callOptions).then((rep) {
@@ -214,10 +289,7 @@ class HqsService {
 
   Future<userService.AuthHistory> getCurrentUserAuthHistory() async {
     userService.AuthHistory authHistory = userService.AuthHistory();
-    if (token == null || token.token.isEmpty) {
-      token.clearToken();
-      // logout
-    }
+
     try {
       var metadata = {"token": token.token};
       CallOptions callOptions = CallOptions(metadata: metadata);
@@ -231,10 +303,7 @@ class HqsService {
 
   Future<userService.Token> blockTokenByID(String tokenID) async {
     userService.Token responseToken = userService.Token();
-    if (token == null || token.token.isEmpty) {
-      token.clearToken();
-      // logout
-    }
+
     try {
       var metadata = {"token": token.token};
       CallOptions callOptions = CallOptions(metadata: metadata);
@@ -250,10 +319,7 @@ class HqsService {
 
   Future<userService.Response> blockAllUsersTokens() async {
     userService.Response response = userService.Response();
-    if (token == null || token.token.isEmpty) {
-      token.clearToken();
-      // logout
-    }
+
     try {
       var metadata = {"token": token.token};
       CallOptions callOptions = CallOptions(metadata: metadata);
@@ -267,22 +333,63 @@ class HqsService {
     return response;
   }
 
-/*   Future<userService.Token> generateSignupToken() async {
-    userService.Token tokenResponse = userService.Token();
-    if (token == null || token.token.isEmpty) {
-      token.clearToken();
-      // logout
-    }
+  Future<userService.Response> deleteUser(String id) async {
+    userService.Response response = userService.Response();
+
     try {
       var metadata = {"token": token.token};
       CallOptions callOptions = CallOptions(metadata: metadata);
-      tokenResponse = await client.generateSignupToken(userService.Request(),
+      response = await client.delete(userService.User()..id = id,
           options: callOptions);
     } catch (e) {
       throw GrpcError;
     }
     return response;
-  } */
+  }
+
+  Future<userService.Token> generateSignupToken(
+    bool allowView,
+    bool allowCreate,
+    bool allowPermission,
+    bool allowDelete,
+    bool allowBlock,
+  ) async {
+    userService.Token tokenResponse = userService.Token();
+    try {
+      var metadata = {"token": token.token};
+      userService.User user = userService.User()
+        ..allowView = allowView
+        ..allowCreate = allowCreate
+        ..allowPermission = allowPermission
+        ..allowDelete = allowDelete
+        ..allowBlock = allowBlock;
+      CallOptions callOptions = CallOptions(metadata: metadata);
+      tokenResponse =
+          await client.generateSignupToken(user, options: callOptions);
+    } catch (e) {
+      throw GrpcError;
+    }
+    return tokenResponse;
+  }
+
+  Future<userService.Response> signupByToken(String name, String email,
+      String password, bool gender, String signupToken) async {
+    userService.Response response = userService.Response();
+
+    try {
+      var metadata = {"token": signupToken};
+      userService.User user = userService.User()
+        ..name = name
+        ..email = email
+        ..password = password
+        ..gender = gender;
+      CallOptions callOptions = CallOptions(metadata: metadata);
+      response = await client.signup(user, options: callOptions);
+    } catch (e) {
+      throw GrpcError;
+    }
+    return response;
+  }
 
   Future<userService.Token> logout() async {
     userService.Token resToken = userService.Token();
@@ -321,12 +428,13 @@ class HqsService {
 /*         fileExtension:
             '.jpeg, .jpg, .png' // Only if FileTypeCross.custom . May be any file extension like `.dot`, `.ppt,.pptx,.odp` */
       );
-      
+
       Uint8List fileToBytes = file.toUint8List();
 
       await client.uploadImage(generateUploadStream(fileToBytes));
-
-    } on FileSelectionCanceledError catch (e) {return null;}
+    } on FileSelectionCanceledError catch (e) {
+      return null;
+    }
     return resToken;
   }
 }

@@ -2,10 +2,8 @@ import 'dart:ffi';
 
 import 'package:flutter/material.dart';
 import 'package:hqs_desktop/generated/hqs-user-service/proto/hqs-user-service.pb.dart';
-import 'package:hqs_desktop/screens/home/widgets/drawer.dart';
 import 'package:hqs_desktop/screens/home/screens/profile/profile_page.dart';
 import 'package:hqs_desktop/service/hqs_service.dart';
-import 'package:hqs_desktop/screens/home/widgets/home_appbar.dart';
 import 'package:hqs_desktop/screens/home/screens/departments/departments_page.dart';
 
 class HomePage extends StatelessWidget {
@@ -42,7 +40,6 @@ class HomePage extends StatelessWidget {
               );
             default:
               return Scaffold(
-                backgroundColor: Colors.grey[100],
                 body: MaterialApp(
                   debugShowCheckedModeBanner: false,
                   title: 'Headquarters - by Softcorp',

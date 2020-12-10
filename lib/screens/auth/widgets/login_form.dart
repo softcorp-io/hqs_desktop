@@ -115,7 +115,6 @@ class _LogInState extends State<LogIn> {
                                   padding: EdgeInsets.all(10),
                                 ),
                                 TextFormField(
-                                  // todo on backslash password don't update correct when obscure text is true... wait for fix and set to false for now
                                   obscureText: true,
                                   controller: _passwordController,
                                   decoration: InputDecoration(

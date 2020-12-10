@@ -27,11 +27,22 @@ class HomeAppBar extends StatelessWidget with PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     return AppBar(
-      title: Text(
-        title,
-        style: TextStyle(color: Colors.white),
-        textAlign: TextAlign.right,
-      ),
+      title: Row(children: [
+        Image(
+          width: 55,
+          height: 55,
+          image: AssetImage('assets/images/logo-white.png'),
+        ),
+        SizedBox(width: 10),
+        Text(
+          "Headquarters",
+          style: GoogleFonts.poppins(
+            color: Colors.white,
+            fontSize: 19,
+            fontWeight: FontWeight.w500,
+          ),
+        )
+      ]),
       actions: [
         Padding(
           padding: EdgeInsets.only(right: 8, top: 4),
@@ -106,8 +117,8 @@ class HomeAppBar extends StatelessWidget with PreferredSizeWidget {
         ),
         SizedBox(width: 16)
       ],
-      backgroundColor: Colors.grey[900],
-      automaticallyImplyLeading: true,
+      backgroundColor: kAppBarColor,
+      automaticallyImplyLeading: false,
       iconTheme: new IconThemeData(color: Colors.white),
       elevation: shadow ? 4 : 0,
       // add optional tabbar controller

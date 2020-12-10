@@ -133,7 +133,7 @@ class HomeDrawer extends StatelessWidget {
                           ),
                           ListTile(
                             title: Text(
-                              'Users',
+                              'Manage Users',
                               style: GoogleFonts.poppins(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w400,

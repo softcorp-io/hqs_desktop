@@ -20,6 +20,9 @@ Color kBlueInfo = Color(int.parse("0xff4069ae"));
 Color kSecondary = Color(int.parse("0xff172b4d"));
 Color kCardColor = Color(int.parse("0xff5e72e4"));
 
+Color kAppBarColor = Color(int.parse("0xff051e34"));
+Color kRailColor = Colors.white;
+
 Color kValidColor = Colors.green[600];
 Color kInvalidColor = Colors.red[600];
 

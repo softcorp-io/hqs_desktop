@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hqs_desktop/service/hqs_service.dart';
 
 Color kPrimaryColor = Color(int.parse("0xff2062ff"));
 Color kLightPrimaryColor = Colors.blue[500];
@@ -26,6 +27,7 @@ Color kRailColor = Colors.white;
 Color kValidColor = Colors.green[600];
 Color kInvalidColor = Colors.red[600];
 
+  HqsService testService = new HqsService(addr: "localhost", port: 9000);
 
 double cardBorderRadius = 6;
 double buttonBorderRadius = 12;

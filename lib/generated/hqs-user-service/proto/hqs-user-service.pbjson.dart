@@ -47,10 +47,11 @@ const Auth$json = const {
     const {'1': 'userID', '3': 2, '4': 1, '5': 9, '10': 'userID'},
     const {'1': 'longitude', '3': 3, '4': 1, '5': 1, '10': 'longitude'},
     const {'1': 'latitude', '3': 4, '4': 1, '5': 1, '10': 'latitude'},
-    const {'1': 'valid', '3': 5, '4': 1, '5': 8, '10': 'valid'},
-    const {'1': 'createdAt', '3': 6, '4': 1, '5': 11, '6': '.google.protobuf.Timestamp', '10': 'createdAt'},
-    const {'1': 'expiresAt', '3': 7, '4': 1, '5': 11, '6': '.google.protobuf.Timestamp', '10': 'expiresAt'},
-    const {'1': 'lastUsedAt', '3': 8, '4': 1, '5': 11, '6': '.google.protobuf.Timestamp', '10': 'lastUsedAt'},
+    const {'1': 'device', '3': 5, '4': 1, '5': 9, '10': 'device'},
+    const {'1': 'valid', '3': 6, '4': 1, '5': 8, '10': 'valid'},
+    const {'1': 'createdAt', '3': 7, '4': 1, '5': 11, '6': '.google.protobuf.Timestamp', '10': 'createdAt'},
+    const {'1': 'expiresAt', '3': 8, '4': 1, '5': 11, '6': '.google.protobuf.Timestamp', '10': 'expiresAt'},
+    const {'1': 'lastUsedAt', '3': 9, '4': 1, '5': 11, '6': '.google.protobuf.Timestamp', '10': 'lastUsedAt'},
   ],
 };
 

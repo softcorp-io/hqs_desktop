@@ -41,6 +41,7 @@ dependencies:
   flutter_datetime_picker: ^1.4.0 
   flushbar: ^1.10.4
   country_code_picker: ^1.6.2
+  platform_info: ^2.2.0 
   # syncfusion_flutter_datepicker: ^18.3.52-beta 
   window_size:
     git:

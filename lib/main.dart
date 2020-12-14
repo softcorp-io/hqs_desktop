@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:hqs_desktop/service/hqs_service.dart';
 import 'package:window_size/window_size.dart';
 import 'dart:io';
-import 'package:hqs_desktop/screens/auth/auth_page.dart';
+import 'package:hqs_desktop/auth/auth_page.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hqs_desktop/constants/constants.dart';
-import 'package:hqs_desktop/screens/home/home.dart';
+import 'package:hqs_desktop/home/home.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();

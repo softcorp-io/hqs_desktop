@@ -6,6 +6,7 @@ import 'package:hqs_desktop/generated/hqs-user-service/proto/hqs-user-service.pb
     as userService;
 import 'package:grpc/grpc.dart';
 import 'package:file_picker_cross/file_picker_cross.dart';
+import 'package:platform_info/platform_info.dart';
 
 class HqsService {
   userService.UserServiceClient client;
@@ -27,19 +28,12 @@ class HqsService {
         )));
   }
 
+  // a setter for setting the logout function
   void setLogout(Function logout) {
     onLogout = logout;
   }
 
-  void retry() {
-    client = userService.UserServiceClient(ClientChannel(addr,
-        port: port,
-        options: const ChannelOptions(
-          credentials: ChannelCredentials.insecure(),
-        )));
-  }
-
-  // methods to call on server
+  // authenticate - login and returns a token
   Future<userService.Token> authenticate(
       BuildContext context, String email, String password) async {
     token.clearToken();
@@ -53,11 +47,7 @@ class HqsService {
       return token;
     }
     // get longitude & latitude
-    var metadata = {
-      "latitude": "0.0",
-      "longitude": "0.0",
-    };
-    /*   try {
+        /*   try {
       Location location = new Location();
       bool _serviceEnabled;
       PermissionStatus _permissionGranted;
@@ -87,6 +77,19 @@ class HqsService {
     add location on login attempt
     */
 
+    // get device info
+    String deviceInfo = "";
+    try{
+      deviceInfo = Platform.I.operatingSystem.toString();
+    } catch(e){
+      print("Could not get device info");
+    }
+    var metadata = {
+      "latitude": "0.0",
+      "longitude": "0.0",
+      "device": deviceInfo,
+    };
+
     try {
       CallOptions callOptions = CallOptions(metadata: metadata);
       token = await client.auth(authUser, options: callOptions).then((val) {
@@ -94,14 +97,14 @@ class HqsService {
       });
       getCurrentUser();
     } catch (e) {
-      throw GrpcError;
+      throw e;
     }
     return token;
   }
 
+  // get current user by users token - if a error is present, log that user out
   Future<userService.Response> getCurrentUser() async {
     userService.Response response = userService.Response();
-
     try {
       var metadata = {"token": token.token};
       CallOptions callOptions = CallOptions(metadata: metadata);
@@ -110,11 +113,53 @@ class HqsService {
           .then((rep) {
         return rep;
       });
-    } on GrpcError catch (e) {} catch (e) {}
+    } catch (e) {
+      token.clearToken();
+      onLogout();
+    }
     curUser = response.user;
     return response;
   }
 
+  // get all users - get all users tokens
+  Future<userService.Response> getAllUsers() async {
+    userService.Response response = userService.Response();
+    // check if user is allowed
+    if (!curUser.allowView) {
+      return response;
+    }
+    try {
+      var metadata = {"token": token.token};
+      CallOptions callOptions = CallOptions(metadata: metadata);
+      response = await client
+          .getAll(userService.Request(), options: callOptions)
+          .then((rep) {
+        return rep;
+      });
+    } catch (e) {
+      token.clearToken();
+      onLogout();
+    }
+    return response;
+  }
+
+  // get logged users auth history
+  Future<userService.AuthHistory> getCurrentUserAuthHistory() async {
+    userService.AuthHistory authHistory = userService.AuthHistory();
+    try {
+      var metadata = {"token": token.token};
+      CallOptions callOptions = CallOptions(metadata: metadata);
+      authHistory = await client.getAuthHistory(userService.Request(),
+          options: callOptions);
+    } catch (e) {
+      token.clearToken();
+      onLogout();
+      throw GrpcError;
+    }
+    return authHistory;
+  }
+
+  // create a user - only allowed if current user got admin status.
   Future<userService.Response> createUser(
       String name,
       String email,
@@ -123,9 +168,12 @@ class HqsService {
       bool allowCreate,
       bool allowPermission,
       bool allowDelete,
-      bool allowBlock) async {
+      bool allowBlock,
+      bool gender) async {
     userService.Response response = userService.Response();
-
+    if (!curUser.allowCreate) {
+      return response;
+    }
     try {
       var metadata = {"token": token.token};
       CallOptions callOptions = CallOptions(metadata: metadata);
@@ -139,18 +187,24 @@ class HqsService {
                 ..allowCreate = allowCreate
                 ..allowPermission = allowPermission
                 ..allowDelete = allowDelete
-                ..allowBlock = allowBlock,
+                ..allowBlock = allowBlock
+                ..gender = gender,
               options: callOptions)
           .then((rep) {
         return rep;
       });
-    } on GrpcError catch (e) {} catch (e) {}
+    } catch (e) {
+      throw GrpcError;
+    }
     return response;
   }
 
+  // block a user - only if you have access.
   Future<userService.Response> blockUser(userService.User user) async {
     userService.Response response = userService.Response();
-
+    if (!curUser.allowBlock) {
+      return response;
+    }
     try {
       var metadata = {"token": token.token};
       CallOptions callOptions = CallOptions(metadata: metadata);
@@ -163,10 +217,15 @@ class HqsService {
           .then((rep) {
         return rep;
       });
-    } on GrpcError catch (e) {} catch (e) {}
+    } catch (e) {
+      token.clearToken();
+      onLogout();
+      throw GrpcError;
+    }
     return response;
   }
 
+  // update a users permissions - only if you have access
   Future<userService.Response> updateUsersPermissions(
     String id,
     bool allowView,
@@ -176,6 +235,9 @@ class HqsService {
     bool allowBlock,
   ) async {
     userService.Response response = userService.Response();
+    if (!curUser.allowPermission) {
+      return response;
+    }
     try {
       var metadata = {"token": token.token};
       CallOptions callOptions = CallOptions(metadata: metadata);
@@ -193,25 +255,15 @@ class HqsService {
         getCurrentUser();
         return rep;
       });
-    } on GrpcError catch (e) {} catch (e) {}
+    } catch (e) {
+      token.clearToken();
+      onLogout();
+      throw GrpcError;
+    }
     return response;
   }
 
-  Future<userService.Response> getAllUsers() async {
-    userService.Response response = userService.Response();
-
-    try {
-      var metadata = {"token": token.token};
-      CallOptions callOptions = CallOptions(metadata: metadata);
-      response = await client
-          .getAll(userService.Request(), options: callOptions)
-          .then((rep) {
-        return rep;
-      });
-    } on GrpcError catch (e) {} catch (e) {}
-    return response;
-  }
-
+  // update current users profile.
   Future<userService.Response> updateCurrentUser(
       BuildContext context,
       String name,
@@ -247,6 +299,8 @@ class HqsService {
         return rep;
       });
     } catch (e) {
+      token.clearToken();
+      onLogout();
       throw GrpcError;
     }
     curUser.name = response.user.name;
@@ -261,6 +315,7 @@ class HqsService {
     return response;
   }
 
+  // update currents users password.
   Future<userService.Response> updateCurrentUserPassword(
     BuildContext context,
     String oldPassword,
@@ -287,20 +342,7 @@ class HqsService {
     return response;
   }
 
-  Future<userService.AuthHistory> getCurrentUserAuthHistory() async {
-    userService.AuthHistory authHistory = userService.AuthHistory();
-
-    try {
-      var metadata = {"token": token.token};
-      CallOptions callOptions = CallOptions(metadata: metadata);
-      authHistory = await client.getAuthHistory(userService.Request(),
-          options: callOptions);
-    } catch (e) {
-      throw GrpcError;
-    }
-    return authHistory;
-  }
-
+  // block a token by its id.
   Future<userService.Token> blockTokenByID(String tokenID) async {
     userService.Token responseToken = userService.Token();
 
@@ -312,11 +354,14 @@ class HqsService {
       responseToken =
           await client.blockTokenByID(request, options: callOptions);
     } catch (e) {
+      token.clearToken();
+      onLogout();
       throw GrpcError;
     }
     return responseToken;
   }
 
+  // block all of your tokens.
   Future<userService.Response> blockAllUsersTokens() async {
     userService.Response response = userService.Response();
 
@@ -328,25 +373,33 @@ class HqsService {
       token.clearToken();
       onLogout();
     } catch (e) {
+      token.clearToken();
+      onLogout();
       throw GrpcError;
     }
     return response;
   }
 
+  // delete a user if you have access.
   Future<userService.Response> deleteUser(String id) async {
     userService.Response response = userService.Response();
-
+    if (!curUser.allowDelete) {
+      return response;
+    }
     try {
       var metadata = {"token": token.token};
       CallOptions callOptions = CallOptions(metadata: metadata);
       response = await client.delete(userService.User()..id = id,
           options: callOptions);
     } catch (e) {
+      token.clearToken();
+      onLogout();
       throw GrpcError;
     }
     return response;
   }
 
+  // generate a token another user can use to signup with
   Future<userService.Token> generateSignupToken(
     bool allowView,
     bool allowCreate,
@@ -355,6 +408,9 @@ class HqsService {
     bool allowBlock,
   ) async {
     userService.Token tokenResponse = userService.Token();
+    if (!curUser.allowCreate) {
+      return tokenResponse;
+    }
     try {
       var metadata = {"token": token.token};
       userService.User user = userService.User()
@@ -367,15 +423,17 @@ class HqsService {
       tokenResponse =
           await client.generateSignupToken(user, options: callOptions);
     } catch (e) {
+      token.clearToken();
+      onLogout();
       throw GrpcError;
     }
     return tokenResponse;
   }
 
+  // signup by a signup token
   Future<userService.Response> signupByToken(String name, String email,
       String password, bool gender, String signupToken) async {
     userService.Response response = userService.Response();
-
     try {
       var metadata = {"token": signupToken};
       userService.User user = userService.User()

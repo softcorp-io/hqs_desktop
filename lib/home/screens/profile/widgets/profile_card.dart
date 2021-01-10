@@ -337,7 +337,6 @@ class ProfileCard extends StatelessWidget {
               style: GoogleFonts.poppins(
                 fontSize: 18,
                 fontWeight: FontWeight.w600,
-                color: Colors.black,
               ),
             ),
             content: SingleChildScrollView(

@@ -9,6 +9,7 @@ class HqsDarkTheme {
         displayColor: ThemeData.dark().textTheme.headline1.color);
     return ThemeData.dark().copyWith(
       textTheme: textTheme,
+      accentColor: primaryColor,
       appBarTheme: AppBarTheme(color: ThemeData.dark().cardColor),
       primaryColor: primaryColor,
       inputDecorationTheme: InputDecorationTheme(

@@ -1,9 +1,6 @@
-import 'dart:convert';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:dart_hqs/hqs_user_service.pbgrpc.dart' as userService;
-import 'package:dart_hqs/google/protobuf/timestamp.pbserver.dart';
-import 'package:flutter/services.dart';
 import 'package:grpc/grpc.dart';
 import 'package:file_picker_cross/file_picker_cross.dart';
 import 'package:platform_info/platform_info.dart';
@@ -39,43 +36,27 @@ class HqsService {
           options: ChannelOptions(credentials: ChannelCredentials.insecure()));
       client = userService.UserServiceClient(clientChannel);
       client.ping(userService.Request());
+
+      // check if we have a valid token
+      await checkStoredToken();
     } catch (e) {
-      print(e);
-      print("could not connect");
       throw e;
     }
     return;
   }
 
   // todo: create a service that checks if user has a stored token on startup
-  checkStoredToken() async {
+  Future<void> checkStoredToken() async {
     // check if user has a stored token and authenticate it
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    String storedToken = prefs.getString("stored_token") ?? "";
-    if (storedToken.isEmpty) return;
-    validateToken(storedToken).then((valToken) {
-      if (valToken.valid) {
-        onLogin();
-      }
-      return valToken;
-    });
-  }
-
-  Future<userService.Token> validateToken(String token) async {
-    userService.Token validateToken = userService.Token();
-    validateToken..token = token;
-    try {
-      userService.Token repToken =
-          await client.validateToken(validateToken).then((valToken) {
-        return valToken;
-      });
-      validateToken = repToken;
-    } on GrpcError catch (e) {
-      throw e;
-    } catch (e) {
-      throw e;
+    String storedToken = prefs.getString("stored_token");
+    if (storedToken == null || storedToken.isEmpty) return;
+    userService.Token validateToken = await client.validateToken(userService.Token()..token=storedToken);
+    if (validateToken.valid) {
+      token.token = storedToken;
+      await onLogin();
     }
-    return validateToken;
+    return;
   }
 
   // authenticate - login and returns a token
@@ -95,29 +76,6 @@ class HqsService {
     // get longitude & latitude
     String latitude = "0.0";
     String longitude = "0.0";
-    /*    try {
-      Location location = new Location();
-      bool _serviceEnabled;
-      PermissionStatus _permissionGranted;
-      LocationData _locationData;
-      _serviceEnabled = await location.serviceEnabled();
-      if (!_serviceEnabled) {
-        _serviceEnabled = await location.requestService();
-        if (_serviceEnabled) {
-          _permissionGranted = await location.hasPermission();
-          if (_permissionGranted == PermissionStatus.denied) {
-            _permissionGranted = await location.requestPermission();
-            if (_permissionGranted == PermissionStatus.granted) {
-              _locationData = await location.getLocation();
-                latitude = _locationData.latitude.toString();
-                longitude = _locationData.longitude.toString();
-            }
-          }
-        }
-      }
-    } catch (e) {
-      print(e);
-    }  */
 
     // get device info
     String deviceInfo = "";
@@ -133,10 +91,13 @@ class HqsService {
     };
 
     try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
       CallOptions callOptions = CallOptions(metadata: metadata);
       token = await client.auth(authUser, options: callOptions).then((val) {
+        prefs.setString('stored_token', val.token);
         return val;
       });
+
       getCurrentUser();
     } on GrpcError catch (e) {
       throw e;

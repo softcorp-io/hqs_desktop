@@ -9,10 +9,11 @@ class HqsLightTheme {
         displayColor: ThemeData.light().textTheme.headline1.color);
     return ThemeData.light().copyWith(
       textTheme: textTheme,
+      accentColor: primaryColor,
       appBarTheme: AppBarTheme(color: ThemeData.light().cardColor),
-      buttonTheme: ThemeData.light().buttonTheme.copyWith(
-        textTheme: ButtonTextTheme.primary
-      ),
+      buttonTheme: ThemeData.light()
+          .buttonTheme
+          .copyWith(textTheme: ButtonTextTheme.primary),
       primaryColor: primaryColor,
       inputDecorationTheme: InputDecorationTheme(
           focusedBorder: OutlineInputBorder(

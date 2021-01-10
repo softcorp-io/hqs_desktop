@@ -60,9 +60,7 @@ class UsersSource extends DataTableSource {
         style: GoogleFonts.poppins(
           fontSize: 14,
           fontWeight: FontWeight.w400,
-          color: user.allowView
-              ? successColor
-              : Theme.of(context).errorColor,
+          color: user.allowView ? successColor : Theme.of(context).errorColor,
         ),
       )),
       DataCell(Text(
@@ -70,9 +68,7 @@ class UsersSource extends DataTableSource {
         style: GoogleFonts.poppins(
           fontSize: 14,
           fontWeight: FontWeight.w400,
-          color: user.allowCreate
-              ? successColor
-              : Theme.of(context).errorColor,
+          color: user.allowCreate ? successColor : Theme.of(context).errorColor,
         ),
       )),
       DataCell(Text(
@@ -90,9 +86,7 @@ class UsersSource extends DataTableSource {
         style: GoogleFonts.poppins(
           fontSize: 14,
           fontWeight: FontWeight.w400,
-          color: user.allowDelete
-              ? successColor
-              : Theme.of(context).errorColor,
+          color: user.allowDelete ? successColor : Theme.of(context).errorColor,
         ),
       )),
       DataCell(Text(
@@ -100,9 +94,7 @@ class UsersSource extends DataTableSource {
         style: GoogleFonts.poppins(
           fontSize: 14,
           fontWeight: FontWeight.w400,
-          color: user.allowBlock
-              ? successColor
-              : Theme.of(context).errorColor,
+          color: user.allowBlock ? successColor : Theme.of(context).errorColor,
         ),
       )),
       DataCell(Text(
@@ -120,9 +112,7 @@ class UsersSource extends DataTableSource {
         style: GoogleFonts.poppins(
           fontSize: 14,
           fontWeight: FontWeight.w400,
-          color: user.blocked
-              ? successColor
-              : Theme.of(context).errorColor,
+          color: user.blocked ? successColor : Theme.of(context).errorColor,
         ),
       )),
       service.curUser.allowBlock ||
@@ -286,6 +276,7 @@ class UsersSource extends DataTableSource {
               style: GoogleFonts.poppins(
                 fontSize: 14,
                 fontWeight: FontWeight.w400,
+                color: Theme.of(context).errorColor,
               ),
             ),
           ),

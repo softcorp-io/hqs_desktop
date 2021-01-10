@@ -23,21 +23,6 @@ class CustomDromDownMenu extends StatelessWidget {
       items: items,
       value: value,
       hint: Text(hintText),
-      decoration: InputDecoration(
-        focusedBorder: OutlineInputBorder(
-          borderSide: BorderSide(color: Theme.of(context).primaryColor, width: 1.0),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderSide: BorderSide(color: Colors.grey[300], width: 1.0),
-        ),
-        errorBorder: OutlineInputBorder(
-          borderSide: BorderSide(color: Colors.red[600], width: 1.0),
-        ),
-        focusedErrorBorder: OutlineInputBorder(
-          borderSide: BorderSide(color: Colors.red[600], width: 1.0),
-        ),
-        errorStyle: TextStyle(color: Colors.red[600]),
-      ),
       isExpanded: true,
       onChanged: (value) {
         if (this.onChanged == null) {

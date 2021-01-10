@@ -10,7 +10,7 @@ import 'package:hqs_desktop/theme/hqs_light_theme.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:hqs_desktop/home/screens/settings/settings_page.dart';
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
     DesktopWindow.setWindowSize(Size(800, 900));
@@ -25,24 +25,33 @@ class HqsApp extends StatefulWidget {
 }
 
 class _HqsAppState extends State<HqsApp> {
-  AuthStatus authStatus = AuthStatus.LoggedOut;
-  onLogin() => setState(() {
-        authStatus = AuthStatus.LoggedIn;
-      });
-
-  onLogout() => setState(() {
-        authStatus = AuthStatus.LoggedOut;
-      });
-
+  AuthStatus authStatus;
   HqsService service;
-  
   ThemeData lightTheme = HqsLightTheme().getTheme();
   ThemeData darkTheme = HqsDarkTheme().getTheme();
-
   ThemeData theme;
-
-
   Future<void> platformReady;
+
+  _HqsAppState() {
+    service = new HqsService(
+        addr: "34.77.45.46", port: 9000, onLogin: onLogin, onLogout: onLogout);
+    platformReady = setupPlatform();
+  }
+
+  onLogin() {
+    setState(() {
+      authStatus = AuthStatus.LoggedIn;
+    });
+  }
+
+  onLogout() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.remove("stored_token");
+    setState(() {
+      authStatus = AuthStatus.LoggedOut;
+    });
+  }
+
   Future<void> setupPlatform() async {
     await service.connect();
     // setup theme
@@ -68,52 +77,47 @@ class _HqsAppState extends State<HqsApp> {
     return;
   }
 
-  _HqsAppState() {
-    service = new HqsService(
-        addr: "34.77.45.46", port: 9000, onLogin: onLogin, onLogout: onLogout);
-    platformReady = setupPlatform();
-  }
-
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-        title: 'Headquarters',
-        theme: theme,
-        debugShowCheckedModeBanner: false,
-        home: FutureBuilder<void>(
-            future: platformReady,
-            builder: (BuildContext context, AsyncSnapshot<void> snapshot) {
-              switch (snapshot.connectionState) {
-                case ConnectionState.done:
-                  return authStatus == AuthStatus.LoggedOut
-                      ? AuthPage(
-                          service: service,
-                          onLogIn: onLogin,
-                        )
-                      : HomePage(
-                          changeTheme: (HqsTheme changeTheme) {
-                            switch(changeTheme){
-                              case HqsTheme.dark:
-                                setState(() {
-                                  theme = darkTheme;
-                                });
-                                break;
-                              case HqsTheme.light:
-                                setState(() {
-                                  theme = lightTheme;
-                                });
-                                break;
-                            }
-                          },
-                          service: service,
-                        );
-                default:
-                  return Align(
-                      child: Container(
-                        child: CircularProgressIndicator(),
+    return FutureBuilder<void>(
+        future: platformReady,
+        builder: (BuildContext context, AsyncSnapshot<void> snapshot) {
+          switch (snapshot.connectionState) {
+            case ConnectionState.done:
+              return MaterialApp(
+                title: 'Headquarters',
+                theme: theme,
+                debugShowCheckedModeBanner: false,
+                home: authStatus == AuthStatus.LoggedOut
+                    ? AuthPage(
+                        service: service,
+                        onLogIn: onLogin,
+                      )
+                    : HomePage(
+                        changeTheme: (HqsTheme changeTheme) {
+                          switch (changeTheme) {
+                            case HqsTheme.dark:
+                              setState(() {
+                                theme = darkTheme;
+                              });
+                              break;
+                            case HqsTheme.light:
+                              setState(() {
+                                theme = lightTheme;
+                              });
+                              break;
+                          }
+                        },
+                        service: service,
                       ),
-                      alignment: Alignment.center);
-              }
-            }));
+              );
+            default:
+              return Align(
+                  child: Container(
+                    child: CircularProgressIndicator(),
+                  ),
+                  alignment: Alignment.center);
+          }
+        });
   }
 }

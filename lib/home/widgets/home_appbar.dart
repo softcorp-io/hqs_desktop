@@ -3,12 +3,10 @@ import 'package:dart_hqs/hqs_user_service.pb.dart';
 import 'package:hqs_desktop/home/constants/text.dart';
 import 'package:hqs_desktop/service/hqs_user_service.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:hqs_desktop/theme/theme.dart';
 
 class HomeAppBar extends StatelessWidget with PreferredSizeWidget {
   @override
   final Size preferredSize;
-  final HqsTheme theme;
   final bool shadow;
   final HqsService service;
   final User user;
@@ -17,11 +15,9 @@ class HomeAppBar extends StatelessWidget with PreferredSizeWidget {
   HomeAppBar(
       {this.shadow,
       this.service,
-      @required this.theme,
       @required this.user,
       @required this.navigateToProfile})
-      : assert(theme != null),
-        assert(shadow != null),
+      : assert(shadow != null),
         assert(navigateToProfile != null),
         assert(service != null),
         assert(user != null),
@@ -41,8 +37,8 @@ class HomeAppBar extends StatelessWidget with PreferredSizeWidget {
         Text(
           appBarPlatformTitle,
           style: GoogleFonts.poppins(
-            color: theme.titleColor(),
             fontSize: 19,
+            color: Theme.of(context).textTheme.bodyText1.color,
             fontWeight: FontWeight.w500,
           ),
         )
@@ -87,9 +83,9 @@ class HomeAppBar extends StatelessWidget with PreferredSizeWidget {
                 child: Text(
                   appBarPopupProfileTitle,
                   style: GoogleFonts.poppins(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w400,
-                      color: theme.titleColor()),
+                    fontSize: 14,
+                    fontWeight: FontWeight.w400,
+                  ),
                 ),
               ),
             ),
@@ -101,7 +97,7 @@ class HomeAppBar extends StatelessWidget with PreferredSizeWidget {
                   style: GoogleFonts.poppins(
                       fontSize: 14,
                       fontWeight: FontWeight.w400,
-                      color: theme.dangerColor()),
+                      color: Theme.of(context).errorColor),
                 ),
               ),
             ),
@@ -111,17 +107,20 @@ class HomeAppBar extends StatelessWidget with PreferredSizeWidget {
               Text(
                 user.name,
                 style: GoogleFonts.poppins(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w400,
-                    color: theme.titleColor()),
+                  fontSize: 14,
+                  color: Theme.of(context).textTheme.bodyText1.color,
+                  fontWeight: FontWeight.w400,
+                ),
               ),
-              Icon(Icons.arrow_drop_down, color: theme.titleColor())
+              Icon(
+                Icons.arrow_drop_down,
+                color: Theme.of(context).textTheme.bodyText1.color,
+              ),
             ],
           ),
         ),
         SizedBox(width: 16)
       ],
-      backgroundColor: theme.appbarColor(),
       automaticallyImplyLeading: false,
       elevation: shadow ? 4 : 0,
       // add optional tabbar controller

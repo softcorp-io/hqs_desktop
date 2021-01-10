@@ -5,31 +5,22 @@ import 'package:hqs_desktop/home/screens/profile/widgets/profile_auth_history.da
 import 'package:hqs_desktop/service/hqs_user_service.dart';
 import 'package:dart_hqs/hqs_user_service.pb.dart';
 import 'package:hqs_desktop/home/screens/profile/widgets/profile_password_form.dart';
-import 'package:hqs_desktop/theme/theme.dart';
 
 class ProfilePage extends StatefulWidget {
   final HqsService service;
-  final HqsTheme theme;
-  ProfilePage(
-      {@required this.service, @required this.theme})
-      : assert(service != null),
-        assert(theme != null);
+  ProfilePage({@required this.service}) : assert(service != null);
   @override
   _ProfilePageState createState() {
-    return _ProfilePageState(service: service, theme: theme);
+    return _ProfilePageState(service: service);
   }
 }
 
 class _ProfilePageState extends State<ProfilePage> {
   final HqsService service;
-  final HqsTheme theme;
   User user;
   Future<Response> userResponse;
 
-  _ProfilePageState(
-      {@required this.service, @required this.theme})
-      : assert(service != null),
-        assert(theme != null) {
+  _ProfilePageState({@required this.service}) : assert(service != null) {
     userResponse = service.getCurrentUser().then((value) {
       user = value.user;
       return value;
@@ -53,7 +44,6 @@ class _ProfilePageState extends State<ProfilePage> {
                       // Profile card and form information
                       ProfileCol(
                         service: service,
-                        theme: theme,
                         onImageUpdate: () {
                           setState(() {});
                         },
@@ -61,7 +51,6 @@ class _ProfilePageState extends State<ProfilePage> {
                       SizedBox(height: 16),
                       // Password card and form information
                       ProfilePasswordForm(
-                        theme: theme,
                         service: service,
                       ),
                       // Users auth history
@@ -70,7 +59,6 @@ class _ProfilePageState extends State<ProfilePage> {
                         child: Container(
                           color: Colors.transparent,
                           child: ProfileAuthHistory(
-                            theme: theme,
                             service: service,
                           ),
                         ),

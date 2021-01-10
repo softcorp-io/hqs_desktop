@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hqs_desktop/auth/constants/text.dart';
-import 'package:hqs_desktop/theme/theme.dart';
+import 'package:hqs_desktop/theme/constants.dart';
 
 class LoginWavyHeader extends StatelessWidget {
-  final HqsTheme theme;
-  LoginWavyHeader({@required this.theme}) : assert(theme != null);
   @override
   Widget build(BuildContext context) {
     return ClipPath(
@@ -37,7 +35,7 @@ class LoginWavyHeader extends StatelessWidget {
           ),
         ),
         decoration: BoxDecoration(
-          gradient: LinearGradient(colors: theme.defaultGradientColor(), begin: Alignment.topLeft, end: Alignment.center),
+          gradient: LinearGradient(colors: defaultGradientColor, begin: Alignment.topLeft, end: Alignment.center),
         ),
         height: MediaQuery.of(context).size.height / 3.5,
       ),

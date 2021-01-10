@@ -1,30 +1,24 @@
 import 'package:flutter/material.dart';
-import 'package:another_flushbar/flushbar.dart';
 import 'package:dart_hqs/hqs_user_service.pb.dart';
 import 'package:hqs_desktop/home/screens/admin_users/constants/text.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:hqs_desktop/constants/constants.dart';
 import 'package:hqs_desktop/home/widgets/custom_flushbar_error.dart';
 import 'package:hqs_desktop/home/widgets/custom_flushbar_success.dart';
 import 'package:hqs_desktop/service/hqs_user_service.dart';
-import 'package:hqs_desktop/theme/theme.dart';
 
 class ResetPasswordDialog extends StatelessWidget {
   final HqsService service;
   final User user;
   final Function onUpdate;
   final BuildContext buildContext;
-  final HqsTheme theme;
 
   ResetPasswordDialog(
       {@required this.service,
       @required this.user,
       @required this.onUpdate,
-      @required this.theme,
       @required this.buildContext})
       : assert(service != null),
         assert(onUpdate != null),
-        assert(theme != null),
         assert(buildContext != null),
         assert(user != null);
 
@@ -36,7 +30,6 @@ class ResetPasswordDialog extends StatelessWidget {
         style: GoogleFonts.poppins(
           fontSize: 18,
           fontWeight: FontWeight.w600,
-          color: theme.titleColor(),
         ),
       ),
       content: SingleChildScrollView(
@@ -47,7 +40,6 @@ class ResetPasswordDialog extends StatelessWidget {
               style: GoogleFonts.poppins(
                 fontSize: 14,
                 fontWeight: FontWeight.normal,
-                color: theme.textColor(),
               ),
             ),
             Text(
@@ -55,7 +47,6 @@ class ResetPasswordDialog extends StatelessWidget {
               style: GoogleFonts.poppins(
                 fontSize: 14,
                 fontWeight: FontWeight.normal,
-                color: theme.textColor(),
               ),
             ),
             Text(
@@ -63,7 +54,6 @@ class ResetPasswordDialog extends StatelessWidget {
               style: GoogleFonts.poppins(
                 fontSize: 14,
                 fontWeight: FontWeight.normal,
-                color: theme.textColor(),
               ),
             ),
           ],
@@ -76,7 +66,7 @@ class ResetPasswordDialog extends StatelessWidget {
             style: GoogleFonts.poppins(
               fontSize: 14,
               fontWeight: FontWeight.normal,
-              color: theme.dangerColor(),
+              color: Theme.of(context).errorColor,
             ),
           ),
           onPressed: () {
@@ -89,7 +79,7 @@ class ResetPasswordDialog extends StatelessWidget {
             style: GoogleFonts.poppins(
               fontSize: 14,
               fontWeight: FontWeight.normal,
-              color: theme.primaryColor(),
+              color: Theme.of(context).primaryColor,
             ),
           ),
           onPressed: () {
@@ -100,7 +90,7 @@ class ResetPasswordDialog extends StatelessWidget {
                         title: userSourceResetPasswordDialogExceptionTitle,
                         body: userSourceResetPasswordDialogExceptionText(
                             user, error),
-                        theme: theme)
+                        context: context)
                     .getFlushbar()
                     .show(context);
               }).then((value) {
@@ -108,7 +98,7 @@ class ResetPasswordDialog extends StatelessWidget {
                 CustomFlushbarSuccess(
                         title: userSourceResetPassworDialogSuccessTitle,
                         body: userSourceResetPasswordDialogSuccessText(user),
-                        theme: theme)
+                        context: context)
                     .getFlushbar()
                     .show(Navigator.of(buildContext, rootNavigator: true)
                         .context);

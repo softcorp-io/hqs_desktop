@@ -5,23 +5,19 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:hqs_desktop/home/widgets/custom_flushbar_error.dart';
 import 'package:hqs_desktop/home/widgets/custom_flushbar_success.dart';
 import 'package:hqs_desktop/service/hqs_user_service.dart';
-import 'package:hqs_desktop/theme/theme.dart';
 
 class DeleteUserDialog extends StatelessWidget {
   final HqsService service;
   final User user;
   final Function onUpdate;
   final BuildContext buildContext;
-  final HqsTheme theme;
 
   DeleteUserDialog(
       {@required this.service,
       @required this.user,
       @required this.onUpdate,
-      @required this.theme,
       @required this.buildContext})
       : assert(service != null),
-        assert(theme != null),
         assert(onUpdate != null),
         assert(buildContext != null),
         assert(user != null);
@@ -29,13 +25,11 @@ class DeleteUserDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      backgroundColor: theme.cardDefaultColor(),
       title: Text(
         userSourceDeleteUserDialogTitle(user),
         style: GoogleFonts.poppins(
           fontSize: 18,
           fontWeight: FontWeight.w600,
-          color: theme.titleColor(),
         ),
       ),
       content: SingleChildScrollView(
@@ -46,7 +40,6 @@ class DeleteUserDialog extends StatelessWidget {
               style: GoogleFonts.poppins(
                 fontSize: 14,
                 fontWeight: FontWeight.normal,
-                color: theme.textColor(),
               ),
             ),
             Text(
@@ -54,7 +47,6 @@ class DeleteUserDialog extends StatelessWidget {
               style: GoogleFonts.poppins(
                 fontSize: 14,
                 fontWeight: FontWeight.normal,
-                color: theme.textColor(),
               ),
             ),
           ],
@@ -67,7 +59,6 @@ class DeleteUserDialog extends StatelessWidget {
             style: GoogleFonts.poppins(
               fontSize: 14,
               fontWeight: FontWeight.normal,
-              color: theme.dangerColor(),
             ),
           ),
           onPressed: () {
@@ -80,7 +71,7 @@ class DeleteUserDialog extends StatelessWidget {
             style: GoogleFonts.poppins(
               fontSize: 14,
               fontWeight: FontWeight.normal,
-              color: theme.primaryColor(),
+              color: Theme.of(context).primaryColor,
             ),
           ),
           onPressed: () {
@@ -90,7 +81,7 @@ class DeleteUserDialog extends StatelessWidget {
                 CustomFlushbarError(
                         title: userSourceDeleteExceptionTitle,
                         body: userSourceDeleteExceptionText(user),
-                        theme: theme)
+                        context: context)
                     .getFlushbar()
                     .show(context);
               }).then((value) {
@@ -98,7 +89,7 @@ class DeleteUserDialog extends StatelessWidget {
                 CustomFlushbarSuccess(
                         title: userSourceDeleteSuccessTitle(user),
                         body: userSourceDeleteSuccessText(user),
-                        theme: theme)
+                        context: context)
                     .getFlushbar()
                     .show(Navigator.of(buildContext, rootNavigator: true)
                         .context);

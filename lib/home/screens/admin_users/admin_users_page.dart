@@ -8,27 +8,21 @@ import 'package:hqs_desktop/home/screens/admin_users/widgets/generate_signup_tok
 import 'package:hqs_desktop/home/widgets/custom_navigationrail.dart';
 import 'package:hqs_desktop/service/hqs_user_service.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:hqs_desktop/theme/theme.dart';
 
 /// This is the stateless widget that the main application instantiates.
 class UsersPage extends StatefulWidget {
   final HqsService service;
-  final HqsTheme theme;
-  UsersPage({@required this.service, @required this.theme})
-      : assert(service != null),
-        assert(theme != null);
+  UsersPage({@required this.service}) : assert(service != null);
 
   @override
-  _UsersPageState createState() =>
-      _UsersPageState(service: service, theme: theme);
+  _UsersPageState createState() => _UsersPageState(service: service);
 }
 
 class _UsersPageState extends State<UsersPage> {
   final HqsService service;
-  final HqsTheme theme;
   Future<Response> usersResponse;
   List<User> users;
-  _UsersPageState({@required this.service, @required this.theme}) {
+  _UsersPageState({@required this.service}) {
     usersResponse = service.getAllUsers().then((response) {
       this.users = response.users;
       return response;
@@ -63,7 +57,7 @@ class _UsersPageState extends State<UsersPage> {
                     alignment: Alignment.center));
           case ConnectionState.done:
             usersSource = UsersSource(
-              theme: theme,
+              context: context,
               onUpdate: onUpdate,
               buildContext: context,
               service: service,
@@ -89,16 +83,16 @@ class _UsersPageState extends State<UsersPage> {
                                     builder: (BuildContext context) {
                                       return Expanded(
                                           child: GenerateSignupTokenDialog(
-                                              theme: theme, service: service));
+                                        service: service,
+                                      ));
                                     });
                               },
-                              color: theme.successColor(),
+                              color: Theme.of(context).primaryColor,
                               shape: RoundedRectangleBorder(
                                 borderRadius:
                                     BorderRadius.circular(cardBorderRadius),
                               ),
                               child: Text(adminUsersGenerateSignupLink),
-                              textColor: theme.buttonTextColor(),
                             )),
                         SizedBox(
                             width: 130,
@@ -111,19 +105,17 @@ class _UsersPageState extends State<UsersPage> {
                                       return StatefulBuilder(
                                           builder: (context, setState) {
                                         return CreateUserDialog(
-                                            theme: theme,
                                             service: service,
                                             onUpdate: onUpdate);
                                       });
                                     });
                               },
-                              color: theme.primaryColor(),
+                              color: Theme.of(context).primaryColor,
                               shape: RoundedRectangleBorder(
                                 borderRadius:
                                     BorderRadius.circular(cardBorderRadius),
                               ),
                               child: Text(adminUsersCreateUserButton),
-                              textColor: theme.buttonTextColor(),
                             )),
                       ],
                       headingRowHeight: 80,
@@ -135,7 +127,6 @@ class _UsersPageState extends State<UsersPage> {
                         style: GoogleFonts.poppins(
                           fontSize: 24,
                           fontWeight: FontWeight.w700,
-                          color: theme.titleColor(),
                         ),
                       ),
                       columns: _colGen(usersSource),

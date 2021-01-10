@@ -7,7 +7,7 @@ import 'package:hqs_desktop/home/widgets/custom_flushbar_error.dart';
 import 'package:hqs_desktop/home/widgets/custom_flushbar_success.dart';
 import 'package:hqs_desktop/service/hqs_user_service.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:hqs_desktop/theme/theme.dart';
+import 'package:hqs_desktop/theme/constants.dart';
 import 'package:intl/intl.dart';
 
 class ProfileCard extends StatelessWidget {
@@ -18,13 +18,11 @@ class ProfileCard extends StatelessWidget {
   final onClose;
   final showCloseButton;
   final double dialogSize;
-  final HqsTheme theme;
   ProfileCard(
       {@required this.service,
       @required this.onImageUpdate,
       @required this.showEditImage,
       @required this.onClose,
-      @required this.theme,
       @required this.showCloseButton,
       @required this.dialogSize,
       @required this.user})
@@ -32,7 +30,6 @@ class ProfileCard extends StatelessWidget {
         assert(user != null),
         assert(dialogSize != null),
         assert(showEditImage != null),
-        assert(theme != null),
         assert(onClose != null),
         assert(showCloseButton != null),
         assert(onImageUpdate != null);
@@ -72,7 +69,7 @@ class ProfileCard extends StatelessWidget {
               width: showCloseButton ? dialogSize : screenSplitSize,
               decoration: BoxDecoration(
                 gradient: LinearGradient(
-                    colors: theme.defaultGradientColor(),
+                    colors: defaultGradientColor,
                     begin: Alignment.bottomLeft,
                     end: Alignment.topRight),
               ),
@@ -84,21 +81,22 @@ class ProfileCard extends StatelessWidget {
                           ? EdgeInsets.only(left: 10, top: 10)
                           : EdgeInsets.all(15),
                       child: Container(
-                        width: 55,
-                        height: 35,
+                        width: 60,
+                        height: 40,
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(cardBorderRadius),
-                          color: theme.cardDefaultColor(),
                         ),
-                        child: Align(
-                          child: Text(
-                            profileCardTitle,
-                            style: GoogleFonts.poppins(
+                        child: Card(
+                          child: Align(
+                            child: Text(
+                              profileCardTitle,
+                              style: GoogleFonts.poppins(
                                 fontSize: 11,
                                 fontWeight: FontWeight.w600,
-                                color: theme.titleColor()),
+                              ),
+                            ),
+                            alignment: Alignment.center,
                           ),
-                          alignment: Alignment.center,
                         ),
                       ),
                     ),
@@ -111,7 +109,7 @@ class ProfileCard extends StatelessWidget {
                                 onClose();
                               },
                               icon:
-                                  Icon(Icons.close, color: theme.dangerColor()),
+                                  Icon(Icons.close, color: Theme.of(context).errorColor),
                             ),
                           )
                         : Container(),
@@ -150,7 +148,6 @@ class ProfileCard extends StatelessWidget {
                                           .pop();
                                     }, context).catchError((error) {
                                       CustomFlushbarError(
-                                              theme: theme,
                                               title: uploadPhoneExceptionTitle,
                                               body: uploadPhoneExceptionText)
                                           .getFlushbar()
@@ -159,23 +156,21 @@ class ProfileCard extends StatelessWidget {
                                       if (value != null) {
                                         onImageUpdate();
                                         CustomFlushbarSuccess(
-                                                title: uploadPhoneSuccessTitle,
-                                                body: uploadPhoneSuccessText,
-                                                theme: theme)
-                                            .getFlushbar()
-                                              ..show(context);
+                                          title: uploadPhoneSuccessTitle,
+                                          body: uploadPhoneSuccessText,
+                                        ).getFlushbar()
+                                          ..show(context);
                                       }
                                     });
                                   },
                                   icon: Icon(
                                     Icons.edit,
-                                    color: theme.titleColor(),
                                     size: 19,
                                   ),
                                 ),
                                 decoration: BoxDecoration(
                                   shape: BoxShape.circle,
-                                  color: theme.defaultBackgroundColor(),
+                                  color: Theme.of(context).scaffoldBackgroundColor,
                                 ),
                               ),
                             )
@@ -233,11 +228,10 @@ class ProfileCard extends StatelessWidget {
                                   width: 60,
                                   height: 60,
                                   child: LinearGradientMask(
-                                      theme: theme,
                                       child: Icon(
-                                        Icons.email,
-                                        size: 35,
-                                      )),
+                                    Icons.email,
+                                    size: 35,
+                                  )),
                                   decoration: BoxDecoration(
                                     shape: BoxShape.circle,
                                     color: Colors.white,
@@ -266,11 +260,10 @@ class ProfileCard extends StatelessWidget {
                                   width: 60,
                                   height: 60,
                                   child: LinearGradientMask(
-                                      theme: theme,
                                       child: Icon(
-                                        Icons.phone_android,
-                                        size: 35,
-                                      )),
+                                    Icons.phone_android,
+                                    size: 35,
+                                  )),
                                   decoration: BoxDecoration(
                                       shape: BoxShape.circle,
                                       color: Colors.white),
@@ -300,11 +293,10 @@ class ProfileCard extends StatelessWidget {
                                   width: 60,
                                   height: 60,
                                   child: LinearGradientMask(
-                                      theme: theme,
                                       child: Icon(
-                                        Icons.date_range,
-                                        size: 35,
-                                      )),
+                                    Icons.date_range,
+                                    size: 35,
+                                  )),
                                   decoration: BoxDecoration(
                                       shape: BoxShape.circle,
                                       color: Colors.white),
@@ -365,7 +357,6 @@ class ProfileCard extends StatelessWidget {
                     style: GoogleFonts.poppins(
                       fontSize: 14,
                       fontWeight: FontWeight.normal,
-                      color: theme.titleColor(),
                     ),
                   ),
                 ],
@@ -378,8 +369,7 @@ class ProfileCard extends StatelessWidget {
 
 class LinearGradientMask extends StatelessWidget {
   final Widget child;
-  final HqsTheme theme;
-  LinearGradientMask({this.child, @required this.theme});
+  LinearGradientMask({this.child});
   @override
   Widget build(BuildContext context) {
     return ShaderMask(
@@ -387,7 +377,7 @@ class LinearGradientMask extends StatelessWidget {
         return RadialGradient(
           center: Alignment.topLeft,
           radius: 1,
-          colors: theme.defaultGradientColor(),
+          colors: defaultGradientColor,
           tileMode: TileMode.mirror,
         ).createShader(bounds);
       },

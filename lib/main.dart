@@ -3,12 +3,12 @@ import 'package:hqs_desktop/service/hqs_user_service.dart';
 import 'package:desktop_window/desktop_window.dart';
 import 'dart:io';
 import 'package:hqs_desktop/auth/auth_page.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:hqs_desktop/constants/constants.dart';
 import 'package:hqs_desktop/home/home.dart';
-import 'package:hqs_desktop/theme/dark_theme.dart';
-import 'package:hqs_desktop/theme/light_theme.dart';
-import 'package:hqs_desktop/theme/theme.dart';
+import 'package:hqs_desktop/theme/hqs_dark_theme.dart';
+import 'package:hqs_desktop/theme/hqs_light_theme.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:hqs_desktop/home/screens/settings/settings_page.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -35,55 +35,53 @@ class _HqsAppState extends State<HqsApp> {
       });
 
   HqsService service;
-  Future<void> connected;
+  
+  ThemeData lightTheme = HqsLightTheme().getTheme();
+  ThemeData darkTheme = HqsDarkTheme().getTheme();
+
+  ThemeData theme;
+
+
+  Future<void> platformReady;
+  Future<void> setupPlatform() async {
+    await service.connect();
+    // setup theme
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String chosenTheme = prefs.getString('theme');
+    if (chosenTheme == null) {
+      theme = lightTheme;
+      prefs.setString('theme', 'light');
+    } else {
+      switch (chosenTheme) {
+        case 'light':
+          theme = lightTheme;
+          break;
+        case 'dark':
+          theme = darkTheme;
+          break;
+        default:
+          theme = lightTheme;
+          prefs.setString('theme', 'light');
+          break;
+      }
+    }
+    return;
+  }
 
   _HqsAppState() {
     service = new HqsService(
         addr: "34.77.45.46", port: 9000, onLogin: onLogin, onLogout: onLogout);
-    connected = service.connect();
+    platformReady = setupPlatform();
   }
-
-  HqsTheme theme;
-  ThemeData getTheme(bool light) {
-    ThemeData themeData;
-    if (light) {
-      theme = LightTheme();
-      themeData = ThemeData.light();
-    } else {
-      theme = DarkTheme();
-      TextTheme textTheme = GoogleFonts.poppinsTextTheme()
-          .apply(bodyColor: theme.textColor(), displayColor: theme.textColor());
-      themeData = ThemeData.dark().copyWith(
-        dialogBackgroundColor: theme.cardDefaultColor(),
-        textTheme: textTheme,
-        brightness: Brightness.dark,
-        dividerColor: theme.dividerColor(),
-        cardColor: theme.cardDefaultColor(),
-        dataTableTheme: DataTableThemeData(
-          headingRowColor: MaterialStateColor.resolveWith((states) {
-            return theme.cardDefaultColor();
-          }),
-          dataTextStyle: TextStyle(color: theme.textColor()),
-          headingTextStyle: TextStyle(color: theme.titleColor()),
-          dataRowColor: MaterialStateColor.resolveWith((states) {
-            return theme.cardDefaultColor();
-          }),
-        ),
-      );
-    }
-    return themeData;
-  }
-
-  bool lightTheme = true;
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
         title: 'Headquarters',
-        theme: getTheme(lightTheme),
+        theme: theme,
         debugShowCheckedModeBanner: false,
         home: FutureBuilder<void>(
-            future: connected,
+            future: platformReady,
             builder: (BuildContext context, AsyncSnapshot<void> snapshot) {
               switch (snapshot.connectionState) {
                 case ConnectionState.done:
@@ -91,24 +89,23 @@ class _HqsAppState extends State<HqsApp> {
                       ? AuthPage(
                           service: service,
                           onLogIn: onLogin,
-                          theme: theme,
                         )
                       : HomePage(
-                          lightTheme: lightTheme,
-                          changeTheme: (bool value) {
-                            setState(() {
-                              void rebuild(Element el) {
-                                lightTheme = value;
-
-                                el.markNeedsBuild();
-                                el.visitChildren(rebuild);
-                              }
-
-                              (context as Element).visitChildren(rebuild);
-                            });
+                          changeTheme: (HqsTheme changeTheme) {
+                            switch(changeTheme){
+                              case HqsTheme.dark:
+                                setState(() {
+                                  theme = darkTheme;
+                                });
+                                break;
+                              case HqsTheme.light:
+                                setState(() {
+                                  theme = lightTheme;
+                                });
+                                break;
+                            }
                           },
                           service: service,
-                          theme: theme,
                         );
                 default:
                   return Align(

@@ -10,7 +10,6 @@ import 'package:hqs_desktop/service/hqs_user_service.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:country_code_picker/country_code_picker.dart';
 import 'package:hqs_desktop/home/widgets/custom_text_form_field.dart';
-import 'package:hqs_desktop/theme/theme.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 
 class ProfileFormCard extends StatelessWidget {
@@ -31,7 +30,6 @@ class ProfileFormCard extends StatelessWidget {
   final Function setBirthday;
   final Function setGender;
   final Function setCountry;
-  final HqsTheme theme;
 
   // init gender list
   final List<DropdownMenuItem<bool>> genderList = [
@@ -49,7 +47,6 @@ class ProfileFormCard extends StatelessWidget {
     @required this.service,
     @required this.onUpdate,
     @required this.user,
-    @required this.theme,
     @required this.birthday,
     @required this.birthdayString,
     @required this.setBirthday,
@@ -62,7 +59,6 @@ class ProfileFormCard extends StatelessWidget {
     assert(birthday != null);
     assert(setBirthday != null);
     assert(setGender != null);
-    assert(theme != null);
     assert(setCountry != null);
     assert(birthdayString != null && birthdayString.isNotEmpty);
     _nameController.text = user.name;
@@ -96,7 +92,6 @@ class ProfileFormCard extends StatelessWidget {
       children: [
         Card(
           elevation: 4,
-          color: theme.cardDefaultColor(),
           clipBehavior: Clip.antiAlias,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.all(
@@ -116,7 +111,6 @@ class ProfileFormCard extends StatelessWidget {
                         style: GoogleFonts.poppins(
                           fontSize: 24,
                           fontWeight: FontWeight.w700,
-                          color: theme.titleColor(),
                         ),
                       ),
                       alignment: Alignment.topLeft,
@@ -140,7 +134,6 @@ class ProfileFormCard extends StatelessWidget {
                                   maxLength: 50,
                                   minLines: 1,
                                   maxLines: 1,
-                                  theme: theme,
                                   controller: _nameController,
                                   validator: (value) {
                                     if (value.isEmpty) {
@@ -164,7 +157,6 @@ class ProfileFormCard extends StatelessWidget {
                                   maxLength: 100,
                                   minLines: 1,
                                   maxLines: 1,
-                                  theme: theme,
                                   controller: _emailController,
                                   hintText: editProfileCardEmailFieldHint,
                                   labelText: editProfileCardEmailFieldText,
@@ -193,16 +185,15 @@ class ProfileFormCard extends StatelessWidget {
                             children: <Widget>[
                               Flexible(
                                 child: DropdownButtonFormField(
-                                  style: TextStyle(color: theme.textColor()),
                                   decoration: InputDecoration(
                                     focusedBorder: OutlineInputBorder(
                                       borderSide: BorderSide(
-                                          color: theme.primaryColor(),
+                                          color: Theme.of(context).primaryColor,
                                           width: 1.0),
                                     ),
                                     enabledBorder: OutlineInputBorder(
                                       borderSide: BorderSide(
-                                          color: theme.formBorderColor(),
+                                          color: Theme.of(context).hintColor,
                                           width: 1.0),
                                     ),
                                   ),
@@ -257,7 +248,6 @@ class ProfileFormCard extends StatelessWidget {
                                           maxLength: 40,
                                           minLines: 1,
                                           maxLines: 1,
-                                          theme: theme,
                                           obscure: false),
                                     ),
                                   ],
@@ -278,7 +268,6 @@ class ProfileFormCard extends StatelessWidget {
                                   maxLength: 50,
                                   minLines: 1,
                                   maxLines: 1,
-                                  theme: theme,
                                   controller: _titleController,
                                   validator: (value) {
                                     return null;
@@ -296,13 +285,17 @@ class ProfileFormCard extends StatelessWidget {
                               Flexible(
                                 child: Container(
                                   decoration: BoxDecoration(
-                                    color: theme.defaultBackgroundColor(),
                                     borderRadius:
                                         BorderRadius.circular(cardBorderRadius),
                                   ),
                                   width: 500,
                                   height: 50,
                                   child: TextButton(
+                                    style: ButtonStyle(backgroundColor:
+                                        MaterialStateColor.resolveWith(
+                                            (states) {
+                                      return Theme.of(context).dividerColor;
+                                    })),
                                     child: Text(
                                       birthdayString,
                                     ),
@@ -350,7 +343,6 @@ class ProfileFormCard extends StatelessWidget {
                               maxLength: 500,
                               minLines: 3,
                               maxLines: 5,
-                              theme: theme,
                               obscure: false),
                           Padding(
                             padding: EdgeInsets.all(30),
@@ -361,12 +353,11 @@ class ProfileFormCard extends StatelessWidget {
                                   width: 200,
                                   height: 50.0,
                                   child: RaisedButton(
-                                    color: theme.primaryColor(),
+                                    color: Theme.of(context).primaryColor,
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(
                                           buttonBorderRadius),
                                     ),
-                                    textColor: theme.buttonTextColor(),
                                     onPressed: () async => {
                                       if (_formKey.currentState.validate())
                                         {
@@ -389,7 +380,7 @@ class ProfileFormCard extends StatelessWidget {
                                                         "Something went wrong",
                                                     body:
                                                         "We could not update your profile information. Please make sure you have a valid wifi connection.",
-                                                    theme: theme)
+                                                    context: context)
                                                 .getFlushbar()
                                                 .show(context);
                                           }).then((value) {
@@ -398,7 +389,7 @@ class ProfileFormCard extends StatelessWidget {
                                                   "Successfully updated your profile",
                                               body:
                                                   "Your profile was successfully updated.",
-                                              theme: theme,
+                                              context: context,
                                             ).getFlushbar().show(context);
                                             onUpdate();
                                           })

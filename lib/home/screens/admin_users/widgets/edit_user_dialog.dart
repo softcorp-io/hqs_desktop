@@ -6,25 +6,21 @@ import 'package:hqs_desktop/home/widgets/custom_dropdown_form_field.dart';
 import 'package:hqs_desktop/home/widgets/custom_flushbar_error.dart';
 import 'package:hqs_desktop/home/widgets/custom_flushbar_success.dart';
 import 'package:hqs_desktop/service/hqs_user_service.dart';
-import 'package:hqs_desktop/theme/theme.dart';
 
 class EditUserDialog extends StatelessWidget {
   final HqsService service;
   final User user;
   final Function onUpdate;
   final BuildContext buildContext;
-  final HqsTheme theme;
 
   EditUserDialog(
       {@required this.service,
       @required this.user,
-      @required this.theme,
       @required this.onUpdate,
       @required this.buildContext})
       : assert(service != null),
         assert(onUpdate != null),
         assert(buildContext != null),
-        assert(theme != null),
         assert(user != null);
 
   @override
@@ -38,13 +34,11 @@ class EditUserDialog extends StatelessWidget {
     bool allowReset = user.allowResetPassword;
     return StatefulBuilder(builder: (context, setState) {
       return AlertDialog(
-          backgroundColor: theme.cardDefaultColor(),
           title: Text(
             userSourceEditDialogTitle(user),
             style: GoogleFonts.poppins(
               fontSize: 22,
               fontWeight: FontWeight.w600,
-              color: theme.titleColor(),
             ),
           ),
           content: Container(
@@ -59,7 +53,6 @@ class EditUserDialog extends StatelessWidget {
                   style: GoogleFonts.poppins(
                     fontSize: 12,
                     fontWeight: FontWeight.w500,
-                    color: theme.textColor(),
                   ),
                 ),
                 SizedBox(height: 32),
@@ -82,12 +75,9 @@ class EditUserDialog extends StatelessWidget {
                                       height: 8,
                                     ),
                                     CustomDromDownMenu(
-                                      theme: theme,
                                       validator: (value) {
                                         return null;
                                       },
-                                      defaultBorderColor:
-                                          theme.formBorderColor(),
                                       hintText:
                                           userSourceEditDialogViewAccessHint,
                                       items: [
@@ -120,7 +110,6 @@ class EditUserDialog extends StatelessWidget {
                                       height: 8,
                                     ),
                                     CustomDromDownMenu(
-                                      theme: theme,
                                       validator: (value) {
                                         if (allowCreate &&
                                             !(allowView && allowPermission)) {
@@ -128,8 +117,6 @@ class EditUserDialog extends StatelessWidget {
                                         }
                                         return null;
                                       },
-                                      defaultBorderColor:
-                                          theme.formBorderColor(),
                                       hintText:
                                           userSourceEditDialogCreateAccessHint,
                                       items: [
@@ -168,15 +155,12 @@ class EditUserDialog extends StatelessWidget {
                                       height: 8,
                                     ),
                                     CustomDromDownMenu(
-                                      theme: theme,
                                       validator: (value) {
                                         if (allowPermission && !allowView) {
                                           return userSourceEditDialogPermissionAccessValidator;
                                         }
                                         return null;
                                       },
-                                      defaultBorderColor:
-                                          theme.formBorderColor(),
                                       hintText:
                                           userSourceEditDialogPermissionAccessHint,
                                       items: [
@@ -209,15 +193,12 @@ class EditUserDialog extends StatelessWidget {
                                       height: 8,
                                     ),
                                     CustomDromDownMenu(
-                                      theme: theme,
                                       validator: (value) {
                                         if (allowDelete && !allowView) {
                                           return userSourceEditDialogDeleteAccessValidator;
                                         }
                                         return null;
                                       },
-                                      defaultBorderColor:
-                                          theme.formBorderColor(),
                                       hintText:
                                           userSourceEditDialogDeleteAccessHint,
                                       items: [
@@ -255,15 +236,12 @@ class EditUserDialog extends StatelessWidget {
                                       height: 8,
                                     ),
                                     CustomDromDownMenu(
-                                      theme: theme,
                                       validator: (value) {
                                         if (allowBlock && !allowView) {
                                           return userSourceEditDialogBlockAccessValidator;
                                         }
                                         return null;
                                       },
-                                      defaultBorderColor:
-                                          theme.formBorderColor(),
                                       hintText:
                                           userSourceEditDialogBlockAccessHint,
                                       items: [
@@ -296,15 +274,12 @@ class EditUserDialog extends StatelessWidget {
                                       height: 8,
                                     ),
                                     CustomDromDownMenu(
-                                      theme: theme,
                                       validator: (value) {
                                         if (allowReset && !allowView) {
                                           return editUserSelectResetValidator;
                                         }
                                         return null;
                                       },
-                                      defaultBorderColor:
-                                          theme.formBorderColor(),
                                       hintText:
                                           userSourceEditDialogResetAccessHint,
                                       items: [
@@ -340,7 +315,7 @@ class EditUserDialog extends StatelessWidget {
                 style: GoogleFonts.poppins(
                   fontSize: 14,
                   fontWeight: FontWeight.normal,
-                  color: theme.dangerColor(),
+                  color: Theme.of(context).errorColor,
                 ),
               ),
               onPressed: () {
@@ -351,9 +326,10 @@ class EditUserDialog extends StatelessWidget {
               child: Text(
                 userSourceEditDialogUpdateBtnText,
                 style: GoogleFonts.poppins(
-                    fontSize: 14,
-                    fontWeight: FontWeight.normal,
-                    color: theme.primaryColor()),
+                  fontSize: 14,
+                  fontWeight: FontWeight.normal,
+                  color: Theme.of(context).primaryColor,
+                ),
               ),
               onPressed: () {
                 service
@@ -368,20 +344,18 @@ class EditUserDialog extends StatelessWidget {
                 )
                     .catchError((error) {
                   CustomFlushbarError(
-                          title: userSourceEditDialogExceptionTitle,
-                          body: userSourceEditDialogExceptionText(user),
-                          theme: theme)
-                      .getFlushbar()
-                      .show(context);
+                    title: userSourceEditDialogExceptionTitle,
+                    body: userSourceEditDialogExceptionText(user),
+                    context: context,
+                  ).getFlushbar().show(context);
                 }).then((value) {
                   onUpdate();
                   Navigator.of(buildContext, rootNavigator: true).pop();
                   CustomFlushbarSuccess(
-                          title: userSourceEditDialogSuccessTitle,
-                          body: userSourceEditDialogSuccessText(user),
-                          theme: theme)
-                      .getFlushbar()
-                      .show(context);
+                    title: userSourceEditDialogSuccessTitle,
+                    body: userSourceEditDialogSuccessText(user),
+                    context: context,
+                  ).getFlushbar().show(context);
                   return value;
                 });
               },

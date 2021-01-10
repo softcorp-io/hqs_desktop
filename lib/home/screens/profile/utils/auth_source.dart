@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:dart_hqs/hqs_user_service.pb.dart';
-import 'package:hqs_desktop/theme/theme.dart';
+import 'package:hqs_desktop/theme/constants.dart';
 import 'dart:async';
 import 'package:intl/intl.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -10,14 +10,14 @@ typedef OnRowSelect = void Function(int index);
 class AuthHistorySource extends DataTableSource {
   final List<Auth> authData;
   final OnRowSelect onRowSelect;
-  final HqsTheme theme;
-  AuthHistorySource(
-      {@required this.authData,
-      @required this.onRowSelect,
-      @required this.theme}) {
+  final BuildContext context;
+  AuthHistorySource({
+    @required this.authData,
+    @required this.onRowSelect,
+    @required this.context,
+  }) {
     assert(authData != null);
     assert(onRowSelect != null);
-    assert(theme != null);
 
     authData.sort((a, b) {
       return b.lastUsedAt.toDateTime().compareTo(a.lastUsedAt.toDateTime());
@@ -51,7 +51,7 @@ class AuthHistorySource extends DataTableSource {
       style: GoogleFonts.poppins(
         fontSize: 14,
         fontWeight: FontWeight.w500,
-        color: theme.dangerColor(),
+        color: Theme.of(context).errorColor,
       ),
     );
     if (auth.valid) {
@@ -60,59 +60,52 @@ class AuthHistorySource extends DataTableSource {
         style: GoogleFonts.poppins(
           fontSize: 14,
           fontWeight: FontWeight.w500,
-          color: theme.successColor(),
+          color: successColor,
         ),
       );
     }
 
-    return DataRow.byIndex(
-        index: index,
-
-        cells: <DataCell>[
-          DataCell(Text(
-            '${auth.typeOf}',
-            style: GoogleFonts.poppins(
-              fontSize: 14,
-              fontWeight: FontWeight.w400,
-              color: theme.textColor(),
-            ),
-          )),
-          DataCell(Text(
-            '${auth.device}',
-            style: GoogleFonts.poppins(
-              fontSize: 14,
-              fontWeight: FontWeight.w400,
-              color: theme.textColor(),
-            ),
-          )),
-          DataCell(Text(
-            '$formatlastUsedAt',
-            style: GoogleFonts.poppins(
-              fontSize: 14,
-              fontWeight: FontWeight.w400,
-              color: theme.textColor(),
-            ),
-          )),
-          DataCell(status),
-          DataCell(
-            auth.valid
-                ? IconButton(
-                    icon: Icon(
-                      Icons.delete,
-                      color: theme.primaryColor(),
-                    ),
-                    onPressed: () => onRowSelect(index),
-                  )
-                : Text(
-                    'Blocked',
-                    style: GoogleFonts.poppins(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w400,
-                      color: theme.textColor(),
-                    ),
-                  ),
-          ),
-        ]);
+    return DataRow.byIndex(index: index, cells: <DataCell>[
+      DataCell(Text(
+        '${auth.typeOf}',
+        style: GoogleFonts.poppins(
+          fontSize: 14,
+          fontWeight: FontWeight.w400,
+        ),
+      )),
+      DataCell(Text(
+        '${auth.device}',
+        style: GoogleFonts.poppins(
+          fontSize: 14,
+          fontWeight: FontWeight.w400,
+        ),
+      )),
+      DataCell(Text(
+        '$formatlastUsedAt',
+        style: GoogleFonts.poppins(
+          fontSize: 14,
+          fontWeight: FontWeight.w400,
+        ),
+      )),
+      DataCell(status),
+      DataCell(
+        auth.valid
+            ? IconButton(
+                icon: Icon(
+                  Icons.delete,
+                  color: Theme.of(context).primaryColor,
+                ),
+                onPressed: () => onRowSelect(index),
+              )
+            : Text(
+                'Blocked',
+                style: GoogleFonts.poppins(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w400,
+                ),
+              ),
+      ),
+    ]);
   }
 
   @override

@@ -8,7 +8,7 @@ import 'package:hqs_desktop/home/screens/admin_users/widgets/reset_password_dial
 import 'package:hqs_desktop/home/screens/admin_users/widgets/view_user_dialog.dart';
 import 'package:hqs_desktop/service/hqs_user_service.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:hqs_desktop/theme/theme.dart';
+import 'package:hqs_desktop/theme/constants.dart';
 
 typedef OnRowSelect = void Function(int index);
 
@@ -18,18 +18,17 @@ class UsersSource extends DataTableSource {
   final HqsService service;
   final BuildContext buildContext;
   final Function onUpdate;
-  final HqsTheme theme;
-
+  final BuildContext context;
   UsersSource(
       {@required this.usersData,
       @required this.onRowSelect,
-      @required this.theme,
+      @required this.context,
       @required this.onUpdate,
       @required this.buildContext,
       @required this.service}) {
     assert(usersData != null);
+    assert(context != null);
     assert(service != null);
-    assert(theme != null);
     assert(onUpdate != null);
     assert(buildContext != null);
     assert(onRowSelect != null);
@@ -52,16 +51,18 @@ class UsersSource extends DataTableSource {
       DataCell(Text(
         '${user.name}',
         style: GoogleFonts.poppins(
-            fontSize: 14,
-            fontWeight: FontWeight.w400,
-            color: theme.textColor()),
+          fontSize: 14,
+          fontWeight: FontWeight.w400,
+        ),
       )),
       DataCell(Text(
         '${user.allowView}',
         style: GoogleFonts.poppins(
           fontSize: 14,
           fontWeight: FontWeight.w400,
-          color: user.allowView ? theme.successColor() : theme.dangerColor(),
+          color: user.allowView
+              ? successColor
+              : Theme.of(context).errorColor,
         ),
       )),
       DataCell(Text(
@@ -69,7 +70,9 @@ class UsersSource extends DataTableSource {
         style: GoogleFonts.poppins(
           fontSize: 14,
           fontWeight: FontWeight.w400,
-          color: user.allowCreate ? theme.successColor() : theme.dangerColor(),
+          color: user.allowCreate
+              ? successColor
+              : Theme.of(context).errorColor,
         ),
       )),
       DataCell(Text(
@@ -77,8 +80,9 @@ class UsersSource extends DataTableSource {
         style: GoogleFonts.poppins(
           fontSize: 14,
           fontWeight: FontWeight.w400,
-          color:
-              user.allowPermission ? theme.successColor() : theme.dangerColor(),
+          color: user.allowPermission
+              ? successColor
+              : Theme.of(context).errorColor,
         ),
       )),
       DataCell(Text(
@@ -86,7 +90,9 @@ class UsersSource extends DataTableSource {
         style: GoogleFonts.poppins(
           fontSize: 14,
           fontWeight: FontWeight.w400,
-          color: user.allowDelete ? theme.successColor() : theme.dangerColor(),
+          color: user.allowDelete
+              ? successColor
+              : Theme.of(context).errorColor,
         ),
       )),
       DataCell(Text(
@@ -94,7 +100,9 @@ class UsersSource extends DataTableSource {
         style: GoogleFonts.poppins(
           fontSize: 14,
           fontWeight: FontWeight.w400,
-          color: user.allowBlock ? theme.successColor() : theme.dangerColor(),
+          color: user.allowBlock
+              ? successColor
+              : Theme.of(context).errorColor,
         ),
       )),
       DataCell(Text(
@@ -103,8 +111,8 @@ class UsersSource extends DataTableSource {
           fontSize: 14,
           fontWeight: FontWeight.w400,
           color: user.allowResetPassword
-              ? theme.successColor()
-              : theme.dangerColor(),
+              ? successColor
+              : Theme.of(context).errorColor,
         ),
       )),
       DataCell(Text(
@@ -112,7 +120,9 @@ class UsersSource extends DataTableSource {
         style: GoogleFonts.poppins(
           fontSize: 14,
           fontWeight: FontWeight.w400,
-          color: user.blocked ? theme.successColor() : theme.dangerColor(),
+          color: user.blocked
+              ? successColor
+              : Theme.of(context).errorColor,
         ),
       )),
       service.curUser.allowBlock ||
@@ -130,7 +140,6 @@ class UsersSource extends DataTableSource {
                           builder: (BuildContext context) {
                             return ViewUserDialog(
                               service: service,
-                              theme: theme,
                               buildContext: buildContext,
                               user: user,
                             );
@@ -141,7 +150,6 @@ class UsersSource extends DataTableSource {
                           context: buildContext,
                           builder: (BuildContext context) {
                             return BlockUserDialog(
-                              theme: theme,
                               service: service,
                               buildContext: buildContext,
                               onUpdate: onUpdate,
@@ -154,7 +162,6 @@ class UsersSource extends DataTableSource {
                           context: buildContext,
                           builder: (BuildContext context) {
                             return EditUserDialog(
-                              theme: theme,
                               service: service,
                               buildContext: buildContext,
                               onUpdate: onUpdate,
@@ -167,7 +174,6 @@ class UsersSource extends DataTableSource {
                           context: buildContext,
                           builder: (BuildContext context) {
                             return ResetPasswordDialog(
-                              theme: theme,
                               service: service,
                               buildContext: buildContext,
                               onUpdate: onUpdate,
@@ -180,7 +186,6 @@ class UsersSource extends DataTableSource {
                           context: buildContext,
                           builder: (BuildContext context) {
                             return DeleteUserDialog(
-                              theme: theme,
                               service: service,
                               buildContext: buildContext,
                               onUpdate: onUpdate,
@@ -213,7 +218,6 @@ class UsersSource extends DataTableSource {
               style: GoogleFonts.poppins(
                 fontSize: 14,
                 fontWeight: FontWeight.w400,
-                color: theme.titleColor(),
               ),
             ),
           ),
@@ -231,7 +235,6 @@ class UsersSource extends DataTableSource {
               style: GoogleFonts.poppins(
                 fontSize: 14,
                 fontWeight: FontWeight.w400,
-                color: theme.titleColor(),
               ),
             ),
           ),
@@ -249,7 +252,6 @@ class UsersSource extends DataTableSource {
               style: GoogleFonts.poppins(
                 fontSize: 14,
                 fontWeight: FontWeight.w400,
-                color: theme.titleColor(),
               ),
             ),
           ),
@@ -267,7 +269,6 @@ class UsersSource extends DataTableSource {
               style: GoogleFonts.poppins(
                 fontSize: 14,
                 fontWeight: FontWeight.w400,
-                color: theme.titleColor(),
               ),
             ),
           ),
@@ -285,7 +286,6 @@ class UsersSource extends DataTableSource {
               style: GoogleFonts.poppins(
                 fontSize: 14,
                 fontWeight: FontWeight.w400,
-                color: theme.dangerColor(),
               ),
             ),
           ),

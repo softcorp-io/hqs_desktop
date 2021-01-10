@@ -7,15 +7,13 @@ import 'package:hqs_desktop/home/widgets/custom_dropdown_form_field.dart';
 import 'package:hqs_desktop/home/widgets/custom_flushbar_success.dart';
 import 'package:hqs_desktop/service/hqs_user_service.dart';
 import 'package:hqs_desktop/home/screens/admin_users/constants/text.dart';
-import 'package:hqs_desktop/theme/theme.dart';
 
 class GenerateSignupTokenDialog extends StatelessWidget {
   final HqsService service;
-  final HqsTheme theme;
 
-  GenerateSignupTokenDialog({@required this.service, @required this.theme})
-      : assert(service != null),
-        assert(theme != null);
+  GenerateSignupTokenDialog({
+    @required this.service,
+  }) : assert(service != null);
 
   @override
   Widget build(BuildContext context) {
@@ -33,9 +31,9 @@ class GenerateSignupTokenDialog extends StatelessWidget {
         title: Text(
           generateSignUpLinkTitle,
           style: GoogleFonts.poppins(
-              fontSize: 22,
-              fontWeight: FontWeight.w600,
-              color: theme.titleColor()),
+            fontSize: 22,
+            fontWeight: FontWeight.w600,
+          ),
         ),
         content: Container(
           width: 800,
@@ -49,7 +47,6 @@ class GenerateSignupTokenDialog extends StatelessWidget {
                 style: GoogleFonts.poppins(
                   fontSize: 12,
                   fontWeight: FontWeight.w500,
-                  color: theme.textColor(),
                 ),
               ),
               SizedBox(height: 32),
@@ -72,11 +69,9 @@ class GenerateSignupTokenDialog extends StatelessWidget {
                                     height: 8,
                                   ),
                                   CustomDromDownMenu(
-                                    theme: theme,
                                     validator: (value) {
                                       return null;
                                     },
-                                    defaultBorderColor: theme.formBorderColor(),
                                     hintText: generateSignUpLinkSelectViewHint,
                                     items: [
                                       DropdownMenuItem(
@@ -108,7 +103,6 @@ class GenerateSignupTokenDialog extends StatelessWidget {
                                     height: 8,
                                   ),
                                   CustomDromDownMenu(
-                                    theme: theme,
                                     validator: (value) {
                                       if (allowCreate &&
                                           (!allowView || !allowPermission)) {
@@ -116,7 +110,6 @@ class GenerateSignupTokenDialog extends StatelessWidget {
                                       }
                                       return null;
                                     },
-                                    defaultBorderColor: theme.formBorderColor(),
                                     hintText:
                                         generateSignUpLinkSelectCreateHint,
                                     items: [
@@ -154,14 +147,12 @@ class GenerateSignupTokenDialog extends StatelessWidget {
                                     height: 8,
                                   ),
                                   CustomDromDownMenu(
-                                    theme: theme,
                                     validator: (value) {
                                       if (allowPermission && !allowView) {
                                         return generateSignUpLinkSelectPermissionValidator;
                                       }
                                       return null;
                                     },
-                                    defaultBorderColor: theme.formBorderColor(),
                                     hintText:
                                         generateSignUpLinkSelectPermissionHint,
                                     items: [
@@ -194,14 +185,12 @@ class GenerateSignupTokenDialog extends StatelessWidget {
                                     height: 8,
                                   ),
                                   CustomDromDownMenu(
-                                    theme: theme,
                                     validator: (value) {
                                       if (allowDelete && !allowView) {
                                         return generateSignUpLinkSelectDeleteValidator;
                                       }
                                       return null;
                                     },
-                                    defaultBorderColor: theme.formBorderColor(),
                                     hintText:
                                         generateSignUpLinkSelectDeleteHint,
                                     items: [
@@ -239,14 +228,12 @@ class GenerateSignupTokenDialog extends StatelessWidget {
                                     height: 8,
                                   ),
                                   CustomDromDownMenu(
-                                    theme: theme,
                                     validator: (value) {
                                       if (allowBlock && !allowView) {
                                         return generateSignUpLinkSelectBlockValidator;
                                       }
                                       return null;
                                     },
-                                    defaultBorderColor: theme.formBorderColor(),
                                     hintText:
                                         generateSignUpLinkSelectBlockeHint,
                                     items: [
@@ -279,14 +266,12 @@ class GenerateSignupTokenDialog extends StatelessWidget {
                                     height: 8,
                                   ),
                                   CustomDromDownMenu(
-                                    theme: theme,
                                     validator: (value) {
                                       if (allowReset && !allowView) {
                                         return generateSignupLinkSelectResetValidator;
                                       }
                                       return null;
                                     },
-                                    defaultBorderColor: theme.formBorderColor(),
                                     hintText: generateSignUpLinkSelectResetHint,
                                     items: [
                                       DropdownMenuItem(
@@ -317,7 +302,7 @@ class GenerateSignupTokenDialog extends StatelessWidget {
                   width: 750,
                   height: 50,
                   decoration: BoxDecoration(
-                    color: theme.defaultBackgroundColor(),
+                    color: Theme.of(context).scaffoldBackgroundColor,
                     borderRadius: BorderRadius.circular(cardBorderRadius),
                   ),
                   child: Row(
@@ -331,7 +316,6 @@ class GenerateSignupTokenDialog extends StatelessWidget {
                                   ? copyTokenButtonNotGenerated
                                   : signupToken.url + signupToken.token,
                               style: TextStyle(
-                                color: theme.textColor(),
                                 fontSize: 16,
                               ),
                               maxLines: 1,
@@ -343,8 +327,8 @@ class GenerateSignupTokenDialog extends StatelessWidget {
                         height: 50,
                         child: IconButton(
                           color: signupToken == null
-                              ? theme.textColor()
-                              : theme.primaryColor(),
+                              ? Theme.of(context).textTheme.bodyText1.color
+                              : Theme.of(context).primaryColor,
                           hoverColor: Colors.transparent,
                           splashColor: Colors.transparent,
                           focusColor: Colors.transparent,
@@ -360,7 +344,7 @@ class GenerateSignupTokenDialog extends StatelessWidget {
                                             generateSignUpLinkCopyTokenSuccessTitle,
                                         body:
                                             generateSignUpLinkCopyTokenSuccessText,
-                                        theme: theme)
+                                        context: context)
                                     .getFlushbar()
                                     .show(context);
                               });
@@ -382,7 +366,7 @@ class GenerateSignupTokenDialog extends StatelessWidget {
               style: GoogleFonts.poppins(
                 fontSize: 14,
                 fontWeight: FontWeight.normal,
-                color: theme.dangerColor(),
+                color: Theme.of(context).errorColor,
               ),
             ),
             onPressed: () {
@@ -395,7 +379,7 @@ class GenerateSignupTokenDialog extends StatelessWidget {
               style: GoogleFonts.poppins(
                 fontSize: 14,
                 fontWeight: FontWeight.normal,
-                color: theme.primaryColor(),
+                color: Theme.of(context).primaryColor,
               ),
             ),
             onPressed: () {

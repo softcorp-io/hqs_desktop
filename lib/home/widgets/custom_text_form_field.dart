@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:hqs_desktop/theme/theme.dart';
 
 class CustomTextFormField extends StatefulWidget {
   final TextEditingController controller;
@@ -14,7 +13,6 @@ class CustomTextFormField extends StatefulWidget {
   final String labelText;
   final bool obscure;
   final FocusNode focusNode;
-  final HqsTheme theme;
 
   CustomTextFormField(
       {@required this.controller,
@@ -26,7 +24,6 @@ class CustomTextFormField extends StatefulWidget {
       @required this.maxLength,
       @required this.minLines,
       @required this.maxLines,
-      @required this.theme,
       this.onChange,
       this.icon,
       @required this.obscure}) {
@@ -37,25 +34,24 @@ class CustomTextFormField extends StatefulWidget {
     assert(minLines != null);
     assert(maxLength != null);
     assert(keyboardType != null);
-    assert(theme != null);
   }
 
   @override
   State<StatefulWidget> createState() {
     return _CustomTextFormFieldState(
-        controller: controller,
-        validator: validator,
-        onChange: onChange,
-        icon: icon,
-        hintText: hintText,
-        labelText: labelText,
-        obscure: obscure,
-        keyboardType: keyboardType,
-        maxLength: maxLength,
-        minLines: minLines,
-        maxLines: maxLines,
-        focusNode: focusNode,
-        theme: theme);
+      controller: controller,
+      validator: validator,
+      onChange: onChange,
+      icon: icon,
+      hintText: hintText,
+      labelText: labelText,
+      obscure: obscure,
+      keyboardType: keyboardType,
+      maxLength: maxLength,
+      minLines: minLines,
+      maxLines: maxLines,
+      focusNode: focusNode,
+    );
   }
 }
 
@@ -72,7 +68,6 @@ class _CustomTextFormFieldState extends State<CustomTextFormField> {
   final String labelText;
   final bool obscure;
   final FocusNode focusNode;
-  final HqsTheme theme;
 
   _CustomTextFormFieldState(
       {@required this.controller,
@@ -84,7 +79,6 @@ class _CustomTextFormFieldState extends State<CustomTextFormField> {
       @required this.maxLength,
       @required this.minLines,
       @required this.maxLines,
-      @required this.theme,
       this.onChange,
       this.icon,
       @required this.obscure}) {
@@ -95,7 +89,6 @@ class _CustomTextFormFieldState extends State<CustomTextFormField> {
     assert(minLines != null);
     assert(maxLength != null);
     assert(keyboardType != null);
-    assert(theme != null);
     focusNode.addListener(() {
       setState(() {});
     });
@@ -119,29 +112,15 @@ class _CustomTextFormFieldState extends State<CustomTextFormField> {
       maxLength: maxLength,
       maxLines: maxLines,
       minLines: minLines,
-      style: TextStyle(color: theme.textColor()),
       decoration: InputDecoration(
-        focusedBorder: OutlineInputBorder(
-          borderSide: BorderSide(color: theme.primaryColor(), width: 1.0),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderSide: BorderSide(color: theme.formBorderColor(), width: 1.0),
-        ),
-        labelStyle: TextStyle(color: theme.textColor()),
-        errorBorder: OutlineInputBorder(
-          borderSide: BorderSide(color: theme.dangerColor(), width: 1.0),
-        ),
-        focusedErrorBorder: OutlineInputBorder(
-          borderSide: BorderSide(color: theme.dangerColor(), width: 1.0),
-        ),
-        errorStyle: TextStyle(color: theme.dangerColor()),
         hintText: hintText,
         labelText: labelText,
         suffixIcon: Icon(
           icon,
-          color: focusNode.hasFocus ? theme.primaryColor() : theme.iconColor(),
+          color: focusNode.hasFocus
+              ? Theme.of(context).primaryColor
+              : Theme.of(context).iconTheme.color,
         ),
-        hintStyle: TextStyle(color: theme.hintColor()),
       ),
       validator: (value) {
         if (this.validator == null) {

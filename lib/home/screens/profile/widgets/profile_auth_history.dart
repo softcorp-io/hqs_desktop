@@ -8,17 +8,13 @@ import 'package:hqs_desktop/home/widgets/custom_flushbar_error.dart';
 import 'package:hqs_desktop/home/widgets/custom_flushbar_success.dart';
 import 'package:hqs_desktop/service/hqs_user_service.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:hqs_desktop/theme/theme.dart';
 
 class ProfileAuthHistory extends StatefulWidget {
   final HqsService service;
-  final HqsTheme theme;
-  ProfileAuthHistory({@required this.service, @required this.theme})
-      : assert(service != null),
-        assert(theme != null);
+  ProfileAuthHistory({@required this.service}) : assert(service != null);
+
   @override
   _ProfileAuthHistoryState createState() => _ProfileAuthHistoryState(
-        theme: theme,
         service: service,
       );
 }
@@ -26,16 +22,13 @@ class ProfileAuthHistory extends StatefulWidget {
 class _ProfileAuthHistoryState extends State<ProfileAuthHistory> {
   // constructor parameters
   final HqsService service;
-  final HqsTheme theme;
   Future<AuthHistory> authHistoryResponse;
   AuthHistory authHistory;
 
   _ProfileAuthHistoryState({
     @required this.service,
-    @required this.theme,
   }) {
     assert(service != null);
-    assert(theme != null);
     this.authHistoryResponse =
         service.getCurrentUserAuthHistory().then((value) {
       authHistory = value;
@@ -64,7 +57,7 @@ class _ProfileAuthHistoryState extends State<ProfileAuthHistory> {
                           alignment: Alignment.center));
                 case ConnectionState.done:
                   final authSource = AuthHistorySource(
-                    theme: theme,
+                    context: context,
                     onRowSelect: (index) => _blockTokenDetails(
                         context, authHistory.authHistory[index]),
                     authData: authHistory.authHistory,
@@ -81,14 +74,13 @@ class _ProfileAuthHistoryState extends State<ProfileAuthHistory> {
                                 onPressed: () {
                                   _blockAllTokensDetails(context);
                                 },
-                                color: theme.dangerColor(),
+                                color: Theme.of(context).errorColor,
                                 shape: RoundedRectangleBorder(
                                   borderRadius:
                                       BorderRadius.circular(cardBorderRadius),
                                 ),
                                 child:
                                     Text(usersTokenCardBlockAllTokensBtnText),
-                                textColor: theme.buttonTextColor(),
                               )),
                         ],
                         headingRowHeight: 80,
@@ -100,7 +92,6 @@ class _ProfileAuthHistoryState extends State<ProfileAuthHistory> {
                           style: GoogleFonts.poppins(
                             fontSize: 24,
                             fontWeight: FontWeight.w700,
-                            color: theme.titleColor(),
                           ),
                         ),
                         columns: _colGen(authSource),
@@ -125,7 +116,6 @@ class _ProfileAuthHistoryState extends State<ProfileAuthHistory> {
           label: Text(usersTokenCardLastUsedCol),
         ),
         DataColumn(
-
           label: Text(usersTokenCardStatusCol),
         ),
         DataColumn(
@@ -137,13 +127,11 @@ class _ProfileAuthHistoryState extends State<ProfileAuthHistory> {
       await showDialog<bool>(
         context: c,
         builder: (_) => AlertDialog(
-          backgroundColor: theme.cardDefaultColor(),
           title: Text(
             blockTokenCardTitle,
             style: GoogleFonts.poppins(
               fontSize: 18,
               fontWeight: FontWeight.w600,
-              color: theme.titleColor(),
             ),
           ),
           content: SingleChildScrollView(
@@ -154,7 +142,6 @@ class _ProfileAuthHistoryState extends State<ProfileAuthHistory> {
                   style: GoogleFonts.poppins(
                     fontSize: 14,
                     fontWeight: FontWeight.normal,
-                    color: theme.textColor(),
                   ),
                 ),
                 Text(
@@ -162,7 +149,6 @@ class _ProfileAuthHistoryState extends State<ProfileAuthHistory> {
                   style: GoogleFonts.poppins(
                     fontSize: 14,
                     fontWeight: FontWeight.normal,
-                    color: theme.textColor(),
                   ),
                 ),
                 Text(
@@ -170,7 +156,6 @@ class _ProfileAuthHistoryState extends State<ProfileAuthHistory> {
                   style: GoogleFonts.poppins(
                     fontSize: 14,
                     fontWeight: FontWeight.normal,
-                    color: theme.textColor(),
                   ),
                 ),
               ],
@@ -181,9 +166,10 @@ class _ProfileAuthHistoryState extends State<ProfileAuthHistory> {
               child: Text(
                 blockTokenCardCancelBtnText,
                 style: GoogleFonts.poppins(
-                    fontSize: 14,
-                    fontWeight: FontWeight.normal,
-                    color: theme.dangerColor()),
+                  fontSize: 14,
+                  fontWeight: FontWeight.normal,
+                  color: Theme.of(context).errorColor,
+                ),
               ),
               onPressed: () {
                 Navigator.of(context, rootNavigator: true).pop();
@@ -195,7 +181,7 @@ class _ProfileAuthHistoryState extends State<ProfileAuthHistory> {
                 style: GoogleFonts.poppins(
                   fontSize: 14,
                   fontWeight: FontWeight.normal,
-                  color: theme.primaryColor(),
+                  color: Theme.of(context).primaryColor,
                 ),
               ),
               onPressed: () {
@@ -205,14 +191,14 @@ class _ProfileAuthHistoryState extends State<ProfileAuthHistory> {
                     CustomFlushbarError(
                             title: blockTokenCardExceptionTitle,
                             body: blockTokenCardExceptionText,
-                            theme: theme)
+                            context: context)
                         .getFlushbar()
                         .show(context);
                   }).then((token) {
                     CustomFlushbarSuccess(
                             title: blockTokenCardSuccessTitle,
                             body: blockTokenCardSuccessText,
-                            theme: theme)
+                            context: context)
                         .getFlushbar()
                         .show(context);
 
@@ -235,7 +221,6 @@ class _ProfileAuthHistoryState extends State<ProfileAuthHistory> {
             style: GoogleFonts.poppins(
               fontSize: 18,
               fontWeight: FontWeight.w600,
-              color: theme.titleColor(),
             ),
           ),
           content: SingleChildScrollView(
@@ -246,7 +231,6 @@ class _ProfileAuthHistoryState extends State<ProfileAuthHistory> {
                   style: GoogleFonts.poppins(
                     fontSize: 14,
                     fontWeight: FontWeight.normal,
-                    color: theme.textColor(),
                   ),
                 ),
                 Text(
@@ -254,7 +238,6 @@ class _ProfileAuthHistoryState extends State<ProfileAuthHistory> {
                   style: GoogleFonts.poppins(
                     fontSize: 14,
                     fontWeight: FontWeight.normal,
-                    color: theme.textColor(),
                   ),
                 ),
                 Text(
@@ -262,7 +245,6 @@ class _ProfileAuthHistoryState extends State<ProfileAuthHistory> {
                   style: GoogleFonts.poppins(
                     fontSize: 14,
                     fontWeight: FontWeight.normal,
-                    color: theme.textColor(),
                   ),
                 ),
                 Text(
@@ -270,7 +252,6 @@ class _ProfileAuthHistoryState extends State<ProfileAuthHistory> {
                   style: GoogleFonts.poppins(
                     fontSize: 14,
                     fontWeight: FontWeight.normal,
-                    color: theme.textColor(),
                   ),
                 ),
               ],
@@ -283,7 +264,7 @@ class _ProfileAuthHistoryState extends State<ProfileAuthHistory> {
                 style: GoogleFonts.poppins(
                   fontSize: 14,
                   fontWeight: FontWeight.normal,
-                  color: theme.dangerColor(),
+                  color: Theme.of(context).errorColor,
                 ),
               ),
               onPressed: () {
@@ -294,9 +275,9 @@ class _ProfileAuthHistoryState extends State<ProfileAuthHistory> {
               child: Text(
                 "Block All",
                 style: GoogleFonts.poppins(
-                    fontSize: 14,
-                    fontWeight: FontWeight.normal,
-                    color: theme.primaryColor()),
+                  fontSize: 14,
+                  fontWeight: FontWeight.normal,
+                ),
               ),
               onPressed: () {
                 Navigator.of(context, rootNavigator: true).pop();
@@ -306,7 +287,7 @@ class _ProfileAuthHistoryState extends State<ProfileAuthHistory> {
                             title: "Something went wrong",
                             body:
                                 "We could not block all tokens. Please make sure that you have a valid wifi connection.",
-                            theme: theme)
+                            context: context)
                         .getFlushbar()
                         .show(context);
                   }).then((token) {
@@ -314,7 +295,7 @@ class _ProfileAuthHistoryState extends State<ProfileAuthHistory> {
                             title: "All tokens successfully blocked",
                             body:
                                 "All your tokes were successfully blocked. You will be logged out since you don't have a valid token anymore.",
-                            theme: theme)
+                            context: context)
                         .getFlushbar()
                           ..show(Navigator.of(context, rootNavigator: true)
                               .context);

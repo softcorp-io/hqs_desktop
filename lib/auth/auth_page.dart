@@ -2,35 +2,28 @@ import 'package:flutter/material.dart';
 import 'package:hqs_desktop/auth/constants/text.dart';
 import 'package:hqs_desktop/service/hqs_user_service.dart';
 import 'package:hqs_desktop/auth/widgets/login.dart';
-import 'package:hqs_desktop/constants/constants.dart';
 import 'package:hqs_desktop/auth/widgets/header.dart';
 import 'package:hqs_desktop/auth/widgets/footer.dart';
-import 'package:hqs_desktop/theme/theme.dart';
+import 'package:hqs_desktop/theme/constants.dart';
 
 class AuthPage extends StatefulWidget {
   final HqsService service;
   final Function onLogIn;
-  final HqsTheme theme;
-  AuthPage(
-      {@required this.service, @required this.onLogIn, @required this.theme})
+  AuthPage({@required this.service, @required this.onLogIn})
       : assert(service != null),
-        assert(theme != null),
         assert(onLogIn != null);
 
   @override
   _AuthPageState createState() =>
-      _AuthPageState(service: service, onLogIn: onLogIn, theme: theme);
+      _AuthPageState(service: service, onLogIn: onLogIn);
 }
 
 class _AuthPageState extends State<AuthPage> {
   final HqsService service;
   final Function onLogIn;
-  final HqsTheme theme;
 
-  _AuthPageState(
-      {@required this.service, @required this.onLogIn, @required this.theme})
+  _AuthPageState({@required this.service, @required this.onLogIn})
       : assert(service != null),
-        assert(theme != null),
         assert(onLogIn != null);
 
   @override
@@ -40,6 +33,7 @@ class _AuthPageState extends State<AuthPage> {
       body: Container(
         width: size.width,
         height: size.height,
+        color: loginDarkColor,
         child: Stack(
           children: [
             // defines the background color of the login screen
@@ -48,15 +42,14 @@ class _AuthPageState extends State<AuthPage> {
                 Container(
                   height: double.infinity,
                   width: size.width,
-                  color: theme.loginBackgroundColor(),
                 ),
               ],
             ),
             // Design wavy header
-            LoginWavyHeader(theme: theme),
+            LoginWavyHeader(),
             Align(
               alignment: Alignment.bottomCenter,
-              child: WavyFooter(theme: theme,),
+              child: WavyFooter(),
             ),
             // Welcome to the platform
             Align(
@@ -71,15 +64,15 @@ class _AuthPageState extends State<AuthPage> {
                           Text(
                             welcomePlatformTitle,
                             style: TextStyle(
-                              color: theme.welcomeLoginColor(),
                               fontSize: 28,
+                              color: Colors.white,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
                           Text(
                             welcomePlatformSubTitle,
                             style: TextStyle(
-                              color: theme.welcomeLoginColor(),
+                              color: Colors.white,
                               fontSize: 14,
                             ),
                           ),
@@ -122,7 +115,6 @@ class _AuthPageState extends State<AuthPage> {
             LogIn(
               service: service,
               onLogIn: onLogIn,
-              theme: theme,
             )
           ],
         ),

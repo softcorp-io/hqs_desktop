@@ -1,29 +1,27 @@
 import 'package:another_flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
-import 'package:hqs_desktop/theme/theme.dart';
 
 enum FlushSize { Small, Medium, Large }
 
 class CustomFlushbarError {
   final String title;
   final String body;
-  final HqsTheme theme;
+  final BuildContext context;
 
   CustomFlushbarError(
-      {@required this.title, @required this.body, @required this.theme})
-      : assert(theme != null),
-        assert(title != null),
+      {@required this.title, @required this.body, @required this.context})
+      : assert(title != null),
+        assert(context != null),
         assert(body != null);
 
   Flushbar getFlushbar() {
     return Flushbar(
         maxWidth: 800,
         title: title,
-        backgroundColor: theme.flushBackgroundColor(),
         icon: Icon(
-          Icons.info_outline,
+          Icons.error_outline,
           size: 28.0,
-          color: theme.dangerColor(),
+          color: Theme.of(context).errorColor,
         ),
         flushbarPosition: FlushbarPosition.TOP,
         message: body,

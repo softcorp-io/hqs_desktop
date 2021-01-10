@@ -44,7 +44,6 @@ class HqsService {
       print("could not connect");
       throw e;
     }
-    print("success!");
     return;
   }
 

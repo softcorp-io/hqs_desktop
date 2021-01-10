@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:hqs_desktop/constants/constants.dart';
-import 'package:hqs_desktop/theme/theme.dart';
+import 'package:hqs_desktop/theme/constants.dart';
 
 class WavyFooter extends StatelessWidget {
-  final HqsTheme theme;
-  WavyFooter({@required this.theme}) : assert(theme != null);
   @override
   Widget build(BuildContext context) {
     return ClipPath(
@@ -12,7 +9,7 @@ class WavyFooter extends StatelessWidget {
       child: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
-              colors: theme.defaultGradientColor(),
+              colors: defaultGradientColor,
               begin: Alignment.center,
               end: Alignment.bottomRight),
         ),

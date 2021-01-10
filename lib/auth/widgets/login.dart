@@ -5,33 +5,26 @@ import 'package:hqs_desktop/constants/constants.dart';
 import 'package:hqs_desktop/home/widgets/custom_flushbar_error.dart';
 import 'package:hqs_desktop/home/widgets/custom_text_form_field.dart';
 import 'package:hqs_desktop/service/hqs_user_service.dart';
-import 'package:another_flushbar/flushbar.dart';
-import 'package:hqs_desktop/theme/theme.dart';
+import 'package:hqs_desktop/theme/constants.dart';
 
 class LogIn extends StatefulWidget {
   final HqsService service;
   final Function onLogIn;
-  final HqsTheme theme;
 
-  LogIn({@required this.service, @required this.onLogIn, @required this.theme})
+  LogIn({@required this.service, @required this.onLogIn})
       : assert(HqsService != null),
-        assert(theme != null),
         assert(onLogIn != null);
 
   @override
-  _LogInState createState() =>
-      _LogInState(service: service, onLogIn: onLogIn, theme: theme);
+  _LogInState createState() => _LogInState(service: service, onLogIn: onLogIn);
 }
 
 class _LogInState extends State<LogIn> {
   final HqsService service;
   final Function onLogIn;
-  final HqsTheme theme;
 
-  _LogInState(
-      {@required this.service, @required this.onLogIn, @required this.theme})
+  _LogInState({@required this.service, @required this.onLogIn})
       : assert(HqsService != null),
-        assert(theme != null),
         assert(onLogIn != null);
 
   final _emailController = TextEditingController();
@@ -52,7 +45,6 @@ class _LogInState extends State<LogIn> {
                   : 16),
           child: Center(
             child: Card(
-              color: Colors.transparent,
               elevation: 4,
               clipBehavior: Clip.antiAlias,
               shape: RoundedRectangleBorder(
@@ -63,7 +55,6 @@ class _LogInState extends State<LogIn> {
               child: Container(
                 height: size.height * 0.7,
                 width: 600,
-                color: theme.cardDefaultColor(),
                 child: Center(
                   child: SingleChildScrollView(
                     child: Padding(
@@ -76,7 +67,6 @@ class _LogInState extends State<LogIn> {
                             style: GoogleFonts.poppins(
                               fontSize: 24,
                               fontWeight: FontWeight.w500,
-                              color: theme.titleColor(),
                             ),
                           ),
                           SizedBox(
@@ -85,7 +75,7 @@ class _LogInState extends State<LogIn> {
                           Container(
                             width: 30,
                             child: Divider(
-                              color: theme.primaryColor(),
+                              color: Theme.of(context).primaryColor,
                               thickness: 2,
                             ),
                           ),
@@ -98,10 +88,10 @@ class _LogInState extends State<LogIn> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: <Widget>[
                                 CustomTextFormField(
-                                  maxLength: 50,
-                                  minLines: 1,
-                                  maxLines: 1,
-                                  keyboardType: TextInputType.emailAddress,
+                                    maxLength: 50,
+                                    minLines: 1,
+                                    maxLines: 1,
+                                    keyboardType: TextInputType.emailAddress,
                                     controller: _emailController,
                                     focusNode: FocusNode(),
                                     validator: (value) {
@@ -115,17 +105,16 @@ class _LogInState extends State<LogIn> {
                                     },
                                     hintText: emailHintText,
                                     labelText: emailLabelText,
-                                    theme: theme,
                                     icon: Icons.person,
                                     obscure: false),
                                 Padding(
                                   padding: EdgeInsets.all(10),
                                 ),
                                 CustomTextFormField(
-                                  maxLength: 50,
-                                  minLines: 1,
-                                  maxLines: 1,
-                                  keyboardType: TextInputType.text,
+                                    maxLength: 50,
+                                    minLines: 1,
+                                    maxLines: 1,
+                                    keyboardType: TextInputType.text,
                                     controller: _passwordController,
                                     icon: Icons.lock_outline,
                                     focusNode: FocusNode(),
@@ -137,7 +126,6 @@ class _LogInState extends State<LogIn> {
                                     },
                                     hintText: passwordHintText,
                                     labelText: passwordLabelText,
-                                    theme: theme,
                                     obscure: true),
                                 Padding(
                                   padding: EdgeInsets.all(60),
@@ -146,7 +134,6 @@ class _LogInState extends State<LogIn> {
                                     child: RaisedButton(
                                   shape: StadiumBorder(),
                                   padding: EdgeInsets.all(0.0),
-                                  textColor: theme.buttonTextColor(),
                                   onPressed: () async => {
                                     if (_formKey.currentState.validate())
                                       {
@@ -161,7 +148,7 @@ class _LogInState extends State<LogIn> {
                                                       authExceptionResponseTitle,
                                                   body:
                                                       authExceptionResponseText,
-                                                  theme: theme)
+                                                  context: context)
                                               .getFlushbar()
                                                 ..show(context);
                                           _emailController.text = "";
@@ -189,13 +176,17 @@ class _LogInState extends State<LogIn> {
                                       borderRadius: BorderRadius.circular(
                                           buttonBorderRadius),
                                       gradient: LinearGradient(
-                                          colors: theme.defaultGradientColor()),
+                                        colors: defaultGradientColor,
+                                      ),
                                     ),
                                     child: Align(
                                       alignment: Alignment.center,
                                       child: Text(
                                         submitButtonText,
-                                        style: TextStyle(fontSize: 15.0),
+                                        style: TextStyle(
+                                          fontSize: 15.0,
+                                          color: Colors.white,
+                                        ),
                                       ),
                                     ),
                                     padding: EdgeInsets.symmetric(

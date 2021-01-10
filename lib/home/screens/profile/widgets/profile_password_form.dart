@@ -7,19 +7,15 @@ import 'package:hqs_desktop/home/widgets/custom_flushbar_success.dart';
 import 'package:hqs_desktop/service/hqs_user_service.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hqs_desktop/home/widgets/custom_text_form_field.dart';
-import 'package:hqs_desktop/theme/theme.dart';
 
 class ProfilePasswordForm extends StatefulWidget {
   final HqsService service;
-  final HqsTheme theme;
   ProfilePasswordForm({
     @required this.service,
-    @required this.theme,
-  })  : assert(service != null),
-        assert(theme != null);
+  }) : assert(service != null);
   @override
   _ProfilePasswordFormState createState() =>
-      _ProfilePasswordFormState(service: service, theme: theme);
+      _ProfilePasswordFormState(service: service);
 }
 
 class _ProfilePasswordFormState extends State<ProfilePasswordForm> {
@@ -31,16 +27,14 @@ class _ProfilePasswordFormState extends State<ProfilePasswordForm> {
 
   // constructor parameters
   final HqsService service;
-  final HqsTheme theme;
 
   bool passwordLongerThanSix = false;
   bool passwordContainsUpper = false;
   bool passwordContainsLower = false;
   bool passwordContainsNumber = false;
 
-  _ProfilePasswordFormState({@required this.service, @required this.theme}) {
+  _ProfilePasswordFormState({@required this.service}) {
     assert(service != null);
-    assert(theme != null);
   }
 
   @override
@@ -66,7 +60,6 @@ class _ProfilePasswordFormState extends State<ProfilePasswordForm> {
                     Radius.circular(cardBorderRadius),
                   ),
                 ),
-                color: theme.cardDefaultColor(),
                 child: Padding(
                   padding: EdgeInsets.all(16),
                   child: Column(
@@ -75,9 +68,9 @@ class _ProfilePasswordFormState extends State<ProfilePasswordForm> {
                         Text(
                           passwordRuleTitle,
                           style: GoogleFonts.poppins(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w700,
-                              color: theme.titleColor()),
+                            fontSize: 14,
+                            fontWeight: FontWeight.w700,
+                          ),
                         ),
                         SizedBox(height: 18),
                         Text(
@@ -88,7 +81,6 @@ class _ProfilePasswordFormState extends State<ProfilePasswordForm> {
                           style: GoogleFonts.poppins(
                             fontSize: 16,
                             fontWeight: FontWeight.w400,
-                            color: theme.textColor(),
                           ),
                         ),
                         SizedBox(height: 18),
@@ -100,7 +92,6 @@ class _ProfilePasswordFormState extends State<ProfilePasswordForm> {
                           style: GoogleFonts.poppins(
                             fontSize: 16,
                             fontWeight: FontWeight.w400,
-                            color: theme.textColor(),
                           ),
                         ),
                         SizedBox(height: 18),
@@ -112,7 +103,6 @@ class _ProfilePasswordFormState extends State<ProfilePasswordForm> {
                           style: GoogleFonts.poppins(
                             fontSize: 16,
                             fontWeight: FontWeight.w400,
-                            color: theme.textColor(),
                           ),
                         ),
                         SizedBox(height: 18),
@@ -124,7 +114,6 @@ class _ProfilePasswordFormState extends State<ProfilePasswordForm> {
                           style: GoogleFonts.poppins(
                             fontSize: 16,
                             fontWeight: FontWeight.w400,
-                            color: theme.textColor(),
                           ),
                         ),
                       ]),
@@ -133,7 +122,6 @@ class _ProfilePasswordFormState extends State<ProfilePasswordForm> {
         Container(
             width: screenSplitSize,
             child: Card(
-              color: theme.cardDefaultColor(),
               elevation: 4,
               clipBehavior: Clip.antiAlias,
               shape: RoundedRectangleBorder(
@@ -150,7 +138,6 @@ class _ProfilePasswordFormState extends State<ProfilePasswordForm> {
                       style: GoogleFonts.poppins(
                         fontSize: 24,
                         fontWeight: FontWeight.w700,
-                        color: theme.titleColor(),
                       ),
                     ),
                     alignment: Alignment.topLeft,
@@ -170,7 +157,6 @@ class _ProfilePasswordFormState extends State<ProfilePasswordForm> {
                               maxLines: 1,
                               keyboardType: TextInputType.text,
                               focusNode: FocusNode(),
-                              theme: theme,
                               controller: _oldPasswordController,
                               hintText: passwordFormOldPasswordHint,
                               labelText: passwordFormOldPasswordText,
@@ -190,7 +176,6 @@ class _ProfilePasswordFormState extends State<ProfilePasswordForm> {
                             maxLines: 1,
                             keyboardType: TextInputType.text,
                             focusNode: FocusNode(),
-                            theme: theme,
                             controller: _newPasswordController,
                             onChange: (value) {
                               setState(() {
@@ -224,7 +209,6 @@ class _ProfilePasswordFormState extends State<ProfilePasswordForm> {
                             maxLines: 1,
                             keyboardType: TextInputType.text,
                             focusNode: FocusNode(),
-                            theme: theme,
                             controller: _repeatedPasswordController,
                             hintText: passwordFormRepeatPasswordHint,
                             labelText: passwordFormRepeatPasswordText,
@@ -247,13 +231,12 @@ class _ProfilePasswordFormState extends State<ProfilePasswordForm> {
                           width: 200,
                           height: 50.0,
                           child: RaisedButton(
-                            color: theme.primaryColor(),
+                            color: Theme.of(context).primaryColor,
                             shape: RoundedRectangleBorder(
                               borderRadius:
                                   BorderRadius.circular(cardBorderRadius),
                             ),
                             child: Text(passwordFormUpdateBtnText),
-                            textColor: theme.buttonTextColor(),
                             onPressed: () async => {
                               if (_formKey.currentState.validate())
                                 {
@@ -275,7 +258,7 @@ class _ProfilePasswordFormState extends State<ProfilePasswordForm> {
                                     CustomFlushbarError(
                                             title: passwordFormExceptionTitle,
                                             body: passwordFormExceptionText,
-                                            theme: theme)
+                                            context: context)
                                         .getFlushbar()
                                         .show(context);
                                   }).then((value) {
@@ -292,7 +275,7 @@ class _ProfilePasswordFormState extends State<ProfilePasswordForm> {
                                       CustomFlushbarSuccess(
                                               title: passwordFormSuccessTitle,
                                               body: passwordFormSuccessText,
-                                              theme: theme)
+                                              context: context)
                                           .getFlushbar()
                                           .show(context);
                                     }

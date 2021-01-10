@@ -1,17 +1,22 @@
-import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:hqs_desktop/constants/constants.dart';
 import 'package:hqs_desktop/home/screens/admin_users/constants/text.dart';
 import 'package:hqs_desktop/home/widgets/custom_dropdown_form_field.dart';
+import 'package:hqs_desktop/home/widgets/custom_flushbar_error.dart';
+import 'package:hqs_desktop/home/widgets/custom_flushbar_success.dart';
 import 'package:hqs_desktop/home/widgets/custom_text_form_field.dart';
-import 'package:hqs_desktop/service/hqs_service.dart';
+import 'package:hqs_desktop/service/hqs_user_service.dart';
+import 'package:hqs_desktop/theme/theme.dart';
 
 class CreateUserDialog extends StatelessWidget {
   final HqsService service;
   final Function onUpdate;
-  CreateUserDialog({@required this.service, @required this.onUpdate})
+  final HqsTheme theme;
+
+  CreateUserDialog(
+      {@required this.service, @required this.onUpdate, @required this.theme})
       : assert(service != null),
+        assert(theme != null),
         assert(onUpdate != null);
 
   @override
@@ -21,6 +26,7 @@ class CreateUserDialog extends StatelessWidget {
     bool allowDelete = false;
     bool allowPermission = false;
     bool allowBlock = false;
+    bool allowReset = false;
     bool gender = true;
     final _nameController = TextEditingController();
     final _emailController = TextEditingController();
@@ -29,12 +35,13 @@ class CreateUserDialog extends StatelessWidget {
     return StatefulBuilder(
         builder: (BuildContext context, StateSetter setState) {
       return AlertDialog(
+          backgroundColor: theme.cardDefaultColor(),
           title: Text(
             creatUserDialogTitle,
             style: GoogleFonts.poppins(
               fontSize: 22,
               fontWeight: FontWeight.w600,
-              color: Colors.grey[900],
+              color: theme.titleColor(),
             ),
           ),
           content: Container(
@@ -49,7 +56,7 @@ class CreateUserDialog extends StatelessWidget {
                   style: GoogleFonts.poppins(
                     fontSize: 12,
                     fontWeight: FontWeight.w500,
-                    color: Colors.grey[600],
+                    color: theme.textColor(),
                   ),
                 ),
                 SizedBox(height: 32),
@@ -64,14 +71,13 @@ class CreateUserDialog extends StatelessWidget {
                           children: [
                             Flexible(
                               child: CustomTextFormField(
-                                defaultBorderColor: Colors.grey[300],
+                                theme: theme,
                                 controller: _nameController,
                                 hintText: createUserNameHint,
                                 labelText: createUserNameText,
                                 obscure: false,
-                                icon: Icon(
-                                  Icons.person,
-                                ),
+                                icon: Icons.person,
+                                focusNode: FocusNode(),
                                 validator: (value) {
                                   if (value.isEmpty) {
                                     return createUserNameValidator;
@@ -83,14 +89,13 @@ class CreateUserDialog extends StatelessWidget {
                             SizedBox(width: 16),
                             Flexible(
                               child: CustomTextFormField(
-                                defaultBorderColor: Colors.grey[300],
+                                theme: theme,
                                 controller: _emailController,
                                 hintText: createUserEmailHint,
                                 labelText: createUserEmailText,
                                 obscure: false,
-                                icon: Icon(
-                                  Icons.mail_outline_rounded,
-                                ),
+                                icon: Icons.mail_outline_rounded,
+                                focusNode: FocusNode(),
                                 validator: (value) {
                                   var validEmail = RegExp(
                                           r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
@@ -112,12 +117,13 @@ class CreateUserDialog extends StatelessWidget {
                               child: Padding(
                                 padding: EdgeInsets.only(top: 28),
                                 child: CustomTextFormField(
-                                  defaultBorderColor: Colors.grey[300],
+                                  theme: theme,
                                   controller: _passwordController,
                                   hintText: createUserPasswordHint,
                                   labelText: createUserPasswordText,
                                   obscure: true,
-                                  icon: Icon(Icons.lock),
+                                  icon: Icons.lock,
+                                  focusNode: FocusNode(),
                                   validator: (value) {
                                     if (value.length < 6) {
                                       return createUserPasswordlValidator;
@@ -138,10 +144,12 @@ class CreateUserDialog extends StatelessWidget {
                                       height: 8,
                                     ),
                                     CustomDromDownMenu(
+                                      theme: theme,
                                       validator: (value) {
                                         return null;
                                       },
-                                      defaultBorderColor: Colors.grey[200],
+                                      defaultBorderColor:
+                                          theme.formBorderColor(),
                                       hintText: createUserSelectViewHint,
                                       items: [
                                         DropdownMenuItem(
@@ -178,6 +186,7 @@ class CreateUserDialog extends StatelessWidget {
                                       height: 8,
                                     ),
                                     CustomDromDownMenu(
+                                      theme: theme,
                                       validator: (value) {
                                         if (allowCreate &&
                                             !(allowView && allowPermission)) {
@@ -185,7 +194,8 @@ class CreateUserDialog extends StatelessWidget {
                                         }
                                         return null;
                                       },
-                                      defaultBorderColor: Colors.grey[200],
+                                      defaultBorderColor:
+                                          theme.formBorderColor(),
                                       hintText: createUserSelectCreateHint,
                                       items: [
                                         DropdownMenuItem(
@@ -217,13 +227,15 @@ class CreateUserDialog extends StatelessWidget {
                                       height: 8,
                                     ),
                                     CustomDromDownMenu(
+                                      theme: theme,
                                       validator: (value) {
                                         if (allowPermission && !allowView) {
                                           return createUserSelectPermissionValidator;
                                         }
                                         return null;
                                       },
-                                      defaultBorderColor: Colors.grey[200],
+                                      defaultBorderColor:
+                                          theme.formBorderColor(),
                                       hintText: createUserSelectPermissionHint,
                                       items: [
                                         DropdownMenuItem(
@@ -260,13 +272,15 @@ class CreateUserDialog extends StatelessWidget {
                                       height: 8,
                                     ),
                                     CustomDromDownMenu(
+                                      theme: theme,
                                       validator: (value) {
                                         if (allowDelete && !allowView) {
                                           return createUserSelectDeleteValidator;
                                         }
                                         return null;
                                       },
-                                      defaultBorderColor: Colors.grey[200],
+                                      defaultBorderColor:
+                                          theme.formBorderColor(),
                                       hintText: createUserSelectDeleteHint,
                                       items: [
                                         DropdownMenuItem(
@@ -298,13 +312,15 @@ class CreateUserDialog extends StatelessWidget {
                                       height: 8,
                                     ),
                                     CustomDromDownMenu(
+                                      theme: theme,
                                       validator: (value) {
                                         if (allowBlock && !allowView) {
                                           return createUserSelectBlockValidator;
                                         }
                                         return null;
                                       },
-                                      defaultBorderColor: Colors.grey[200],
+                                      defaultBorderColor:
+                                          theme.formBorderColor(),
                                       hintText: createUserSelectBlockHint,
                                       items: [
                                         DropdownMenuItem(
@@ -327,40 +343,87 @@ class CreateUserDialog extends StatelessWidget {
                             ),
                           ]),
                       SizedBox(height: 28),
-                      Flexible(
-                        child: Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(createUserSelectGenderTitle),
-                              SizedBox(
-                                height: 8,
-                              ),
-                              CustomDromDownMenu(
-                                validator: (value) {
-                                  return null;
-                                },
-                                defaultBorderColor: Colors.grey[200],
-                                hintText: createUserSelectGenderHint,
-                                items: [
-                                  DropdownMenuItem(
-                                    child: Text('female'),
-                                    value: true,
-                                  ),
-                                  DropdownMenuItem(
-                                    child: Text('male'),
-                                    value: false,
-                                  ),
-                                ],
-                                value: gender,
-                                onChanged: (value) {
-                                  setState(() {
-                                    gender = value;
-                                  });
-                                },
-                              ),
-                            ]),
-                      ),
+                      Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Flexible(
+                              child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(createUserSelectResetTitle),
+                                    SizedBox(
+                                      height: 8,
+                                    ),
+                                    CustomDromDownMenu(
+                                      theme: theme,
+                                      validator: (value) {
+                                        if (allowReset && !allowView) {
+                                          return createUserSelectResetValidator;
+                                        }
+                                        return null;
+                                      },
+                                      defaultBorderColor:
+                                          theme.formBorderColor(),
+                                      hintText: createUserSelectResetHint,
+                                      items: [
+                                        DropdownMenuItem(
+                                          child: Text('true'),
+                                          value: true,
+                                        ),
+                                        DropdownMenuItem(
+                                          child: Text('false'),
+                                          value: false,
+                                        ),
+                                      ],
+                                      value: allowReset,
+                                      onChanged: (value) {
+                                        setState(() {
+                                          allowReset = value;
+                                        });
+                                      },
+                                    ),
+                                  ]),
+                            ),
+                            SizedBox(width: 18),
+                            Flexible(
+                              child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(createUserSelectGenderTitle),
+                                    SizedBox(
+                                      height: 8,
+                                    ),
+                                    CustomDromDownMenu(
+                                      theme: theme,
+                                      validator: (value) {
+                                        return null;
+                                      },
+                                      defaultBorderColor:
+                                          theme.formBorderColor(),
+                                      hintText: createUserSelectGenderHint,
+                                      items: [
+                                        DropdownMenuItem(
+                                          child: Text('female'),
+                                          value: true,
+                                        ),
+                                        DropdownMenuItem(
+                                          child: Text('male'),
+                                          value: false,
+                                        ),
+                                      ],
+                                      value: gender,
+                                      onChanged: (value) {
+                                        setState(() {
+                                          gender = value;
+                                        });
+                                      },
+                                    ),
+                                  ]),
+                            ),
+                          ]),
                     ],
                   ),
                 ),
@@ -374,7 +437,7 @@ class CreateUserDialog extends StatelessWidget {
                 style: GoogleFonts.poppins(
                   fontSize: 14,
                   fontWeight: FontWeight.normal,
-                  color: Colors.red,
+                  color: theme.dangerColor(),
                 ),
               ),
               onPressed: () {
@@ -387,7 +450,7 @@ class CreateUserDialog extends StatelessWidget {
                 style: GoogleFonts.poppins(
                   fontSize: 14,
                   fontWeight: FontWeight.normal,
-                  color: kPrimaryColor,
+                  color: theme.primaryColor(),
                 ),
               ),
               onPressed: () {
@@ -402,43 +465,27 @@ class CreateUserDialog extends StatelessWidget {
                           allowPermission,
                           allowDelete,
                           allowBlock,
+                          allowReset,
                           gender)
                       .catchError((error) {
-                    Flushbar(
-                      title: createUserDialogExceptionTitle,
-                      maxWidth: 800,
-                      icon: Icon(
-                        Icons.error_outline,
-                        size: 28.0,
-                        color: Colors.red[600],
-                      ),
-                      flushbarPosition: FlushbarPosition.TOP,
-                      message:
-                          createUserDialogExceptionText,
-                      margin: EdgeInsets.all(8),
-                      borderRadius: 8,
-                      duration: Duration(seconds: 5),
-                    )..show(context);
+                    CustomFlushbarError(
+                            title: createUserDialogExceptionTitle,
+                            body: createUserDialogExceptionText,
+                            theme: theme)
+                        .getFlushbar()
+                        .show(context);
                   }).then((response) {
                     service.getAllUsers().then((value) {
                       setState(() {});
                     });
                     onUpdate();
                     Navigator.of(context, rootNavigator: true).pop();
-                    Flushbar(
-                      title: createUserDialogSuccessTitle,
-                      maxWidth: 800,
-                      icon: Icon(
-                        Icons.check_circle,
-                        size: 28.0,
-                        color: Colors.green,
-                      ),
-                      flushbarPosition: FlushbarPosition.TOP,
-                      message: createUserDialogSuccessText,
-                      margin: EdgeInsets.all(8),
-                      borderRadius: 8,
-                      duration: Duration(seconds: 5),
-                    )..show(context);
+                    CustomFlushbarSuccess(
+                            title: createUserDialogSuccessTitle,
+                            body: createUserDialogSuccessText,
+                            theme: theme)
+                        .getFlushbar()
+                        .show(context);
                   });
                 }
               },

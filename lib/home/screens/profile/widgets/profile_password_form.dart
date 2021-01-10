@@ -2,20 +2,24 @@ import 'package:flutter/material.dart';
 import 'package:hqs_desktop/constants/constants.dart';
 import 'package:hqs_desktop/home/screens/profile/constants/constants.dart';
 import 'package:hqs_desktop/home/screens/profile/constants/text.dart';
-import 'package:hqs_desktop/service/hqs_service.dart';
+import 'package:hqs_desktop/home/widgets/custom_flushbar_error.dart';
+import 'package:hqs_desktop/home/widgets/custom_flushbar_success.dart';
+import 'package:hqs_desktop/service/hqs_user_service.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hqs_desktop/home/widgets/custom_text_form_field.dart';
-import 'package:flushbar/flushbar.dart';
+import 'package:hqs_desktop/theme/theme.dart';
 
 class ProfilePasswordForm extends StatefulWidget {
   final HqsService service;
-
+  final HqsTheme theme;
   ProfilePasswordForm({
     @required this.service,
-  }) : assert(service != null);
+    @required this.theme,
+  })  : assert(service != null),
+        assert(theme != null);
   @override
   _ProfilePasswordFormState createState() =>
-      _ProfilePasswordFormState(service: service);
+      _ProfilePasswordFormState(service: service, theme: theme);
 }
 
 class _ProfilePasswordFormState extends State<ProfilePasswordForm> {
@@ -27,14 +31,16 @@ class _ProfilePasswordFormState extends State<ProfilePasswordForm> {
 
   // constructor parameters
   final HqsService service;
+  final HqsTheme theme;
 
   bool passwordLongerThanSix = false;
   bool passwordContainsUpper = false;
   bool passwordContainsLower = false;
   bool passwordContainsNumber = false;
 
-  _ProfilePasswordFormState({@required this.service}) {
+  _ProfilePasswordFormState({@required this.service, @required this.theme}) {
     assert(service != null);
+    assert(theme != null);
   }
 
   @override
@@ -60,7 +66,7 @@ class _ProfilePasswordFormState extends State<ProfilePasswordForm> {
                     Radius.circular(cardBorderRadius),
                   ),
                 ),
-                color: kDarkBlue,
+                color: theme.cardDefaultColor(),
                 child: Padding(
                   padding: EdgeInsets.all(16),
                   child: Column(
@@ -69,49 +75,56 @@ class _ProfilePasswordFormState extends State<ProfilePasswordForm> {
                         Text(
                           passwordRuleTitle,
                           style: GoogleFonts.poppins(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w700,
-                            color: kBlueInfo,
-                          ),
+                              fontSize: 14,
+                              fontWeight: FontWeight.w700,
+                              color: theme.titleColor()),
                         ),
                         SizedBox(height: 18),
                         Text(
-                         passwordRuleOne +
-                              (passwordLongerThanSix ? passwordValid : passwordInvalid),
+                          passwordRuleOne +
+                              (passwordLongerThanSix
+                                  ? passwordValid
+                                  : passwordInvalid),
                           style: GoogleFonts.poppins(
                             fontSize: 16,
                             fontWeight: FontWeight.w400,
-                            color: Colors.white,
+                            color: theme.textColor(),
                           ),
                         ),
                         SizedBox(height: 18),
                         Text(
                           passwordRuleTwo +
-                              (passwordContainsUpper ? passwordValid : passwordInvalid),
+                              (passwordContainsUpper
+                                  ? passwordValid
+                                  : passwordInvalid),
                           style: GoogleFonts.poppins(
                             fontSize: 16,
                             fontWeight: FontWeight.w400,
-                            color: Colors.white,
+                            color: theme.textColor(),
                           ),
                         ),
                         SizedBox(height: 18),
                         Text(
-                         passwordRuleThree +
-                              (passwordContainsLower ? passwordValid : passwordInvalid),
+                          passwordRuleThree +
+                              (passwordContainsLower
+                                  ? passwordValid
+                                  : passwordInvalid),
                           style: GoogleFonts.poppins(
                             fontSize: 16,
                             fontWeight: FontWeight.w400,
-                            color: Colors.white,
+                            color: theme.textColor(),
                           ),
                         ),
                         SizedBox(height: 18),
                         Text(
                           passwordRuleFour +
-                              (passwordContainsNumber ? passwordValid : passwordInvalid),
+                              (passwordContainsNumber
+                                  ? passwordValid
+                                  : passwordInvalid),
                           style: GoogleFonts.poppins(
                             fontSize: 16,
                             fontWeight: FontWeight.w400,
-                            color: Colors.white,
+                            color: theme.textColor(),
                           ),
                         ),
                       ]),
@@ -120,6 +133,7 @@ class _ProfilePasswordFormState extends State<ProfilePasswordForm> {
         Container(
             width: screenSplitSize,
             child: Card(
+              color: theme.cardDefaultColor(),
               elevation: 4,
               clipBehavior: Clip.antiAlias,
               shape: RoundedRectangleBorder(
@@ -136,7 +150,7 @@ class _ProfilePasswordFormState extends State<ProfilePasswordForm> {
                       style: GoogleFonts.poppins(
                         fontSize: 24,
                         fontWeight: FontWeight.w700,
-                        color: Colors.black,
+                        color: theme.titleColor(),
                       ),
                     ),
                     alignment: Alignment.topLeft,
@@ -151,7 +165,12 @@ class _ProfilePasswordFormState extends State<ProfilePasswordForm> {
                           Padding(
                             padding: EdgeInsets.only(top: 8),
                             child: CustomTextFormField(
-                              defaultBorderColor: Colors.grey[400],
+                              maxLength: 50,
+                              minLines: 1,
+                              maxLines: 1,
+                              keyboardType: TextInputType.text,
+                              focusNode: FocusNode(),
+                              theme: theme,
                               controller: _oldPasswordController,
                               hintText: passwordFormOldPasswordHint,
                               labelText: passwordFormOldPasswordText,
@@ -166,7 +185,12 @@ class _ProfilePasswordFormState extends State<ProfilePasswordForm> {
                           ),
                           SizedBox(height: 45),
                           CustomTextFormField(
-                            defaultBorderColor: Colors.grey[400],
+                            maxLength: 50,
+                            minLines: 1,
+                            maxLines: 1,
+                            keyboardType: TextInputType.text,
+                            focusNode: FocusNode(),
+                            theme: theme,
                             controller: _newPasswordController,
                             onChange: (value) {
                               setState(() {
@@ -191,11 +215,16 @@ class _ProfilePasswordFormState extends State<ProfilePasswordForm> {
                             },
                             obscure: true,
                             hintText: passwordFormNewPasswordHint,
-                            labelText:passwordFormNewPasswordText,
+                            labelText: passwordFormNewPasswordText,
                           ),
                           SizedBox(height: 45),
                           CustomTextFormField(
-                            defaultBorderColor: Colors.grey[400],
+                            maxLength: 50,
+                            minLines: 1,
+                            maxLines: 1,
+                            keyboardType: TextInputType.text,
+                            focusNode: FocusNode(),
+                            theme: theme,
                             controller: _repeatedPasswordController,
                             hintText: passwordFormRepeatPasswordHint,
                             labelText: passwordFormRepeatPasswordText,
@@ -218,13 +247,13 @@ class _ProfilePasswordFormState extends State<ProfilePasswordForm> {
                           width: 200,
                           height: 50.0,
                           child: RaisedButton(
-                            color: kPrimaryColor,
+                            color: theme.primaryColor(),
                             shape: RoundedRectangleBorder(
                               borderRadius:
                                   BorderRadius.circular(cardBorderRadius),
                             ),
                             child: Text(passwordFormUpdateBtnText),
-                            textColor: Colors.white,
+                            textColor: theme.buttonTextColor(),
                             onPressed: () async => {
                               if (_formKey.currentState.validate())
                                 {
@@ -243,21 +272,12 @@ class _ProfilePasswordFormState extends State<ProfilePasswordForm> {
                                       passwordContainsUpper = false;
                                       passwordLongerThanSix = false;
                                     });
-                                    Flushbar(
-                                      title: passwordFormExceptionTitle,
-                                      maxWidth: 800,
-                                      icon: Icon(
-                                        Icons.error_outline,
-                                        size: 28.0,
-                                        color: Colors.red[600],
-                                      ),
-                                      flushbarPosition: FlushbarPosition.TOP,
-                                      message:
-                                          passwordFormExceptionText,
-                                      margin: EdgeInsets.all(8),
-                                      borderRadius: 8,
-                                      duration: Duration(seconds: 5),
-                                    )..show(context);
+                                    CustomFlushbarError(
+                                            title: passwordFormExceptionTitle,
+                                            body: passwordFormExceptionText,
+                                            theme: theme)
+                                        .getFlushbar()
+                                        .show(context);
                                   }).then((value) {
                                     if (value != null) {
                                       _oldPasswordController.text = "";
@@ -269,21 +289,12 @@ class _ProfilePasswordFormState extends State<ProfilePasswordForm> {
                                         passwordContainsUpper = false;
                                         passwordLongerThanSix = false;
                                       });
-                                      Flushbar(
-                                        title: passwordFormSuccessTitle,
-                                        maxWidth: 800,
-                                        icon: Icon(
-                                          Icons.check_circle,
-                                          size: 28.0,
-                                          color: Colors.green,
-                                        ),
-                                        flushbarPosition: FlushbarPosition.TOP,
-                                        message:
-                                            passwordFormSuccessText,
-                                        margin: EdgeInsets.all(8),
-                                        borderRadius: 8,
-                                        duration: Duration(seconds: 5),
-                                      )..show(context);
+                                      CustomFlushbarSuccess(
+                                              title: passwordFormSuccessTitle,
+                                              body: passwordFormSuccessText,
+                                              theme: theme)
+                                          .getFlushbar()
+                                          .show(context);
                                     }
                                   })
                                 }

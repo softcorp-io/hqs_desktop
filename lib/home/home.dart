@@ -1,60 +1,79 @@
+import 'package:dart_hqs/hqs_user_service.pbgrpc.dart';
 import 'package:flutter/material.dart';
-import 'package:hqs_desktop/generated/hqs-user-service/proto/hqs-user-service.pb.dart';
-import 'package:hqs_desktop/home/constants/text.dart';
 import 'package:hqs_desktop/home/screens/profile/profile_page.dart';
-import 'package:hqs_desktop/service/hqs_service.dart';
-import 'package:hqs_desktop/home/screens/departments/departments_page.dart';
+import 'package:hqs_desktop/home/widgets/custom_navigationrail.dart';
+import 'package:hqs_desktop/service/hqs_user_service.dart';
+import 'package:hqs_desktop/theme/theme.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   final HqsService service;
-
-  HomePage({Key key, @required this.service})
+  final HqsTheme theme;
+  final bool lightTheme;
+  final Function changeTheme;
+  HomePage(
+      {Key key,
+      @required this.service,
+      @required this.theme,
+      @required this.lightTheme,
+      @required this.changeTheme})
       : assert(service != null),
+        assert(theme != null),
+        assert(lightTheme != null),
+        assert(changeTheme != null),
         super(key: key);
+
+  @override
+  HomePageState createState() {
+    return HomePageState(
+      service: service,
+      theme: theme,
+      lightTheme: lightTheme,
+      changeTheme: changeTheme,
+    );
+  }
+}
+
+class HomePageState extends State<HomePage> {
+  final HqsService service;
+  final HqsTheme theme;
+  final bool lightTheme;
+  final Function changeTheme;
+  Future<Response> userResponse;
+  HomePageState(
+      {Key key,
+      @required this.service,
+      @required this.theme,
+      @required this.lightTheme,
+      @required this.changeTheme})
+      : assert(service != null),
+        assert(lightTheme != null),
+        assert(changeTheme != null),
+        assert(theme != null) {
+    userResponse = service.getCurrentUser();
+  }
 
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<Response>(
-        future: service.getCurrentUser(),
+        future: userResponse,
         builder: (BuildContext context, AsyncSnapshot<Response> snapshot) {
           switch (snapshot.connectionState) {
             case ConnectionState.done:
-              return MaterialApp(
-                debugShowCheckedModeBanner: false,
-                title: platformTitle,
-                initialRoute: baseRoute,
-                routes: {
-                  // When navigating to the "/" route, build the Main widget.
-                  baseRoute: (context) => ProfilePage(
-                        service: service,
-                      ),
-                  profileRoute: (context) => ProfilePage(
-                        service: service,
-                      ),
-                  departmentsRoute: (context) => DepartmentsPage(
-                        service: service,
-                      ),
-                },
-                // home: Main(),
+              return CustomNavigationrail(
+                changeTheme: changeTheme,
+                lightTheme: lightTheme,
+                service: service,
+                showActive: false,
+                theme: theme,
+                body: ProfilePage(service: service, theme: theme),
               );
+
             default:
-              return Scaffold(
-                body: MaterialApp(
-                  debugShowCheckedModeBanner: false,
-                  title: platformTitle,
-                  initialRoute: baseRoute,
-                  routes: {
-                    // When navigating to the "/" route, build the Main widget.
-                    baseRoute: (context) => Padding(
-                        padding: EdgeInsets.only(top: 120),
-                        child: Align(
-                            child: Container(
-                              child: CircularProgressIndicator(),
-                            ),
-                            alignment: Alignment.center)),
-                  },
-                ),
-              );
+              return Align(
+                  child: Container(
+                    child: CircularProgressIndicator(),
+                  ),
+                  alignment: Alignment.center);
           }
         });
   }

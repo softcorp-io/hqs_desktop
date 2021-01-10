@@ -1,43 +1,74 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:hqs_desktop/constants/constants.dart';
 import 'package:hqs_desktop/home/constants/text.dart';
 import 'package:hqs_desktop/home/screens/departments/departments_page.dart';
 import 'package:hqs_desktop/home/screens/admin_users/admin_users_page.dart';
+import 'package:hqs_desktop/home/screens/profile/profile_page.dart';
+import 'package:hqs_desktop/home/screens/settings/settings_page.dart';
 import 'package:hqs_desktop/home/widgets/home_appbar.dart';
-import 'package:hqs_desktop/service/hqs_service.dart';
+import 'package:hqs_desktop/service/hqs_user_service.dart';
+import 'package:hqs_desktop/theme/theme.dart';
+import 'package:koukicons/department.dart';
+import 'package:koukicons/users2.dart';
+import 'package:koukicons/blueprint.dart';
+import 'package:koukicons/settings.dart';
 
 class CustomNavigationrail extends StatefulWidget {
   final HqsService service;
   final Widget body;
-  final String title;
+  final HqsTheme theme;
+  final showActive;
+  final bool lightTheme;
+  final Function changeTheme;
 
   CustomNavigationrail(
-      {@required this.service, @required this.body, @required this.title})
+      {@required this.service,
+      @required this.body,
+      @required this.showActive,
+      @required this.theme,
+      @required this.lightTheme,
+      @required this.changeTheme})
       : assert(service != null),
+        assert(theme != null),
+        assert(showActive != null),
+        assert(lightTheme != null),
+        assert(changeTheme != null),
         assert(body != null);
 
   @override
-  _CustomNavigationrailState createState() =>
-      _CustomNavigationrailState(service: service, body: body, title: title);
+  _CustomNavigationrailState createState() => _CustomNavigationrailState(
+      service: service, body: body, theme: theme, showActive: showActive, lightTheme: lightTheme, changeTheme: changeTheme);
 }
 
 /// This is the stateless widget that the main application instantiates.
 class _CustomNavigationrailState extends State<CustomNavigationrail> {
   int _selectedIndex;
-  Color activeColor = Colors.blueAccent;
+  Color activeColor;
   final HqsService service;
-  final title;
+  final HqsTheme theme;
+  final bool lightTheme;
+  final Function changeTheme;
+  bool showActive;
   Widget body;
 
   _CustomNavigationrailState(
-      {@required this.service, @required this.body, @required this.title})
+      {@required this.service,
+      @required this.body,
+      @required this.showActive,
+      @required this.theme,
+      @required this.lightTheme,
+      @required this.changeTheme})
       : assert(service != null),
-        assert(title != null),
+        assert(theme != null),
+        assert(showActive != null),
+        assert(lightTheme != null),
+        assert(changeTheme != null),
         assert(body != null) {
     _selectedIndex = 0;
-    if (this.title.toLowerCase() == appBarPopupProfileValue) {
-      this.activeColor = Colors.grey[600];
+    if (showActive) {
+      this.activeColor = theme.primaryColor();
+    } else {
+      this.activeColor = theme.textColor();
     }
   }
 
@@ -46,54 +77,94 @@ class _CustomNavigationrailState extends State<CustomNavigationrail> {
         new Map<NavigationRailDestination, Widget>();
     destinations.putIfAbsent(
         NavigationRailDestination(
-          icon: Icon(Icons.business, color: Colors.grey[800]),
-          selectedIcon: Icon(Icons.business, color: activeColor),
+          icon: KoukiconsDepartment(
+            height: 26,
+          ),
+          selectedIcon: KoukiconsDepartment(
+            height: 26,
+          ),
           label: Text(
             departmentsNavRailLabel,
             style: GoogleFonts.poppins(
-              fontSize: 13,
-              fontWeight: FontWeight.w500,
-              color: Colors.grey[800],
-            ),
+                fontSize: 13,
+                fontWeight: FontWeight.w500,
+                color: (_selectedIndex == 0 && showActive)
+                    ? theme.primaryColor()
+                    : theme.textColor()),
           ),
         ),
-        () => DepartmentsPage(service: service));
+        () => DepartmentsPage(
+              service: service,
+              theme: theme,
+            ));
     destinations.putIfAbsent(
         NavigationRailDestination(
-          icon: Icon(
-            Icons.supervisor_account_rounded,
-            color: Colors.grey[800],
+          icon: KoukiconsUsers2(
+            height: 26,
           ),
-          selectedIcon:
-              Icon(Icons.supervisor_account_rounded, color: activeColor),
+          selectedIcon: KoukiconsUsers2(
+            height: 26,
+          ),
           label: Text(
             adminUsersNavRailLabel,
             style: GoogleFonts.poppins(
-              fontSize: 13,
-              fontWeight: FontWeight.w500,
-              color: Colors.grey[800],
-            ),
+                fontSize: 13,
+                fontWeight: FontWeight.w500,
+                color: (_selectedIndex == 1 && showActive)
+                    ? theme.primaryColor()
+                    : theme.textColor()),
           ),
         ),
-        () => UsersPage(service: service));
+        () => UsersPage(
+              service: service,
+              theme: theme,
+            ));
     destinations.putIfAbsent(
         NavigationRailDestination(
-          icon: Icon(
-            Icons.architecture,
-            color: Colors.grey[800],
+          icon: KoukiconsBlueprint(
+            height: 26,
           ),
-          selectedIcon:
-              Icon(Icons.architecture, color: activeColor),
+          selectedIcon: KoukiconsBlueprint(
+            height: 26,
+          ),
           label: Text(
             projectsNavRailLabel,
             style: GoogleFonts.poppins(
-              fontSize: 13,
-              fontWeight: FontWeight.w500,
-              color: Colors.grey[800],
-            ),
+                fontSize: 13,
+                fontWeight: FontWeight.w500,
+                color: (_selectedIndex == 2 && showActive)
+                    ? theme.primaryColor()
+                    : theme.textColor()),
           ),
         ),
-        () => UsersPage(service: service));
+        () => UsersPage(
+              service: service,
+              theme: theme,
+            ));
+    destinations.putIfAbsent(
+        NavigationRailDestination(
+          icon: KoukiconsSettings(
+            height: 26,
+          ),
+          selectedIcon: KoukiconsSettings(
+            height: 26,
+          ),
+          label: Text(
+            SettingsNavRailLabel,
+            style: GoogleFonts.poppins(
+                fontSize: 13,
+                fontWeight: FontWeight.w500,
+                color: (_selectedIndex == 3 && showActive)
+                    ? theme.primaryColor()
+                    : theme.textColor()),
+          ),
+        ),
+        () => SettingsPage(
+              service: service,
+              lightTheme: lightTheme,
+              changeTheme: changeTheme,
+              theme: theme,
+            ));
     return destinations;
   }
 
@@ -103,8 +174,18 @@ class _CustomNavigationrailState extends State<CustomNavigationrail> {
         buildNavigationRailDests();
     return Scaffold(
       appBar: HomeAppBar(
+        navigateToProfile: () {
+          setState(() {
+            showActive = false;
+            body = ProfilePage(
+              service: service,
+              theme: theme,
+            );
+          });
+        },
+        user: service.curUser,
+        theme: theme,
         service: widget.service,
-        title: widget.title,
         shadow: true,
       ),
       body: Row(
@@ -114,21 +195,21 @@ class _CustomNavigationrailState extends State<CustomNavigationrail> {
               Container(
                 height: 12,
                 width: 200,
-                color: Colors.white,
+                color: theme.defaultBackgroundColor(),
               ),
               Expanded(
                 child: NavigationRail(
-                  backgroundColor: kRailColor,
+                  backgroundColor: theme.defaultBackgroundColor(),
                   extended: true,
                   minExtendedWidth: 200,
                   selectedIndex: _selectedIndex,
                   onDestinationSelected: (int index) {
+                    var key = destinations.keys.toList()[index];
+                    Widget result = destinations[key];
                     setState(() {
-                      var key = destinations.keys.toList()[index];
-                      Widget result = destinations[key];
-                      body = result;
-                      activeColor = Colors.blueAccent[400];
+                      showActive = true;
                       _selectedIndex = index;
+                      body = result;
                     });
                   },
                   destinations: destinations.keys.toList(),
@@ -136,11 +217,13 @@ class _CustomNavigationrailState extends State<CustomNavigationrail> {
               ),
             ],
           ),
-          VerticalDivider(thickness: 1, width: 1),
           // This is the main content.
           Expanded(
               child: Align(
-            child: body,
+            child: Scaffold(
+              body: body,
+              backgroundColor: theme.defaultBackgroundColor(),
+            ),
             alignment: Alignment.topCenter,
           )),
         ],

@@ -44,11 +44,12 @@ const descriptionNotSpecifiedText = "No decription added yet";
 const phoneNotSpecifiedText = "Not specified";
 const uploadPhoneSuccessTitle = "Successfully uploaded your image";
 const uploadPhoneSuccessText = "Your profile image was successfully updated.";
-
+const uploadPhoneExceptionTitle = "Something went wrong...";
+const uploadPhoneExceptionText = "A exception occured while uploading your image. Please try again.";
 // users token card
 const usersTokenCardBlockAllTokensBtnText = "Block all tokens";
 const usersTokenCardTitle = "Login History";
-const usersTokenCardLocationCol = "Location";
+const usersTokenCardTypeCol = "Type";
 const usersTokenCardDeviceCol = "Device Info";
 const usersTokenCardStatusCol = "Status";
 const usersTokenCardLastUsedCol = "Used At";
@@ -68,3 +69,7 @@ const blockTokenCardExceptionTitle = "Something went wrong";
 const blockTokenCardExceptionText = "We could not block the specified token. Please make sure that you have a valid wifi connection.";
 const blockTokenCardSuccessTitle = "Token successfully blocked";
 const blockTokenCardSuccessText = "The token was succesfully blocked and no one can use it to log into your account anymore.";
+
+// waiting upload image dialog
+const waitingUploadDialogTitle = "Your image is being uploaded...";
+const waitingUploadDialogText = "Please wait until your image is fully uploaded.";

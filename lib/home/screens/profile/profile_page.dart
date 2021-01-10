@@ -1,35 +1,37 @@
 import 'package:flutter/material.dart';
 import 'package:hqs_desktop/home/screens/profile/constants/constants.dart';
-import 'package:hqs_desktop/home/screens/profile/widgets/profile_card.dart';
-import 'package:hqs_desktop/home/screens/profile/widgets/profile_form_card.dart';
+import 'package:hqs_desktop/home/screens/profile/widgets/profile_col.dart';
 import 'package:hqs_desktop/home/screens/profile/widgets/profile_auth_history.dart';
-import 'package:hqs_desktop/home/widgets/custom_navigationrail.dart';
-import 'package:hqs_desktop/service/hqs_service.dart';
-import 'package:hqs_desktop/generated/hqs-user-service/proto/hqs-user-service.pb.dart';
+import 'package:hqs_desktop/service/hqs_user_service.dart';
+import 'package:dart_hqs/hqs_user_service.pb.dart';
 import 'package:hqs_desktop/home/screens/profile/widgets/profile_password_form.dart';
+import 'package:hqs_desktop/theme/theme.dart';
 
 class ProfilePage extends StatefulWidget {
   final HqsService service;
-
-  ProfilePage({@required this.service}) : assert(service != null);
-
+  final HqsTheme theme;
+  ProfilePage(
+      {@required this.service, @required this.theme})
+      : assert(service != null),
+        assert(theme != null);
   @override
-  _ProfilePageState createState() => _ProfilePageState(service: service);
+  _ProfilePageState createState() {
+    return _ProfilePageState(service: service, theme: theme);
+  }
 }
 
 class _ProfilePageState extends State<ProfilePage> {
   final HqsService service;
+  final HqsTheme theme;
   User user;
   Future<Response> userResponse;
-  _ProfilePageState({@required this.service}) {
-    this.user = service.curUser;
-  }
 
-  reload() {
-    this.userResponse = service.getCurrentUser().then((value) {
-      setState(() {
-        user = value.user;
-      });
+  _ProfilePageState(
+      {@required this.service, @required this.theme})
+      : assert(service != null),
+        assert(theme != null) {
+    userResponse = service.getCurrentUser().then((value) {
+      user = value.user;
       return value;
     });
   }
@@ -37,60 +39,53 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
     EdgeInsets edgeInsets = EdgeInsets.all(cardPadding);
-    return CustomNavigationrail(
-        title: "Profile",
-        service: service,
-        body: SingleChildScrollView(
-          child: Padding(
-            padding: edgeInsets,
-            child: Column(
-              children: <Widget>[
-                SizedBox(height: 20),
-                // Profile card and form information
-                Wrap(
-                    alignment: WrapAlignment.center,
-                    direction: Axis.horizontal,
-                    textDirection: TextDirection.rtl,
+    return FutureBuilder<Response>(
+        future: userResponse,
+        builder: (BuildContext context, AsyncSnapshot<Response> snapshot) {
+          switch (snapshot.connectionState) {
+            case ConnectionState.done:
+              return SingleChildScrollView(
+                child: Padding(
+                  padding: edgeInsets,
+                  child: Column(
                     children: <Widget>[
-                      ProfileCard(
-                        onUpdate: () {
-                          this.userResponse =
-                              service.getCurrentUser().then((value) {
-                            setState(() {
-                              user = value.user;
-                            });
-                            return value;
-                          });
+                      SizedBox(height: 20),
+                      // Profile card and form information
+                      ProfileCol(
+                        service: service,
+                        theme: theme,
+                        onImageUpdate: () {
+                          setState(() {});
                         },
-                        user: user,
+                      ),
+                      SizedBox(height: 16),
+                      // Password card and form information
+                      ProfilePasswordForm(
+                        theme: theme,
                         service: service,
                       ),
-                      SizedBox(width: cardPadding),
-                      ProfileFormCard(
-                        onUpdate: () {
-                          reload();
-                        },
-                        service: service,
+                      // Users auth history
+                      SizedBox(height: 16),
+                      SingleChildScrollView(
+                        child: Container(
+                          color: Colors.transparent,
+                          child: ProfileAuthHistory(
+                            theme: theme,
+                            service: service,
+                          ),
+                        ),
                       ),
-                    ]),
-                SizedBox(height: 16),
-                // Password card and form information
-                ProfilePasswordForm(
-                  service: service,
-                ),
-                // Users auth history
-                SizedBox(height: 16),
-                SingleChildScrollView(
-                  child: Container(
-                    color: Colors.grey[100],
-                    child: ProfileAuthHistory(
-                      service: service,
-                    ),
+                    ],
                   ),
                 ),
-              ],
-            ),
-          ),
-        ));
+              );
+            default:
+              return Align(
+                  child: Container(
+                    child: CircularProgressIndicator(),
+                  ),
+                  alignment: Alignment.center);
+          }
+        });
   }
 }

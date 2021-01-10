@@ -1,18 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:hqs_desktop/constants/constants.dart';
+import 'package:hqs_desktop/theme/theme.dart';
 
 class WavyFooter extends StatelessWidget {
+  final HqsTheme theme;
+  WavyFooter({@required this.theme}) : assert(theme != null);
   @override
   Widget build(BuildContext context) {
     return ClipPath(
       clipper: FooterWaveClipper(),
       child: Container(
         decoration: BoxDecoration(
-          gradient: LinearGradient(colors: [
-            kBlueOne,
-            kBlueTwo,
-            kBlueThree,
-          ], begin: Alignment.center, end: Alignment.bottomRight),
+          gradient: LinearGradient(
+              colors: theme.defaultGradientColor(),
+              begin: Alignment.center,
+              end: Alignment.bottomRight),
         ),
         height: MediaQuery.of(context).size.height / 3,
       ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:hqs_desktop/generated/hqs-user-service/proto/hqs-user-service.pb.dart';
+import 'package:dart_hqs/hqs_user_service.pb.dart';
+import 'package:hqs_desktop/theme/theme.dart';
 import 'dart:async';
 import 'package:intl/intl.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -9,10 +10,14 @@ typedef OnRowSelect = void Function(int index);
 class AuthHistorySource extends DataTableSource {
   final List<Auth> authData;
   final OnRowSelect onRowSelect;
-
-  AuthHistorySource({@required this.authData, @required this.onRowSelect}) {
+  final HqsTheme theme;
+  AuthHistorySource(
+      {@required this.authData,
+      @required this.onRowSelect,
+      @required this.theme}) {
     assert(authData != null);
     assert(onRowSelect != null);
+    assert(theme != null);
 
     authData.sort((a, b) {
       return b.lastUsedAt.toDateTime().compareTo(a.lastUsedAt.toDateTime());
@@ -46,7 +51,7 @@ class AuthHistorySource extends DataTableSource {
       style: GoogleFonts.poppins(
         fontSize: 14,
         fontWeight: FontWeight.w500,
-        color: Colors.red[700],
+        color: theme.dangerColor(),
       ),
     );
     if (auth.valid) {
@@ -55,58 +60,59 @@ class AuthHistorySource extends DataTableSource {
         style: GoogleFonts.poppins(
           fontSize: 14,
           fontWeight: FontWeight.w500,
-          color: Colors.green[500],
+          color: theme.successColor(),
         ),
       );
     }
 
-    return DataRow.byIndex(index: index, cells: <DataCell>[
-      DataCell(Text(
-        '$address',
-        style: GoogleFonts.poppins(
-          fontSize: 14,
-          fontWeight: FontWeight.w400,
-          color: Colors.grey[800],
-        ),
-      )),
-      DataCell(Text(
-        '${auth.device}',
-        style: GoogleFonts.poppins(
-          fontSize: 14,
-          fontWeight: FontWeight.w400,
-          color: Colors.grey[800],
-        ),
-      )),
-      DataCell(Text(
-        '$formatlastUsedAt',
-        style: GoogleFonts.poppins(
-          fontSize: 14,
-          fontWeight: FontWeight.w400,
-          color: Colors.grey[800],
-        ),
-      )),
-      DataCell(status),
-      DataCell(
-        auth.valid
-            ? IconButton(
-                hoverColor: Colors.transparent,
-                splashColor: Colors.transparent,
-                icon: const Icon(
-                  Icons.delete,
-                  color: Colors.blueGrey,
-                ),
-                onPressed: () => onRowSelect(index),
-              )
-            : Text(
-                'Blocked',
-                style: GoogleFonts.poppins(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w400,
-                  color: Colors.blueGrey,
-                ),
-              ),
-      ),
-    ]);
+    return DataRow.byIndex(
+        index: index,
+
+        cells: <DataCell>[
+          DataCell(Text(
+            '${auth.typeOf}',
+            style: GoogleFonts.poppins(
+              fontSize: 14,
+              fontWeight: FontWeight.w400,
+              color: theme.textColor(),
+            ),
+          )),
+          DataCell(Text(
+            '${auth.device}',
+            style: GoogleFonts.poppins(
+              fontSize: 14,
+              fontWeight: FontWeight.w400,
+              color: theme.textColor(),
+            ),
+          )),
+          DataCell(Text(
+            '$formatlastUsedAt',
+            style: GoogleFonts.poppins(
+              fontSize: 14,
+              fontWeight: FontWeight.w400,
+              color: theme.textColor(),
+            ),
+          )),
+          DataCell(status),
+          DataCell(
+            auth.valid
+                ? IconButton(
+                    icon: Icon(
+                      Icons.delete,
+                      color: theme.primaryColor(),
+                    ),
+                    onPressed: () => onRowSelect(index),
+                  )
+                : Text(
+                    'Blocked',
+                    style: GoogleFonts.poppins(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w400,
+                      color: theme.textColor(),
+                    ),
+                  ),
+          ),
+        ]);
   }
 
   @override

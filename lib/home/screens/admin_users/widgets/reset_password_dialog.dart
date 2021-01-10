@@ -5,21 +5,22 @@ import 'package:hqs_desktop/home/screens/admin_users/constants/text.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hqs_desktop/constants/constants.dart';
 import 'package:hqs_desktop/home/widgets/custom_flushbar_error.dart';
+import 'package:hqs_desktop/home/widgets/custom_flushbar_success.dart';
 import 'package:hqs_desktop/service/hqs_user_service.dart';
 import 'package:hqs_desktop/theme/theme.dart';
 
-class BlockUserDialog extends StatelessWidget {
+class ResetPasswordDialog extends StatelessWidget {
   final HqsService service;
   final User user;
   final Function onUpdate;
   final BuildContext buildContext;
   final HqsTheme theme;
 
-  BlockUserDialog(
+  ResetPasswordDialog(
       {@required this.service,
       @required this.user,
-      @required this.theme,
       @required this.onUpdate,
+      @required this.theme,
       @required this.buildContext})
       : assert(service != null),
         assert(onUpdate != null),
@@ -30,9 +31,8 @@ class BlockUserDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      backgroundColor: theme.cardDefaultColor(),
       title: Text(
-        userSourceBlockDialogTitle(user),
+        userSourceResetPasswordDialogTitle(user),
         style: GoogleFonts.poppins(
           fontSize: 18,
           fontWeight: FontWeight.w600,
@@ -43,7 +43,7 @@ class BlockUserDialog extends StatelessWidget {
         child: ListBody(
           children: <Widget>[
             Text(
-              userSourceBlockDialogTextOne,
+              userSourceResetPasswordDialogTextOne(user),
               style: GoogleFonts.poppins(
                 fontSize: 14,
                 fontWeight: FontWeight.normal,
@@ -51,7 +51,7 @@ class BlockUserDialog extends StatelessWidget {
               ),
             ),
             Text(
-              userSourceBlockDialogTextTwo,
+              userSourceResetPasswordDialogTextTwo(user),
               style: GoogleFonts.poppins(
                 fontSize: 14,
                 fontWeight: FontWeight.normal,
@@ -59,7 +59,7 @@ class BlockUserDialog extends StatelessWidget {
               ),
             ),
             Text(
-              userSourceBlockDialogTextThree,
+              userSourceResetPasswordDialogTextThree,
               style: GoogleFonts.poppins(
                 fontSize: 14,
                 fontWeight: FontWeight.normal,
@@ -72,7 +72,7 @@ class BlockUserDialog extends StatelessWidget {
       actions: <Widget>[
         TextButton(
           child: Text(
-            userSourceBlockDialogCancelBtnText,
+            userSourceResetPasswordDialogCancelBtnText,
             style: GoogleFonts.poppins(
               fontSize: 14,
               fontWeight: FontWeight.normal,
@@ -85,27 +85,29 @@ class BlockUserDialog extends StatelessWidget {
         ),
         TextButton(
           child: Text(
-            userSourceBlockDialogBlockBtnText(user),
+            userSourceResetPasswordDialogBlockBtnText,
             style: GoogleFonts.poppins(
-                fontSize: 14,
-                fontWeight: FontWeight.normal,
-                color: theme.primaryColor()),
+              fontSize: 14,
+              fontWeight: FontWeight.normal,
+              color: theme.primaryColor(),
+            ),
           ),
           onPressed: () {
             Navigator.of(buildContext, rootNavigator: true).pop();
-            service.blockUser(user)
+            service.sendResetPassordEmail(user)
               ..catchError((error) {
                 CustomFlushbarError(
-                        title: userSourceBlockDialogExceptionTitle,
-                        body: userSourceBlockDialogExceptionText(user, error),
+                        title: userSourceResetPasswordDialogExceptionTitle,
+                        body: userSourceResetPasswordDialogExceptionText(
+                            user, error),
                         theme: theme)
                     .getFlushbar()
-                    .show(buildContext);
+                    .show(context);
               }).then((value) {
                 onUpdate();
-                CustomFlushbarError(
-                        title: userSourceBlockDialogSuccessTitle(user),
-                        body: userSourceBlockDialogSuccessText(user),
+                CustomFlushbarSuccess(
+                        title: userSourceResetPassworDialogSuccessTitle,
+                        body: userSourceResetPasswordDialogSuccessText(user),
                         theme: theme)
                     .getFlushbar()
                     .show(Navigator.of(buildContext, rootNavigator: true)

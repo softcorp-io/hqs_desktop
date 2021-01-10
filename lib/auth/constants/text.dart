@@ -1,6 +1,7 @@
 // general
 const logoPlatformTitle = "Headquarters";
-
+const welcomePlatformTitle = "Welcome to the platform !";
+const welcomePlatformSubTitle = "A software platform made by Softcorp";
 // login form
 const signinTitle = "Sign in";
 const emailHintText = "Email";
@@ -8,7 +9,8 @@ const emailLabelText = "Email";
 const passwordHintText = "Password";
 const passwordLabelText = "Password";
 const authExceptionResponseTitle = "Something went wrong";
-const authExceptionResponseText = "We could not authenticate you. Please make sure your email & password are correct and that you have a valid wifi connection.";
+const authExceptionResponseText =
+    "We could not authenticate you. Please make sure your email & password are correct and that you have a valid wifi connection.";
 const submitButtonText = "Submit";
 const noAccountText = "You do not have an account?";
 const signupButtonText = "Sign Up";
@@ -34,7 +36,8 @@ const signupTokenLabelText = "SignupToken";
 const signupTokenHintText = "SignupToken";
 const signupTokenValidatorText = "PLease enter a valid token";
 const signupExceptionTitle = "Something went wrong";
-const signupExceptionText = "We could not create your user. Please make sure your token is valid and that you have a valid wifi connection.";
+const signupExceptionText =
+    "We could not create your user. Please make sure your token is valid and that you have a valid wifi connection.";
 const signupSuccessTitle = "User successfully created";
 const signupSuccessText = "We have successfully created your user.";
 const submitSignupButtonText = "Submit";

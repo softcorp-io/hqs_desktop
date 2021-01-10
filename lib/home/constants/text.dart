@@ -8,6 +8,7 @@ const departmentsRoute = "/departments";
 const departmentsNavRailLabel = "Departments";
 const adminUsersNavRailLabel = "Admin Users";
 const projectsNavRailLabel = "Projects";
+const SettingsNavRailLabel = "Settings";
 
 // appbar
 const appBarPlatformTitle = "Headquarters";

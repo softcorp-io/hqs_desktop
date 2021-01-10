@@ -1,23 +1,27 @@
 import 'package:flutter/material.dart';
-import 'package:flushbar/flushbar.dart';
-import 'package:hqs_desktop/generated/hqs-user-service/proto/hqs-user-service.pb.dart';
+import 'package:dart_hqs/hqs_user_service.pb.dart';
 import 'package:hqs_desktop/home/screens/admin_users/constants/text.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:hqs_desktop/constants/constants.dart';
-import 'package:hqs_desktop/service/hqs_service.dart';
+import 'package:hqs_desktop/home/widgets/custom_flushbar_error.dart';
+import 'package:hqs_desktop/home/widgets/custom_flushbar_success.dart';
+import 'package:hqs_desktop/service/hqs_user_service.dart';
+import 'package:hqs_desktop/theme/theme.dart';
 
 class DeleteUserDialog extends StatelessWidget {
   final HqsService service;
   final User user;
   final Function onUpdate;
   final BuildContext buildContext;
+  final HqsTheme theme;
 
   DeleteUserDialog(
       {@required this.service,
       @required this.user,
       @required this.onUpdate,
+      @required this.theme,
       @required this.buildContext})
       : assert(service != null),
+        assert(theme != null),
         assert(onUpdate != null),
         assert(buildContext != null),
         assert(user != null);
@@ -25,12 +29,13 @@ class DeleteUserDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
+      backgroundColor: theme.cardDefaultColor(),
       title: Text(
         userSourceDeleteUserDialogTitle(user),
         style: GoogleFonts.poppins(
           fontSize: 18,
           fontWeight: FontWeight.w600,
-          color: Colors.black,
+          color: theme.titleColor(),
         ),
       ),
       content: SingleChildScrollView(
@@ -41,7 +46,7 @@ class DeleteUserDialog extends StatelessWidget {
               style: GoogleFonts.poppins(
                 fontSize: 14,
                 fontWeight: FontWeight.normal,
-                color: Colors.black,
+                color: theme.textColor(),
               ),
             ),
             Text(
@@ -49,7 +54,7 @@ class DeleteUserDialog extends StatelessWidget {
               style: GoogleFonts.poppins(
                 fontSize: 14,
                 fontWeight: FontWeight.normal,
-                color: Colors.black,
+                color: theme.textColor(),
               ),
             ),
           ],
@@ -62,7 +67,7 @@ class DeleteUserDialog extends StatelessWidget {
             style: GoogleFonts.poppins(
               fontSize: 14,
               fontWeight: FontWeight.normal,
-              color: Colors.red,
+              color: theme.dangerColor(),
             ),
           ),
           onPressed: () {
@@ -75,43 +80,28 @@ class DeleteUserDialog extends StatelessWidget {
             style: GoogleFonts.poppins(
               fontSize: 14,
               fontWeight: FontWeight.normal,
-              color: kPrimaryColor,
+              color: theme.primaryColor(),
             ),
           ),
           onPressed: () {
             Navigator.of(context, rootNavigator: true).pop();
             service.deleteUser(user.id)
               ..catchError((error) {
-                Flushbar(
-                  title: userSourceDeleteExceptionTitle,
-                  maxWidth: 800,
-                  icon: Icon(
-                    Icons.error_outline,
-                    size: 28.0,
-                    color: Colors.red[600],
-                  ),
-                  flushbarPosition: FlushbarPosition.TOP,
-                  message: userSourceDeleteExceptionText(user),
-                  margin: EdgeInsets.all(8),
-                  borderRadius: 8,
-                  duration: Duration(seconds: 5),
-                )..show(context);
+                CustomFlushbarError(
+                        title: userSourceDeleteExceptionTitle,
+                        body: userSourceDeleteExceptionText(user),
+                        theme: theme)
+                    .getFlushbar()
+                    .show(context);
               }).then((value) {
                 onUpdate();
-                Flushbar(
-                  title: userSourceDeleteSuccessTitle(user),
-                  maxWidth: 800,
-                  icon: Icon(
-                    Icons.check_circle,
-                    size: 28.0,
-                    color: Colors.green,
-                  ),
-                  flushbarPosition: FlushbarPosition.TOP,
-                  message: userSourceDeleteSuccessText(user),
-                  margin: EdgeInsets.all(8),
-                  borderRadius: 8,
-                  duration: Duration(seconds: 5),
-                )..show(Navigator.of(buildContext, rootNavigator: true).context);
+                CustomFlushbarSuccess(
+                        title: userSourceDeleteSuccessTitle(user),
+                        body: userSourceDeleteSuccessText(user),
+                        theme: theme)
+                    .getFlushbar()
+                    .show(Navigator.of(buildContext, rootNavigator: true)
+                        .context);
                 return value;
               });
           },

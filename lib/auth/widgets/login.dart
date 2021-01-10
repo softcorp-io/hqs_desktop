@@ -2,34 +2,40 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hqs_desktop/auth/constants/text.dart';
 import 'package:hqs_desktop/constants/constants.dart';
-import 'package:hqs_desktop/service/hqs_service.dart' as hqs;
-import 'package:flushbar/flushbar.dart';
+import 'package:hqs_desktop/home/widgets/custom_flushbar_error.dart';
+import 'package:hqs_desktop/home/widgets/custom_text_form_field.dart';
+import 'package:hqs_desktop/service/hqs_user_service.dart';
+import 'package:another_flushbar/flushbar.dart';
+import 'package:hqs_desktop/theme/theme.dart';
 
 class LogIn extends StatefulWidget {
-  final hqs.HqsService service;
-  final Function onSignUpSelected;
+  final HqsService service;
   final Function onLogIn;
+  final HqsTheme theme;
 
-  LogIn(
-      {@required this.service,
-      @required this.onSignUpSelected,
-      @required this.onLogIn})
-      : assert(hqs.HqsService != null),
-        assert(onSignUpSelected != null),
+  LogIn({@required this.service, @required this.onLogIn, @required this.theme})
+      : assert(HqsService != null),
+        assert(theme != null),
         assert(onLogIn != null);
 
   @override
-  _LogInState createState() => _LogInState(service: service, onLogIn: onLogIn);
+  _LogInState createState() =>
+      _LogInState(service: service, onLogIn: onLogIn, theme: theme);
 }
 
 class _LogInState extends State<LogIn> {
-  final hqs.HqsService service;
+  final HqsService service;
   final Function onLogIn;
+  final HqsTheme theme;
+
+  _LogInState(
+      {@required this.service, @required this.onLogIn, @required this.theme})
+      : assert(HqsService != null),
+        assert(theme != null),
+        assert(onLogIn != null);
 
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-
-  _LogInState({@required this.service, @required this.onLogIn});
 
   @override
   Widget build(BuildContext context) {
@@ -46,6 +52,7 @@ class _LogInState extends State<LogIn> {
                   : 16),
           child: Center(
             child: Card(
+              color: Colors.transparent,
               elevation: 4,
               clipBehavior: Clip.antiAlias,
               shape: RoundedRectangleBorder(
@@ -53,16 +60,10 @@ class _LogInState extends State<LogIn> {
                   Radius.circular(cardBorderRadius),
                 ),
               ),
-              child: AnimatedContainer(
-                duration: Duration(milliseconds: 200),
-                height: size.height *
-                    (size.height > 770
-                        ? 0.7
-                        : size.height > 670
-                            ? 0.8
-                            : 0.9),
+              child: Container(
+                height: size.height * 0.7,
                 width: 600,
-                color: Colors.white,
+                color: theme.cardDefaultColor(),
                 child: Center(
                   child: SingleChildScrollView(
                     child: Padding(
@@ -75,7 +76,7 @@ class _LogInState extends State<LogIn> {
                             style: GoogleFonts.poppins(
                               fontSize: 24,
                               fontWeight: FontWeight.w500,
-                              color: Colors.grey[700],
+                              color: theme.titleColor(),
                             ),
                           ),
                           SizedBox(
@@ -84,54 +85,60 @@ class _LogInState extends State<LogIn> {
                           Container(
                             width: 30,
                             child: Divider(
-                              color: kPrimaryColor,
+                              color: theme.primaryColor(),
                               thickness: 2,
                             ),
+                          ),
+                          SizedBox(
+                            height: 18,
                           ),
                           Form(
                             key: _formKey,
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: <Widget>[
-                                TextFormField(
-                                  controller: _emailController,
-                                  decoration: InputDecoration(
+                                CustomTextFormField(
+                                  maxLength: 50,
+                                  minLines: 1,
+                                  maxLines: 1,
+                                  keyboardType: TextInputType.emailAddress,
+                                    controller: _emailController,
+                                    focusNode: FocusNode(),
+                                    validator: (value) {
+                                      var validEmail = RegExp(
+                                              r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
+                                          .hasMatch(value);
+                                      if (!validEmail) {
+                                        return emailValidationText;
+                                      }
+                                      return null;
+                                    },
                                     hintText: emailHintText,
                                     labelText: emailLabelText,
-                                    suffixIcon: Icon(
-                                      Icons.mail_outline,
-                                    ),
-                                  ),
-                                  validator: (value) {
-                                    var validEmail = RegExp(
-                                            r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
-                                        .hasMatch(value);
-                                    if (!validEmail) {
-                                      return emailValidationText;
-                                    }
-                                    return null;
-                                  },
-                                ),
+                                    theme: theme,
+                                    icon: Icons.person,
+                                    obscure: false),
                                 Padding(
                                   padding: EdgeInsets.all(10),
                                 ),
-                                TextFormField(
-                                  obscureText: true,
-                                  controller: _passwordController,
-                                  decoration: InputDecoration(
+                                CustomTextFormField(
+                                  maxLength: 50,
+                                  minLines: 1,
+                                  maxLines: 1,
+                                  keyboardType: TextInputType.text,
+                                    controller: _passwordController,
+                                    icon: Icons.lock_outline,
+                                    focusNode: FocusNode(),
+                                    validator: (value) {
+                                      if (value.isEmpty) {
+                                        return passwordValidationText;
+                                      }
+                                      return null;
+                                    },
                                     hintText: passwordHintText,
                                     labelText: passwordLabelText,
-                                    suffixIcon: Icon(
-                                      Icons.lock_outline,
-                                    ),
-                                  ),
-                                  validator: (value) {
-                                    if (value.isEmpty) {
-                                      return passwordValidationText;
-                                    }
-                                    return null;
-                                  },
-                                ),
+                                    theme: theme,
+                                    obscure: true),
                                 Padding(
                                   padding: EdgeInsets.all(60),
                                 ),
@@ -139,7 +146,7 @@ class _LogInState extends State<LogIn> {
                                     child: RaisedButton(
                                   shape: StadiumBorder(),
                                   padding: EdgeInsets.all(0.0),
-                                  textColor: Colors.white,
+                                  textColor: theme.buttonTextColor(),
                                   onPressed: () async => {
                                     if (_formKey.currentState.validate())
                                       {
@@ -149,21 +156,14 @@ class _LogInState extends State<LogIn> {
                                                 _emailController.text,
                                                 _passwordController.text)
                                             .catchError((error) {
-                                          Flushbar(
-                                            title: authExceptionResponseTitle,
-                                            maxWidth: 800,
-                                            icon: Icon(
-                                              Icons.error_outline,
-                                              size: 28.0,
-                                              color: Colors.red[600],
-                                            ),
-                                            flushbarPosition:
-                                                FlushbarPosition.TOP,
-                                            message: authExceptionResponseText,
-                                            margin: EdgeInsets.all(8),
-                                            borderRadius: 8,
-                                            duration: Duration(seconds: 5),
-                                          )..show(context);
+                                          CustomFlushbarError(
+                                                  title:
+                                                      authExceptionResponseTitle,
+                                                  body:
+                                                      authExceptionResponseText,
+                                                  theme: theme)
+                                              .getFlushbar()
+                                                ..show(context);
                                           _emailController.text = "";
                                           _passwordController.text = "";
                                         }).then((token) => {
@@ -189,12 +189,7 @@ class _LogInState extends State<LogIn> {
                                       borderRadius: BorderRadius.circular(
                                           buttonBorderRadius),
                                       gradient: LinearGradient(
-                                        colors: <Color>[
-                                          kBlueOne,
-                                          kBlueTwo,
-                                          kBlueThree,
-                                        ],
-                                      ),
+                                          colors: theme.defaultGradientColor()),
                                     ),
                                     child: Align(
                                       alignment: Alignment.center,
@@ -210,48 +205,6 @@ class _LogInState extends State<LogIn> {
                               ],
                             ),
                           ),
-                          Padding(
-                            padding: EdgeInsets.all(12),
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                noAccountText,
-                                style: TextStyle(
-                                  color: Colors.grey,
-                                  fontSize: 14,
-                                ),
-                              ),
-                              SizedBox(
-                                width: 8,
-                              ),
-                              GestureDetector(
-                                onTap: () {
-                                  widget.onSignUpSelected();
-                                },
-                                child: Row(
-                                  children: [
-                                    Text(
-                                      signupButtonText,
-                                      style: TextStyle(
-                                        color: kPrimaryColor,
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                    SizedBox(
-                                      width: 8,
-                                    ),
-                                    Icon(
-                                      Icons.arrow_forward,
-                                      color: kPrimaryColor,
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          )
                         ],
                       ),
                     ),

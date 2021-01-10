@@ -1,12 +1,13 @@
+import 'dart:convert';
 import 'dart:typed_data';
-
 import 'package:flutter/material.dart';
-import 'package:hqs_desktop/generated/google/protobuf/timestamp.pbserver.dart';
-import 'package:hqs_desktop/generated/hqs-user-service/proto/hqs-user-service.pbgrpc.dart'
-    as userService;
+import 'package:dart_hqs/hqs_user_service.pbgrpc.dart' as userService;
+import 'package:dart_hqs/google/protobuf/timestamp.pbserver.dart';
+import 'package:flutter/services.dart';
 import 'package:grpc/grpc.dart';
 import 'package:file_picker_cross/file_picker_cross.dart';
 import 'package:platform_info/platform_info.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class HqsService {
   userService.UserServiceClient client;
@@ -15,22 +16,67 @@ class HqsService {
 
   final String addr;
   final int port;
-  Function onLogout;
+  final Function onLogout;
+  final Function onLogin;
 
-  HqsService({@required this.addr, @required this.port}) {
+  HqsService(
+      {@required this.addr,
+      @required this.port,
+      @required this.onLogin,
+      @required this.onLogout}) {
+    // assert not null
     assert(addr != null);
     assert(port != null);
-
-    client = userService.UserServiceClient(ClientChannel(addr,
-        port: port,
-        options: const ChannelOptions(
-          credentials: ChannelCredentials.insecure(),
-        )));
+    assert(onLogin != null);
+    assert(onLogout != null);
   }
 
-  // a setter for setting the logout function
-  void setLogout(Function logout) {
-    onLogout = logout;
+  Future<void> connect() async {
+    try {
+      // create connection to client
+      ClientChannel clientChannel = new ClientChannel(addr,
+          port: port,
+          options: ChannelOptions(credentials: ChannelCredentials.insecure()));
+      client = userService.UserServiceClient(clientChannel);
+      client.ping(userService.Request());
+    } catch (e) {
+      print(e);
+      print("could not connect");
+      throw e;
+    }
+    print("success!");
+    return;
+  }
+
+  // todo: create a service that checks if user has a stored token on startup
+  checkStoredToken() async {
+    // check if user has a stored token and authenticate it
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String storedToken = prefs.getString("stored_token") ?? "";
+    if (storedToken.isEmpty) return;
+    validateToken(storedToken).then((valToken) {
+      if (valToken.valid) {
+        onLogin();
+      }
+      return valToken;
+    });
+  }
+
+  Future<userService.Token> validateToken(String token) async {
+    userService.Token validateToken = userService.Token();
+    validateToken..token = token;
+    try {
+      userService.Token repToken =
+          await client.validateToken(validateToken).then((valToken) {
+        return valToken;
+      });
+      validateToken = repToken;
+    } on GrpcError catch (e) {
+      throw e;
+    } catch (e) {
+      throw e;
+    }
+    return validateToken;
   }
 
   // authenticate - login and returns a token
@@ -46,8 +92,11 @@ class HqsService {
     if (email.isEmpty || password.isEmpty) {
       return token;
     }
+
     // get longitude & latitude
-        /*   try {
+    String latitude = "0.0";
+    String longitude = "0.0";
+    /*    try {
       Location location = new Location();
       bool _serviceEnabled;
       PermissionStatus _permissionGranted;
@@ -61,27 +110,21 @@ class HqsService {
             _permissionGranted = await location.requestPermission();
             if (_permissionGranted == PermissionStatus.granted) {
               _locationData = await location.getLocation();
-              metadata = {
-                "latitude": _locationData.latitude.toString(),
-                "longotude": _locationData.longitude.toString()
-              };
+                latitude = _locationData.latitude.toString();
+                longitude = _locationData.longitude.toString();
             }
           }
         }
       }
     } catch (e) {
-      // todo maybe do something
-      print("we get in here...");
       print(e);
-    } 
-    add location on login attempt
-    */
+    }  */
 
     // get device info
     String deviceInfo = "";
-    try{
+    try {
       deviceInfo = Platform.I.operatingSystem.toString();
-    } catch(e){
+    } catch (e) {
       print("Could not get device info");
     }
     var metadata = {
@@ -96,6 +139,8 @@ class HqsService {
         return val;
       });
       getCurrentUser();
+    } on GrpcError catch (e) {
+      throw e;
     } catch (e) {
       throw e;
     }
@@ -152,9 +197,10 @@ class HqsService {
       authHistory = await client.getAuthHistory(userService.Request(),
           options: callOptions);
     } catch (e) {
-      token.clearToken();
-      onLogout();
-      throw GrpcError;
+      print(e);
+      //token.clearToken();
+      //onLogout();
+      throw e;
     }
     return authHistory;
   }
@@ -169,6 +215,7 @@ class HqsService {
       bool allowPermission,
       bool allowDelete,
       bool allowBlock,
+      bool allowReset,
       bool gender) async {
     userService.Response response = userService.Response();
     if (!curUser.allowCreate) {
@@ -188,13 +235,14 @@ class HqsService {
                 ..allowPermission = allowPermission
                 ..allowDelete = allowDelete
                 ..allowBlock = allowBlock
+                ..allowResetPassword = allowReset
                 ..gender = gender,
               options: callOptions)
           .then((rep) {
         return rep;
       });
     } catch (e) {
-      throw GrpcError;
+      throw e;
     }
     return response;
   }
@@ -220,7 +268,7 @@ class HqsService {
     } catch (e) {
       token.clearToken();
       onLogout();
-      throw GrpcError;
+      throw e;
     }
     return response;
   }
@@ -233,6 +281,7 @@ class HqsService {
     bool allowPermissions,
     bool allowDelete,
     bool allowBlock,
+    bool allowReset,
   ) async {
     userService.Response response = userService.Response();
     if (!curUser.allowPermission) {
@@ -249,6 +298,7 @@ class HqsService {
                 ..allowCreate = allowCreate
                 ..allowPermission = allowPermissions
                 ..allowDelete = allowDelete
+                ..allowResetPassword = allowReset
                 ..allowBlock = allowBlock,
               options: callOptions)
           .then((rep) {
@@ -258,7 +308,7 @@ class HqsService {
     } catch (e) {
       token.clearToken();
       onLogout();
-      throw GrpcError;
+      throw e;
     }
     return response;
   }
@@ -274,7 +324,7 @@ class HqsService {
       String title,
       bool gender,
       String description,
-      DateTime birthDate) async {
+      String birthday) async {
     userService.Response response = userService.Response();
     if (token == null || token.token.isEmpty) {
       token.clearToken();
@@ -292,7 +342,7 @@ class HqsService {
         ..gender = gender
         ..countryCode = countryCode
         ..title = title
-        ..birthDate = Timestamp.fromDateTime(birthDate.add(Duration(hours: 9)))
+        ..birthday = birthday
         ..description = description;
       response =
           await client.updateProfile(user, options: callOptions).then((rep) {
@@ -301,7 +351,7 @@ class HqsService {
     } catch (e) {
       token.clearToken();
       onLogout();
-      throw GrpcError;
+      throw e;
     }
     curUser.name = response.user.name;
     curUser.email = response.user.email;
@@ -311,7 +361,7 @@ class HqsService {
     curUser.gender = response.user.gender;
     curUser.description = response.user.description;
     curUser.title = response.user.title;
-    curUser.birthDate = response.user.birthDate;
+    curUser.birthday = response.user.birthday;
     return response;
   }
 
@@ -336,9 +386,8 @@ class HqsService {
       response = await client.updatePassword(updatePasswordRequest,
           options: callOptions);
     } catch (e) {
-      throw GrpcError;
+      throw e;
     }
-    curUser = response.user;
     return response;
   }
 
@@ -356,7 +405,7 @@ class HqsService {
     } catch (e) {
       token.clearToken();
       onLogout();
-      throw GrpcError;
+      throw e;
     }
     return responseToken;
   }
@@ -375,7 +424,7 @@ class HqsService {
     } catch (e) {
       token.clearToken();
       onLogout();
-      throw GrpcError;
+      throw e;
     }
     return response;
   }
@@ -394,7 +443,7 @@ class HqsService {
     } catch (e) {
       token.clearToken();
       onLogout();
-      throw GrpcError;
+      throw e;
     }
     return response;
   }
@@ -406,6 +455,7 @@ class HqsService {
     bool allowPermission,
     bool allowDelete,
     bool allowBlock,
+    bool allowReset,
   ) async {
     userService.Token tokenResponse = userService.Token();
     if (!curUser.allowCreate) {
@@ -418,6 +468,7 @@ class HqsService {
         ..allowCreate = allowCreate
         ..allowPermission = allowPermission
         ..allowDelete = allowDelete
+        ..allowResetPassword = allowReset
         ..allowBlock = allowBlock;
       CallOptions callOptions = CallOptions(metadata: metadata);
       tokenResponse =
@@ -425,7 +476,7 @@ class HqsService {
     } catch (e) {
       token.clearToken();
       onLogout();
-      throw GrpcError;
+      throw e;
     }
     return tokenResponse;
   }
@@ -444,7 +495,25 @@ class HqsService {
       CallOptions callOptions = CallOptions(metadata: metadata);
       response = await client.signup(user, options: callOptions);
     } catch (e) {
-      throw GrpcError;
+      throw e;
+    }
+    return response;
+  }
+
+  // sends an email to a user with reset password information
+  Future<userService.Response> sendResetPassordEmail(
+      userService.User user) async {
+    if (user.email.isEmpty || user.id.isEmpty) {
+      throw userService.Error();
+    }
+    userService.Response response = userService.Response();
+    try {
+      var metadata = {"token": token.token};
+      CallOptions callOptions = CallOptions(metadata: metadata);
+      response =
+          await client.emailResetPasswordToken(user, options: callOptions);
+    } catch (e) {
+      throw e;
     }
     return response;
   }
@@ -456,7 +525,7 @@ class HqsService {
       CallOptions callOptions = CallOptions(metadata: metadata);
       resToken = await client.blockToken(token, options: callOptions);
     } catch (e) {
-      throw GrpcError;
+      throw e;
     }
     token.clearToken();
     onLogout();
@@ -476,7 +545,8 @@ class HqsService {
     }
   }
 
-  Future<userService.Token> uploadUserImage() async {
+  Future<userService.Token> uploadUserImage(
+      Function showDialog, Function closeDialog, BuildContext context) async {
     userService.Token resToken = userService.Token();
     // show a dialog to open a file
     try {
@@ -486,13 +556,19 @@ class HqsService {
 /*         fileExtension:
             '.jpeg, .jpg, .png' // Only if FileTypeCross.custom . May be any file extension like `.dot`, `.ppt,.pptx,.odp` */
       );
-
+      if (file != null) {
+        showDialog(context);
+      }
       Uint8List fileToBytes = file.toUint8List();
 
-      await client.uploadImage(generateUploadStream(fileToBytes));
+      await client.uploadImage(generateUploadStream(fileToBytes)).then((resp) {
+        closeDialog();
+        return resp;
+      });
     } on FileSelectionCanceledError catch (e) {
       return null;
     }
+    await getCurrentUser();
     return resToken;
   }
 }

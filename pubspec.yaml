@@ -24,30 +24,32 @@ dependencies:
   flutter:
     sdk: flutter
 
-  # The following adds the Cupertino Icons font to your application.
-  # Use with the CupertinoIcons class for iOS style icons.
+  dart_hqs: 
+    git:
+      url: git://github.com/softcorp-io/hqs_proto.git
+      ref: main
+      path: dart_hqs
+
   cupertino_icons: ^1.0.0
+  koukicons: ^2.0.3
   google_fonts: ^1.1.0
   intl: ^0.16.1 
+  #location: ^3.2.1
   async: ^2.4.2
   provider: ^4.3.2+2 
   file_picker_cross: ^4.2.6 
   protobuf: ^1.1.0
   grpc: ^2.3.0
+  syncfusion_flutter_datepicker: ^18.4.33-beta 
   google_maps: ">=3.0.0 <4.0.0"
   datetime_picker_formfield: ^1.0.0
-  clipboard: ^0.1.2+8 
+  shared_preferences: ^0.5.12+4 
+  clipboard: ^0.1.2+8
   page_transition: ^1.1.7+2
-  flutter_datetime_picker: ^1.4.0 
-  flushbar: ^1.10.4
+  another_flushbar: ^1.10.8
   country_code_picker: ^1.6.2
   platform_info: ^2.2.0 
-  # syncfusion_flutter_datepicker: ^18.3.52-beta 
-  window_size:
-    git:
-      url: git://github.com/google/flutter-desktop-embedding.git
-      path: plugins/window_size
-      ref: 927f8cbc09b35d85245c095f2db8df9b186f6618
+  desktop_window: ^0.3.0
 
 dev_dependencies:
   flutter_test:
@@ -68,7 +70,7 @@ flutter:
     - assets/images/login-background.png
     - assets/images/logo-white.png
     - assets/images/logo-blue.png
-
+    - assets/cert/cert.pem
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
 

@@ -1,29 +1,37 @@
 import 'package:flutter/material.dart';
-import 'package:hqs_desktop/service/hqs_service.dart';
-import 'package:hqs_desktop/auth/widgets/login_form.dart';
-import 'package:hqs_desktop/auth/widgets/signup_form.dart';
+import 'package:hqs_desktop/auth/constants/text.dart';
+import 'package:hqs_desktop/service/hqs_user_service.dart';
+import 'package:hqs_desktop/auth/widgets/login.dart';
 import 'package:hqs_desktop/constants/constants.dart';
 import 'package:hqs_desktop/auth/widgets/header.dart';
 import 'package:hqs_desktop/auth/widgets/footer.dart';
+import 'package:hqs_desktop/theme/theme.dart';
 
 class AuthPage extends StatefulWidget {
   final HqsService service;
   final Function onLogIn;
-
-  AuthPage({@required this.service, @required this.onLogIn});
+  final HqsTheme theme;
+  AuthPage(
+      {@required this.service, @required this.onLogIn, @required this.theme})
+      : assert(service != null),
+        assert(theme != null),
+        assert(onLogIn != null);
 
   @override
   _AuthPageState createState() =>
-      _AuthPageState(service: service, onLogIn: onLogIn);
+      _AuthPageState(service: service, onLogIn: onLogIn, theme: theme);
 }
 
 class _AuthPageState extends State<AuthPage> {
   final HqsService service;
   final Function onLogIn;
+  final HqsTheme theme;
 
-  _AuthPageState({@required this.service, @required this.onLogIn});
-
-  Option selectedOption = Option.LogIn;
+  _AuthPageState(
+      {@required this.service, @required this.onLogIn, @required this.theme})
+      : assert(service != null),
+        assert(theme != null),
+        assert(onLogIn != null);
 
   @override
   Widget build(BuildContext context) {
@@ -40,15 +48,15 @@ class _AuthPageState extends State<AuthPage> {
                 Container(
                   height: double.infinity,
                   width: size.width,
-                  color: kDarkBlue,
+                  color: theme.loginBackgroundColor(),
                 ),
               ],
             ),
             // Design wavy header
-            LoginWavyHeader(),
+            LoginWavyHeader(theme: theme),
             Align(
               alignment: Alignment.bottomCenter,
-              child: WavyFooter(),
+              child: WavyFooter(theme: theme,),
             ),
             // Welcome to the platform
             Align(
@@ -61,17 +69,17 @@ class _AuthPageState extends State<AuthPage> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            "Welcome to the platform !",
+                            welcomePlatformTitle,
                             style: TextStyle(
-                              color: Colors.white,
+                              color: theme.welcomeLoginColor(),
                               fontSize: 28,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
                           Text(
-                            "A software platform made by Softcorp",
+                            welcomePlatformSubTitle,
                             style: TextStyle(
-                              color: Colors.white,
+                              color: theme.welcomeLoginColor(),
                               fontSize: 14,
                             ),
                           ),
@@ -100,7 +108,7 @@ class _AuthPageState extends State<AuthPage> {
                       width: 8,
                     ),
                     Text(
-                      "Copyright 2020",
+                      "Copyright " + DateTime.now().year.toString(),
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 15,
@@ -111,30 +119,11 @@ class _AuthPageState extends State<AuthPage> {
               ),
             ),
 
-            // Singup & singin card placeholder
-            AnimatedSwitcher(
-              duration: Duration(milliseconds: 500),
-              transitionBuilder: (widget, animation) =>
-                  ScaleTransition(child: widget, scale: animation),
-              child: selectedOption == Option.LogIn
-                  ? LogIn(
-                      service: service,
-                      onSignUpSelected: () {
-                        setState(() {
-                          selectedOption = Option.SignUp;
-                        });
-                      },
-                      onLogIn: onLogIn,
-                    )
-                  : SignUp(
-                      service: service,
-                      onLogInSelected: () {
-                        setState(() {
-                          selectedOption = Option.LogIn;
-                        });
-                      },
-                    ),
-            ),
+            LogIn(
+              service: service,
+              onLogIn: onLogIn,
+              theme: theme,
+            )
           ],
         ),
       ),

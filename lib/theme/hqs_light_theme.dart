@@ -10,7 +10,7 @@ class HqsLightTheme {
     return ThemeData.light().copyWith(
       textTheme: textTheme,
       accentColor: primaryColor,
-      appBarTheme: AppBarTheme(color: ThemeData.light().cardColor),
+      appBarTheme: AppBarTheme(color: primaryColor),
       buttonTheme: ThemeData.light()
           .buttonTheme
           .copyWith(textTheme: ButtonTextTheme.primary),

@@ -5,24 +5,27 @@ import 'package:hqs_desktop/home/screens/admin_users/constants/text.dart';
 import 'package:hqs_desktop/home/screens/admin_users/utils/users_source.dart';
 import 'package:hqs_desktop/home/screens/admin_users/widgets/create_user_dialog.dart';
 import 'package:hqs_desktop/home/screens/admin_users/widgets/generate_signup_token_dialog.dart';
-import 'package:hqs_desktop/home/widgets/custom_navigationrail.dart';
 import 'package:hqs_desktop/service/hqs_user_service.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 /// This is the stateless widget that the main application instantiates.
-class UsersPage extends StatefulWidget {
+class AdminUsersPage extends StatefulWidget {
   final HqsService service;
-  UsersPage({@required this.service}) : assert(service != null);
+  final Function navigateToProfile;
+  AdminUsersPage({@required this.service, @required this.navigateToProfile})
+      : assert(service != null),
+        assert(navigateToProfile != null);
 
   @override
-  _UsersPageState createState() => _UsersPageState(service: service);
+  _AdminUsersPageState createState() => _AdminUsersPageState(service: service, navigateToProfile: navigateToProfile);
 }
 
-class _UsersPageState extends State<UsersPage> {
+class _AdminUsersPageState extends State<AdminUsersPage> {
   final HqsService service;
+  final Function navigateToProfile;
   Future<Response> usersResponse;
   List<User> users;
-  _UsersPageState({@required this.service}) {
+  _AdminUsersPageState({@required this.service, @required this.navigateToProfile}) {
     usersResponse = service.getAllUsers().then((response) {
       this.users = response.users;
       return response;
@@ -57,6 +60,7 @@ class _UsersPageState extends State<UsersPage> {
                     alignment: Alignment.center));
           case ConnectionState.done:
             usersSource = UsersSource(
+              navigateToProfile: navigateToProfile,
               context: context,
               onUpdate: onUpdate,
               buildContext: context,

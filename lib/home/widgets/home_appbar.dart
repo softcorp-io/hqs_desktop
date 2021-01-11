@@ -11,13 +11,16 @@ class HomeAppBar extends StatelessWidget with PreferredSizeWidget {
   final HqsService service;
   final User user;
   final Function navigateToProfile;
+  final Function popContext;
 
   HomeAppBar(
       {this.shadow,
       this.service,
       @required this.user,
+      @required this.popContext,
       @required this.navigateToProfile})
       : assert(shadow != null),
+        assert(popContext != null),
         assert(navigateToProfile != null),
         assert(service != null),
         assert(user != null),
@@ -26,19 +29,17 @@ class HomeAppBar extends StatelessWidget with PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     return AppBar(
-      brightness: Brightness.light,
       title: Row(children: [
         Image(
           width: 50,
           height: 50,
-          image: AssetImage('assets/images/logo-blue.png'),
+          image: AssetImage('assets/images/logo-white.png'),
         ),
         SizedBox(width: 10),
         Text(
           appBarPlatformTitle,
           style: GoogleFonts.poppins(
             fontSize: 19,
-            color: Theme.of(context).textTheme.bodyText1.color,
             fontWeight: FontWeight.w500,
           ),
         )
@@ -72,6 +73,7 @@ class HomeAppBar extends StatelessWidget with PreferredSizeWidget {
                 navigateToProfile();
               });
             } else if (result.toLowerCase() == appBarPopupLogoutValue) {
+              popContext();
               service.logout();
             }
           },
@@ -108,20 +110,18 @@ class HomeAppBar extends StatelessWidget with PreferredSizeWidget {
                 user.name,
                 style: GoogleFonts.poppins(
                   fontSize: 14,
-                  color: Theme.of(context).textTheme.bodyText1.color,
-                  fontWeight: FontWeight.w400,
+                  fontWeight: FontWeight.w500,
                 ),
               ),
               Icon(
                 Icons.arrow_drop_down,
-                color: Theme.of(context).textTheme.bodyText1.color,
               ),
             ],
           ),
         ),
         SizedBox(width: 16)
       ],
-      automaticallyImplyLeading: false,
+      automaticallyImplyLeading: true,
       elevation: shadow ? 4 : 0,
       // add optional tabbar controller
     );

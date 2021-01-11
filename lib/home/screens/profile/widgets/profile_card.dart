@@ -15,23 +15,19 @@ class ProfileCard extends StatelessWidget {
   final Function onImageUpdate;
   final HqsService service;
   final bool showEditImage;
-  final onClose;
-  final showCloseButton;
-  final double dialogSize;
+  final bool constraintSize;
+  final double cardSize;
   ProfileCard(
       {@required this.service,
+      @required this.constraintSize,
       @required this.onImageUpdate,
       @required this.showEditImage,
-      @required this.onClose,
-      @required this.showCloseButton,
-      @required this.dialogSize,
+      @required this.cardSize,
       @required this.user})
       : assert(service != null),
         assert(user != null),
-        assert(dialogSize != null),
+        assert(cardSize != null),
         assert(showEditImage != null),
-        assert(onClose != null),
-        assert(showCloseButton != null),
         assert(onImageUpdate != null);
 
   String getUserBirthday(User user) {
@@ -66,7 +62,7 @@ class ProfileCard extends StatelessWidget {
           ),
           elevation: 4,
           child: Container(
-              width: showCloseButton ? dialogSize : screenSplitSize,
+              width: constraintSize ? screenSplitSize : cardSize,
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                     colors: defaultGradientColor,
@@ -75,11 +71,10 @@ class ProfileCard extends StatelessWidget {
               ),
               child: Column(
                 children: <Widget>[
-                  Row(children: [
-                    Padding(
-                      padding: showCloseButton
-                          ? EdgeInsets.only(left: 10, top: 10)
-                          : EdgeInsets.all(15),
+                  Align(
+                    alignment: Alignment.topLeft,
+                    child: Padding(
+                      padding: EdgeInsets.all(15),
                       child: Container(
                         width: 60,
                         height: 40,
@@ -100,20 +95,7 @@ class ProfileCard extends StatelessWidget {
                         ),
                       ),
                     ),
-                    Spacer(),
-                    showCloseButton
-                        ? Padding(
-                            padding: EdgeInsets.only(right: 1),
-                            child: IconButton(
-                              onPressed: () {
-                                onClose();
-                              },
-                              icon:
-                                  Icon(Icons.close, color: Theme.of(context).errorColor),
-                            ),
-                          )
-                        : Container(),
-                  ]),
+                  ),
 
                   ///Image Avatar
                   Container(
@@ -170,7 +152,8 @@ class ProfileCard extends StatelessWidget {
                                 ),
                                 decoration: BoxDecoration(
                                   shape: BoxShape.circle,
-                                  color: Theme.of(context).scaffoldBackgroundColor,
+                                  color:
+                                      Theme.of(context).scaffoldBackgroundColor,
                                 ),
                               ),
                             )

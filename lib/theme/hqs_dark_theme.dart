@@ -10,7 +10,7 @@ class HqsDarkTheme {
     return ThemeData.dark().copyWith(
       textTheme: textTheme,
       accentColor: primaryColor,
-      appBarTheme: AppBarTheme(color: ThemeData.dark().cardColor),
+      appBarTheme: AppBarTheme(color: primaryColor),
       primaryColor: primaryColor,
       inputDecorationTheme: InputDecorationTheme(
           focusedBorder: OutlineInputBorder(

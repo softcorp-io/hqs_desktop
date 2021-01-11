@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:dart_hqs/hqs_user_service.pb.dart';
+import 'package:hqs_desktop/home/pages/user_page.dart';
 import 'package:hqs_desktop/home/screens/admin_users/constants/text.dart';
 import 'package:hqs_desktop/home/screens/admin_users/widgets/block_user_dialog.dart';
 import 'package:hqs_desktop/home/screens/admin_users/widgets/delete_user_dialog.dart';
 import 'package:hqs_desktop/home/screens/admin_users/widgets/edit_user_dialog.dart';
 import 'package:hqs_desktop/home/screens/admin_users/widgets/reset_password_dialog.dart';
-import 'package:hqs_desktop/home/screens/admin_users/widgets/view_user_dialog.dart';
 import 'package:hqs_desktop/service/hqs_user_service.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hqs_desktop/theme/constants.dart';
@@ -18,16 +18,19 @@ class UsersSource extends DataTableSource {
   final HqsService service;
   final BuildContext buildContext;
   final Function onUpdate;
+  final Function navigateToProfile;
   final BuildContext context;
   UsersSource(
       {@required this.usersData,
       @required this.onRowSelect,
       @required this.context,
       @required this.onUpdate,
+      @required this.navigateToProfile,
       @required this.buildContext,
       @required this.service}) {
     assert(usersData != null);
     assert(context != null);
+    assert(navigateToProfile != null);
     assert(service != null);
     assert(onUpdate != null);
     assert(buildContext != null);
@@ -42,12 +45,25 @@ class UsersSource extends DataTableSource {
       return null;
     }
     final user = usersData[index];
-
     return DataRow.byIndex(index: index, cells: <DataCell>[
-      DataCell(CircleAvatar(
-        backgroundColor: Colors.transparent,
-        backgroundImage: NetworkImage(user.image),
-      )),
+      DataCell(
+        Container(
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black38,
+                blurRadius: 0.5,
+                offset: Offset(0.0, 0.5),
+              ),
+            ],
+          ),
+          child: CircleAvatar(
+            backgroundImage: NetworkImage(user.image),
+            backgroundColor: Colors.transparent,
+          ),
+        ),
+      ),
       DataCell(Text(
         '${user.name}',
         style: GoogleFonts.poppins(
@@ -125,15 +141,12 @@ class UsersSource extends DataTableSource {
                 onSelected: (String result) {
                   switch (result.toLowerCase()) {
                     case userSourceActionViewValue:
-                      showDialog(
-                          context: buildContext,
-                          builder: (BuildContext context) {
-                            return ViewUserDialog(
-                              service: service,
-                              buildContext: buildContext,
-                              user: user,
-                            );
-                          });
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>
+                                UserPage(service: service, user: user, navigateToProfile: navigateToProfile,)),
+                      );
                       break;
                     case userSourceActionBlockValue:
                       showDialog(

@@ -74,10 +74,9 @@ class _ProfileColState extends State<ProfileCol> {
         children: <Widget>[
           ProfileCard(
             user: user,
+            constraintSize: true,
             showEditImage: true,
-            showCloseButton: false,
-            onClose: () {},
-            dialogSize: 0.0,
+            cardSize: 0.0,
             onImageUpdate: () {
               onImageUpdate();
               setState(() {

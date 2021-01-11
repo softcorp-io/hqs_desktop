@@ -83,28 +83,6 @@ class _CustomNavigationrailState extends State<CustomNavigationrail> {
             ));
     destinations.putIfAbsent(
         NavigationRailDestination(
-          icon: KoukiconsUsers2(
-            height: 26,
-          ),
-          selectedIcon: KoukiconsUsers2(
-            height: 26,
-          ),
-          label: Text(
-            adminUsersNavRailLabel,
-            style: GoogleFonts.poppins(
-              fontSize: 13,
-              fontWeight: FontWeight.w500,
-              color: (_selectedIndex == 1 && showActive)
-                  ? Theme.of(context).primaryColor
-                  : Theme.of(context).textTheme.overline.color,
-            ),
-          ),
-        ),
-        () => UsersPage(
-              service: service,
-            ));
-    destinations.putIfAbsent(
-        NavigationRailDestination(
           icon: KoukiconsBlueprint(
             height: 26,
           ),
@@ -116,15 +94,55 @@ class _CustomNavigationrailState extends State<CustomNavigationrail> {
             style: GoogleFonts.poppins(
               fontSize: 13,
               fontWeight: FontWeight.w500,
-              color: (_selectedIndex == 2 && showActive)
+              color: (_selectedIndex == 1 && showActive)
                   ? Theme.of(context).primaryColor
                   : Theme.of(context).textTheme.overline.color,
             ),
           ),
         ),
-        () => UsersPage(
+        () => AdminUsersPage(
+              navigateToProfile: () {
+                setState(() {
+                  showActive = false;
+                  body = ProfilePage(
+                    service: service,
+                  );
+                });
+              },
               service: service,
             ));
+    if (service.curUser.allowView) {
+      destinations.putIfAbsent(
+          NavigationRailDestination(
+            icon: KoukiconsUsers2(
+              height: 26,
+            ),
+            selectedIcon: KoukiconsUsers2(
+              height: 26,
+            ),
+            label: Text(
+              adminUsersNavRailLabel,
+              style: GoogleFonts.poppins(
+                fontSize: 13,
+                fontWeight: FontWeight.w500,
+                color: (_selectedIndex == 2 && showActive)
+                    ? Theme.of(context).primaryColor
+                    : Theme.of(context).textTheme.overline.color,
+              ),
+            ),
+          ),
+          () => AdminUsersPage(
+                navigateToProfile: () {
+                  setState(() {
+                    showActive = false;
+                    body = ProfilePage(
+                      service: service,
+                    );
+                  });
+                },
+                service: service,
+              ));
+    }
     destinations.putIfAbsent(
         NavigationRailDestination(
           icon: KoukiconsSettings(
@@ -138,13 +156,16 @@ class _CustomNavigationrailState extends State<CustomNavigationrail> {
             style: GoogleFonts.poppins(
               fontSize: 13,
               fontWeight: FontWeight.w500,
-              color: (_selectedIndex == 3 && showActive)
+              color: ((_selectedIndex == 3 && showActive) ||
+                      (!service.curUser.allowView && _selectedIndex == 2))
                   ? Theme.of(context).primaryColor
                   : Theme.of(context).textTheme.overline.color,
             ),
           ),
         ),
-        () => SettingsPage(changeTheme: changeTheme,));
+        () => SettingsPage(
+              changeTheme: changeTheme,
+            ));
     return destinations;
   }
 
@@ -154,6 +175,7 @@ class _CustomNavigationrailState extends State<CustomNavigationrail> {
         buildNavigationRailDests();
     return Scaffold(
       appBar: HomeAppBar(
+        popContext: () {},
         navigateToProfile: () {
           setState(() {
             showActive = false;

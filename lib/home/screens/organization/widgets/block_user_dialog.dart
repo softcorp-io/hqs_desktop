@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:dart_hqs/hqs_user_service.pb.dart';
-import 'package:hqs_desktop/home/screens/admin_users/constants/text.dart';
+import 'package:hqs_desktop/home/screens/organization/constants/text.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hqs_desktop/home/widgets/custom_flushbar_error.dart';
-import 'package:hqs_desktop/service/hqs_user_service.dart';
+import 'package:hqs_desktop/home/widgets/custom_flushbar_success.dart';
+import 'package:hqs_desktop/service/hqs_service.dart';
 
 class BlockUserDialog extends StatelessWidget {
   final HqsService service;
@@ -84,13 +85,14 @@ class BlockUserDialog extends StatelessWidget {
             service.blockUser(user)
               ..catchError((error) {
                 CustomFlushbarError(
-                  title: userSourceBlockDialogExceptionTitle,
-                  body: userSourceBlockDialogExceptionText(user, error),
-                  context: context
-                ).getFlushbar().show(buildContext);
+                        title: userSourceBlockDialogExceptionTitle,
+                        body: userSourceBlockDialogExceptionText(user, error),
+                        context: context)
+                    .getFlushbar()
+                    .show(buildContext);
               }).then((value) {
                 onUpdate();
-                CustomFlushbarError(
+                CustomFlushbarSuccess(
                         title: userSourceBlockDialogSuccessTitle(user),
                         body: userSourceBlockDialogSuccessText(user),
                         context: context)

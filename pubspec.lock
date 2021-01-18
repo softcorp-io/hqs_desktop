@@ -90,7 +90,7 @@ packages:
     description:
       path: dart_hqs
       ref: main
-      resolved-ref: "9b7086a93630e3316bd962815e5319e2ef1b8850"
+      resolved-ref: bef6db31cf7a3aff5da6b57b166adf7064a209ea
       url: "git://github.com/softcorp-io/hqs_proto.git"
     source: git
     version: "0.0.1"
@@ -169,6 +169,13 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  flutter_icons:
+    dependency: "direct main"
+    description:
+      name: flutter_icons
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.1.0"
   flutter_plugin_android_lifecycle:
     dependency: transitive
     description:
@@ -424,6 +431,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "3.0.13"
+  progress_state_button:
+    dependency: "direct main"
+    description:
+      name: progress_state_button
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.2"
   protobuf:
     dependency: "direct main"
     description:

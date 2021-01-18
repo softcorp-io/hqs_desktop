@@ -5,7 +5,7 @@ import 'package:hqs_desktop/home/screens/profile/constants/constants.dart';
 import 'package:hqs_desktop/home/screens/profile/constants/text.dart';
 import 'package:hqs_desktop/home/widgets/custom_flushbar_error.dart';
 import 'package:hqs_desktop/home/widgets/custom_flushbar_success.dart';
-import 'package:hqs_desktop/service/hqs_user_service.dart';
+import 'package:hqs_desktop/service/hqs_service.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hqs_desktop/theme/constants.dart';
 import 'package:intl/intl.dart';
@@ -130,6 +130,7 @@ class ProfileCard extends StatelessWidget {
                                           .pop();
                                     }, context).catchError((error) {
                                       CustomFlushbarError(
+                                              context: context,
                                               title: uploadPhoneExceptionTitle,
                                               body: uploadPhoneExceptionText)
                                           .getFlushbar()
@@ -138,6 +139,7 @@ class ProfileCard extends StatelessWidget {
                                       if (value != null) {
                                         onImageUpdate();
                                         CustomFlushbarSuccess(
+                                          context: context,
                                           title: uploadPhoneSuccessTitle,
                                           body: uploadPhoneSuccessText,
                                         ).getFlushbar()

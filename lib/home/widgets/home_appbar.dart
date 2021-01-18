@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:dart_hqs/hqs_user_service.pb.dart';
 import 'package:hqs_desktop/home/constants/text.dart';
-import 'package:hqs_desktop/service/hqs_user_service.dart';
+import 'package:hqs_desktop/service/hqs_service.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class HomeAppBar extends StatelessWidget with PreferredSizeWidget {
@@ -33,15 +33,15 @@ class HomeAppBar extends StatelessWidget with PreferredSizeWidget {
         Image(
           width: 50,
           height: 50,
-          image: AssetImage('assets/images/logo-white.png'),
+          image: AssetImage('assets/images/logo-blue.png'),
         ),
         SizedBox(width: 10),
         Text(
-          appBarPlatformTitle,
+          "Headquarters",
           style: GoogleFonts.poppins(
-            fontSize: 19,
-            fontWeight: FontWeight.w500,
-          ),
+              fontSize: 19,
+              fontWeight: FontWeight.w500,
+              color: Theme.of(context).textTheme.bodyText1.color),
         )
       ]),
       actions: [
@@ -106,16 +106,23 @@ class HomeAppBar extends StatelessWidget with PreferredSizeWidget {
           ],
           child: Row(
             children: [
-              Text(
-                user.name,
-                style: GoogleFonts.poppins(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
+              Container(
+                constraints: BoxConstraints(maxWidth: 140, minWidth: 20),
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Text(
+                    user.name,
+                    overflow: TextOverflow.ellipsis,
+                    style: GoogleFonts.poppins(
+                      fontSize: 14,
+                      color: Theme.of(context).textTheme.bodyText1.color,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
                 ),
               ),
-              Icon(
-                Icons.arrow_drop_down,
-              ),
+              Icon(Icons.arrow_drop_down,
+                  color: Theme.of(context).textTheme.bodyText1.color),
             ],
           ),
         ),

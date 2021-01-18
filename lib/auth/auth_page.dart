@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hqs_desktop/auth/constants/text.dart';
-import 'package:hqs_desktop/service/hqs_user_service.dart';
+import 'package:hqs_desktop/service/hqs_service.dart';
 import 'package:hqs_desktop/auth/widgets/login.dart';
 import 'package:hqs_desktop/auth/widgets/header.dart';
 import 'package:hqs_desktop/auth/widgets/footer.dart';
@@ -33,7 +33,7 @@ class _AuthPageState extends State<AuthPage> {
       body: Container(
         width: size.width,
         height: size.height,
-        color: loginDarkColor,
+        color: blueDarkColor,
         child: Stack(
           children: [
             // defines the background color of the login screen

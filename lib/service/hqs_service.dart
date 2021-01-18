@@ -1,42 +1,62 @@
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:dart_hqs/hqs_user_service.pbgrpc.dart' as userService;
+import 'package:dart_hqs/hqs_privilege_service.pbgrpc.dart' as privilegeService;
 import 'package:grpc/grpc.dart';
 import 'package:file_picker_cross/file_picker_cross.dart';
 import 'package:platform_info/platform_info.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class HqsService {
-  userService.UserServiceClient client;
-  userService.Token token = userService.Token();
+  userService.Token curToken = userService.Token();
   userService.User curUser = userService.User();
+  privilegeService.Privilege curPrivilege = privilegeService.Privilege();
+  // user service
+  userService.UserServiceClient userClient;
+  final String userServiceAddr;
+  final int userServicePort;
 
-  final String addr;
-  final int port;
+  // privilege service
+  privilegeService.PrivilegeServiceClient privilegeClient;
+  final String privilegeServiceAddr;
+  final int privilegeServicePort;
+
   final Function onLogout;
   final Function onLogin;
 
   HqsService(
-      {@required this.addr,
-      @required this.port,
+      {@required this.userServiceAddr,
+      @required this.userServicePort,
+      @required this.privilegeServiceAddr,
+      @required this.privilegeServicePort,
       @required this.onLogin,
       @required this.onLogout}) {
     // assert not null
-    assert(addr != null);
-    assert(port != null);
+    assert(userServiceAddr != null);
+    assert(userServicePort != null);
+    assert(privilegeServiceAddr != null);
+    assert(privilegeServicePort != null);
     assert(onLogin != null);
     assert(onLogout != null);
   }
 
   Future<void> connect() async {
     try {
-      // create connection to client
-      ClientChannel clientChannel = new ClientChannel(addr,
-          port: port,
+      // create connection to userClient
+      ClientChannel userClientChannel = new ClientChannel(userServiceAddr,
+          port: userServicePort,
           options: ChannelOptions(credentials: ChannelCredentials.insecure()));
-      client = userService.UserServiceClient(clientChannel);
-      client.ping(userService.Request());
+      userClient = userService.UserServiceClient(userClientChannel);
+      userClient.ping(userService.Request());
 
+      // craete conncetion to privilege client
+      ClientChannel privilegeClientChannel = new ClientChannel(
+          privilegeServiceAddr,
+          port: privilegeServicePort,
+          options: ChannelOptions(credentials: ChannelCredentials.insecure()));
+      privilegeClient =
+          privilegeService.PrivilegeServiceClient(privilegeClientChannel);
+      privilegeClient.ping(privilegeService.Request());
       // check if we have a valid token
       await checkStoredToken();
     } catch (e) {
@@ -51,9 +71,10 @@ class HqsService {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String storedToken = prefs.getString("stored_token");
     if (storedToken == null || storedToken.isEmpty) return;
-    userService.Token validateToken = await client.validateToken(userService.Token()..token=storedToken);
+    userService.Token validateToken = await userClient
+        .validateToken(userService.Token()..token = storedToken);
     if (validateToken.valid) {
-      token.token = storedToken;
+      curToken.token = storedToken;
       await onLogin();
     }
     return;
@@ -62,15 +83,14 @@ class HqsService {
   // authenticate - login and returns a token
   Future<userService.Token> authenticate(
       BuildContext context, String email, String password) async {
-    token.clearToken();
-
+    curToken.clearToken();
     userService.User authUser = userService.User()
       ..email = email
       ..password = password;
 
     // validate
     if (email.isEmpty || password.isEmpty) {
-      return token;
+      return curToken;
     }
 
     // get longitude & latitude
@@ -80,7 +100,26 @@ class HqsService {
     // get device info
     String deviceInfo = "";
     try {
-      deviceInfo = Platform.I.operatingSystem.toString();
+      switch (Platform.I.operatingSystem) {
+        case OperatingSystem.macOS:
+          deviceInfo = "macOS";
+          break;
+        case OperatingSystem.iOS:
+          deviceInfo = "iOS";
+          break;
+        case OperatingSystem.android:
+          deviceInfo = "Android";
+          break;
+        case OperatingSystem.linux:
+          deviceInfo = "Linux";
+          break;
+        case OperatingSystem.windows:
+          deviceInfo = "Windows";
+          break;
+        default:
+          deviceInfo = "Unknown";
+          break;
+      }
     } catch (e) {
       print("Could not get device info");
     }
@@ -93,7 +132,8 @@ class HqsService {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       CallOptions callOptions = CallOptions(metadata: metadata);
-      token = await client.auth(authUser, options: callOptions).then((val) {
+      curToken =
+          await userClient.auth(authUser, options: callOptions).then((val) {
         prefs.setString('stored_token', val.token);
         return val;
       });
@@ -104,25 +144,90 @@ class HqsService {
     } catch (e) {
       throw e;
     }
-    return token;
+    return curToken;
+  }
+
+  Future<privilegeService.Response> getCurrentPrivileges() async {
+    privilegeService.Response response = privilegeService.Response();
+    try {
+      response = await privilegeClient
+          .get(privilegeService.Privilege()..id = curUser.privilegeID);
+    } catch (e) {
+      curPrivilege.clear();
+      throw e;
+    }
+    curPrivilege = response.privilege;
+    return response;
+  }
+
+  Future<privilegeService.Response> deletePrivilege(
+      privilegeService.Privilege privilege) async {
+    privilegeService.Response response = privilegeService.Response();
+    try {
+      var metadata = {"token": curToken.token};
+      CallOptions callOptions = CallOptions(metadata: metadata);
+      response = await privilegeClient.delete(privilege, options: callOptions);
+    } catch (e) {
+      curPrivilege.clear();
+      throw e;
+    }
+    return response;
+  }
+
+  Future<privilegeService.Response> newPrivilege(
+      privilegeService.Privilege privilege) async {
+    privilegeService.Response response = privilegeService.Response();
+    try {
+      var metadata = {"token": curToken.token};
+      CallOptions callOptions = CallOptions(metadata: metadata);
+      response = await privilegeClient.create(privilege, options: callOptions);
+    } catch (e) {
+      curPrivilege.clear();
+      throw e;
+    }
+    return response;
+  }
+
+  Future<privilegeService.Response> updatePrivilege(
+      privilegeService.Privilege privilege) async {
+    privilegeService.Response response = privilegeService.Response();
+    try {
+      var metadata = {"token": curToken.token};
+      CallOptions callOptions = CallOptions(metadata: metadata);
+      response = await privilegeClient.update(privilege, options: callOptions);
+    } catch (e) {
+      curPrivilege.clear();
+      throw e;
+    }
+    return response;
+  }
+
+  Future<privilegeService.Response> getAllPrivileges() async {
+    privilegeService.Response response = privilegeService.Response();
+    try {
+      response = await privilegeClient.getAll(privilegeService.Request());
+    } catch (e) {
+      throw e;
+    }
+    return response;
   }
 
   // get current user by users token - if a error is present, log that user out
   Future<userService.Response> getCurrentUser() async {
     userService.Response response = userService.Response();
     try {
-      var metadata = {"token": token.token};
+      var metadata = {"token": curToken.token};
       CallOptions callOptions = CallOptions(metadata: metadata);
-      response = await client
-          .getByToken(userService.Request(), options: callOptions)
-          .then((rep) {
-        return rep;
-      });
+      response = await userClient.getByToken(userService.Request(),
+          options: callOptions);
+      curUser = response.user;
+      await getCurrentPrivileges();
     } catch (e) {
-      token.clearToken();
+      print("we get in here!!");
+      print(e.toString());
+      curToken.clearToken();
       onLogout();
     }
-    curUser = response.user;
     return response;
   }
 
@@ -130,19 +235,19 @@ class HqsService {
   Future<userService.Response> getAllUsers() async {
     userService.Response response = userService.Response();
     // check if user is allowed
-    if (!curUser.allowView) {
+    if (!curPrivilege.viewAllUsers) {
       return response;
     }
     try {
-      var metadata = {"token": token.token};
+      var metadata = {"token": curToken.token};
       CallOptions callOptions = CallOptions(metadata: metadata);
-      response = await client
+      response = await userClient
           .getAll(userService.Request(), options: callOptions)
           .then((rep) {
         return rep;
       });
     } catch (e) {
-      token.clearToken();
+      curToken.clearToken();
       onLogout();
     }
     return response;
@@ -152,9 +257,9 @@ class HqsService {
   Future<userService.AuthHistory> getCurrentUserAuthHistory() async {
     userService.AuthHistory authHistory = userService.AuthHistory();
     try {
-      var metadata = {"token": token.token};
+      var metadata = {"token": curToken.token};
       CallOptions callOptions = CallOptions(metadata: metadata);
-      authHistory = await client.getAuthHistory(userService.Request(),
+      authHistory = await userClient.getAuthHistory(userService.Request(),
           options: callOptions);
     } catch (e) {
       print(e);
@@ -167,35 +272,20 @@ class HqsService {
 
   // create a user - only allowed if current user got admin status.
   Future<userService.Response> createUser(
-      String name,
-      String email,
-      String password,
-      bool allowView,
-      bool allowCreate,
-      bool allowPermission,
-      bool allowDelete,
-      bool allowBlock,
-      bool allowReset,
-      bool gender) async {
+      String name, String email, String password, bool gender) async {
     userService.Response response = userService.Response();
-    if (!curUser.allowCreate) {
+    if (!curPrivilege.createUser) {
       return response;
     }
     try {
-      var metadata = {"token": token.token};
+      var metadata = {"token": curToken.token};
       CallOptions callOptions = CallOptions(metadata: metadata);
-      response = await client
+      response = await userClient
           .create(
               userService.User()
                 ..name = name
                 ..email = email
                 ..password = password
-                ..allowView = allowView
-                ..allowCreate = allowCreate
-                ..allowPermission = allowPermission
-                ..allowDelete = allowDelete
-                ..allowBlock = allowBlock
-                ..allowResetPassword = allowReset
                 ..gender = gender,
               options: callOptions)
           .then((rep) {
@@ -210,13 +300,13 @@ class HqsService {
   // block a user - only if you have access.
   Future<userService.Response> blockUser(userService.User user) async {
     userService.Response response = userService.Response();
-    if (!curUser.allowBlock) {
+    if (!curPrivilege.blockUser) {
       return response;
     }
     try {
-      var metadata = {"token": token.token};
+      var metadata = {"token": curToken.token};
       CallOptions callOptions = CallOptions(metadata: metadata);
-      response = await client
+      response = await userClient
           .updateBlockUser(
               userService.User()
                 ..blocked = !user.blocked
@@ -226,7 +316,7 @@ class HqsService {
         return rep;
       });
     } catch (e) {
-      token.clearToken();
+      curToken.clearToken();
       onLogout();
       throw e;
     }
@@ -234,39 +324,29 @@ class HqsService {
   }
 
   // update a users permissions - only if you have access
-  Future<userService.Response> updateUsersPermissions(
-    String id,
-    bool allowView,
-    bool allowCreate,
-    bool allowPermissions,
-    bool allowDelete,
-    bool allowBlock,
-    bool allowReset,
+  Future<userService.Response> updateUsersPrivileges(
+    String userId,
+    String privilegeId,
   ) async {
     userService.Response response = userService.Response();
-    if (!curUser.allowPermission) {
+    if (!curPrivilege.managePrivileges) {
       return response;
     }
     try {
-      var metadata = {"token": token.token};
+      var metadata = {"token": curToken.token};
       CallOptions callOptions = CallOptions(metadata: metadata);
-      response = await client
-          .updateAllowances(
+      response = await userClient
+          .updatePrivileges(
               userService.User()
-                ..id = id
-                ..allowView = allowView
-                ..allowCreate = allowCreate
-                ..allowPermission = allowPermissions
-                ..allowDelete = allowDelete
-                ..allowResetPassword = allowReset
-                ..allowBlock = allowBlock,
+                ..id = userId
+                ..privilegeID = privilegeId,
               options: callOptions)
           .then((rep) {
         getCurrentUser();
         return rep;
       });
     } catch (e) {
-      token.clearToken();
+      curToken.clearToken();
       onLogout();
       throw e;
     }
@@ -286,12 +366,12 @@ class HqsService {
       String description,
       String birthday) async {
     userService.Response response = userService.Response();
-    if (token == null || token.token.isEmpty) {
-      token.clearToken();
+    if (curToken == null || curToken.token.isEmpty) {
+      curToken.clearToken();
       // logout or maybe authenticate again...
     }
     try {
-      var metadata = {"token": token.token};
+      var metadata = {"token": curToken.token};
 
       CallOptions callOptions = CallOptions(metadata: metadata);
       userService.User user = userService.User()
@@ -304,24 +384,13 @@ class HqsService {
         ..title = title
         ..birthday = birthday
         ..description = description;
-      response =
-          await client.updateProfile(user, options: callOptions).then((rep) {
-        return rep;
-      });
+      response = await userClient.updateProfile(user, options: callOptions);
     } catch (e) {
-      token.clearToken();
+      curToken.clearToken();
       onLogout();
       throw e;
     }
-    curUser.name = response.user.name;
-    curUser.email = response.user.email;
-    curUser.phone = response.user.phone;
-    curUser.countryCode = response.user.countryCode;
-    curUser.dialCode = response.user.dialCode;
-    curUser.gender = response.user.gender;
-    curUser.description = response.user.description;
-    curUser.title = response.user.title;
-    curUser.birthday = response.user.birthday;
+    await getCurrentUser();
     return response;
   }
 
@@ -332,18 +401,18 @@ class HqsService {
     String newPassword,
   ) async {
     userService.Response response = userService.Response();
-    if (token == null || token.token.isEmpty) {
-      token.clearToken();
+    if (curToken == null || curToken.token.isEmpty) {
+      curToken.clearToken();
       // logout or maybe authenticate again...
     }
     try {
-      var metadata = {"token": token.token};
+      var metadata = {"token": curToken.token};
       CallOptions callOptions = CallOptions(metadata: metadata);
       userService.UpdatePasswordRequest updatePasswordRequest =
           userService.UpdatePasswordRequest()
             ..oldPassword = oldPassword
             ..newPassword = newPassword;
-      response = await client.updatePassword(updatePasswordRequest,
+      response = await userClient.updatePassword(updatePasswordRequest,
           options: callOptions);
     } catch (e) {
       throw e;
@@ -356,14 +425,14 @@ class HqsService {
     userService.Token responseToken = userService.Token();
 
     try {
-      var metadata = {"token": token.token};
+      var metadata = {"token": curToken.token};
       CallOptions callOptions = CallOptions(metadata: metadata);
       userService.BlockTokenRequest request = userService.BlockTokenRequest()
         ..tokenID = tokenID;
       responseToken =
-          await client.blockTokenByID(request, options: callOptions);
+          await userClient.blockTokenByID(request, options: callOptions);
     } catch (e) {
-      token.clearToken();
+      curToken.clearToken();
       onLogout();
       throw e;
     }
@@ -375,14 +444,14 @@ class HqsService {
     userService.Response response = userService.Response();
 
     try {
-      var metadata = {"token": token.token};
+      var metadata = {"token": curToken.token};
       CallOptions callOptions = CallOptions(metadata: metadata);
-      response = await client.blockUsersTokens(userService.Request(),
+      response = await userClient.blockUsersTokens(userService.Request(),
           options: callOptions);
-      token.clearToken();
+      curToken.clearToken();
       onLogout();
     } catch (e) {
-      token.clearToken();
+      curToken.clearToken();
       onLogout();
       throw e;
     }
@@ -392,16 +461,16 @@ class HqsService {
   // delete a user if you have access.
   Future<userService.Response> deleteUser(String id) async {
     userService.Response response = userService.Response();
-    if (!curUser.allowDelete) {
+    if (!curPrivilege.deleteUser) {
       return response;
     }
     try {
-      var metadata = {"token": token.token};
+      var metadata = {"token": curToken.token};
       CallOptions callOptions = CallOptions(metadata: metadata);
-      response = await client.delete(userService.User()..id = id,
+      response = await userClient.delete(userService.User()..id = id,
           options: callOptions);
     } catch (e) {
-      token.clearToken();
+      curToken.clearToken();
       onLogout();
       throw e;
     }
@@ -409,32 +478,19 @@ class HqsService {
   }
 
   // generate a token another user can use to signup with
-  Future<userService.Token> generateSignupToken(
-    bool allowView,
-    bool allowCreate,
-    bool allowPermission,
-    bool allowDelete,
-    bool allowBlock,
-    bool allowReset,
-  ) async {
+  Future<userService.Token> generateSignupToken() async {
     userService.Token tokenResponse = userService.Token();
-    if (!curUser.allowCreate) {
+    if (!curPrivilege.createUser) {
       return tokenResponse;
     }
     try {
-      var metadata = {"token": token.token};
-      userService.User user = userService.User()
-        ..allowView = allowView
-        ..allowCreate = allowCreate
-        ..allowPermission = allowPermission
-        ..allowDelete = allowDelete
-        ..allowResetPassword = allowReset
-        ..allowBlock = allowBlock;
+      var metadata = {"token": curToken.token};
+      userService.User user = userService.User();
       CallOptions callOptions = CallOptions(metadata: metadata);
       tokenResponse =
-          await client.generateSignupToken(user, options: callOptions);
+          await userClient.generateSignupToken(user, options: callOptions);
     } catch (e) {
-      token.clearToken();
+      curToken.clearToken();
       onLogout();
       throw e;
     }
@@ -453,7 +509,7 @@ class HqsService {
         ..password = password
         ..gender = gender;
       CallOptions callOptions = CallOptions(metadata: metadata);
-      response = await client.signup(user, options: callOptions);
+      response = await userClient.signup(user, options: callOptions);
     } catch (e) {
       throw e;
     }
@@ -468,10 +524,10 @@ class HqsService {
     }
     userService.Response response = userService.Response();
     try {
-      var metadata = {"token": token.token};
+      var metadata = {"token": curToken.token};
       CallOptions callOptions = CallOptions(metadata: metadata);
       response =
-          await client.emailResetPasswordToken(user, options: callOptions);
+          await userClient.emailResetPasswordToken(user, options: callOptions);
     } catch (e) {
       throw e;
     }
@@ -481,20 +537,20 @@ class HqsService {
   Future<userService.Token> logout() async {
     userService.Token resToken = userService.Token();
     try {
-      var metadata = {"token": token.token};
+      var metadata = {"token": curToken.token};
       CallOptions callOptions = CallOptions(metadata: metadata);
-      resToken = await client.blockToken(token, options: callOptions);
+      resToken = await userClient.blockToken(curToken, options: callOptions);
     } catch (e) {
       throw e;
     }
-    token.clearToken();
+    curToken.clearToken();
     onLogout();
     return resToken;
   }
 
   Stream<userService.UploadImageRequest> generateUploadStream(
       Uint8List fileInBytes) async* {
-    final tokenReq = userService.UploadImageRequest()..token = token.token;
+    final tokenReq = userService.UploadImageRequest()..token = curToken.token;
     yield tokenReq;
     int size = 1024;
     for (var i = 0; i < fileInBytes.length; i += size) {
@@ -521,7 +577,9 @@ class HqsService {
       }
       Uint8List fileToBytes = file.toUint8List();
 
-      await client.uploadImage(generateUploadStream(fileToBytes)).then((resp) {
+      await userClient
+          .uploadImage(generateUploadStream(fileToBytes))
+          .then((resp) {
         closeDialog();
         return resp;
       });

@@ -6,8 +6,9 @@ import 'package:hqs_desktop/home/screens/profile/constants/text.dart';
 import 'package:hqs_desktop/home/screens/profile/utils/auth_source.dart';
 import 'package:hqs_desktop/home/widgets/custom_flushbar_error.dart';
 import 'package:hqs_desktop/home/widgets/custom_flushbar_success.dart';
-import 'package:hqs_desktop/service/hqs_user_service.dart';
+import 'package:hqs_desktop/service/hqs_service.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:hqs_desktop/theme/constants.dart';
 
 class ProfileAuthHistory extends StatefulWidget {
   final HqsService service;
@@ -264,7 +265,7 @@ class _ProfileAuthHistoryState extends State<ProfileAuthHistory> {
                 style: GoogleFonts.poppins(
                   fontSize: 14,
                   fontWeight: FontWeight.normal,
-                  color: Theme.of(context).errorColor,
+                  color: dangerColor,
                 ),
               ),
               onPressed: () {
@@ -280,16 +281,16 @@ class _ProfileAuthHistoryState extends State<ProfileAuthHistory> {
                 ),
               ),
               onPressed: () {
-                Navigator.of(context, rootNavigator: true).pop();
+                Navigator.of(c, rootNavigator: true).pop();
                 service.blockAllUsersTokens()
                   ..catchError((error) {
                     CustomFlushbarError(
                             title: "Something went wrong",
                             body:
                                 "We could not block all tokens. Please make sure that you have a valid wifi connection.",
-                            context: context)
+                            context: c)
                         .getFlushbar()
-                        .show(context);
+                        .show(c);
                   }).then((token) {
                     CustomFlushbarSuccess(
                             title: "All tokens successfully blocked",
@@ -297,8 +298,7 @@ class _ProfileAuthHistoryState extends State<ProfileAuthHistory> {
                                 "All your tokes were successfully blocked. You will be logged out since you don't have a valid token anymore.",
                             context: context)
                         .getFlushbar()
-                          ..show(Navigator.of(context, rootNavigator: true)
-                              .context);
+                          ..show(c);
                     return token;
                   });
               },

@@ -6,7 +6,7 @@ const departmentsRoute = "/departments";
 
 // nagivation rail
 const departmentsNavRailLabel = "Departments";
-const adminUsersNavRailLabel = "Admin Users";
+const organizationNavRailLabel = "Organization";
 const projectsNavRailLabel = "Projects";
 const SettingsNavRailLabel = "Settings";
 

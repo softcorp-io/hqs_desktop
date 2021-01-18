@@ -1,32 +1,34 @@
+import 'package:dart_hqs/hqs_privileges_service.pb.dart';
 import 'package:flutter/material.dart';
-import 'package:dart_hqs/hqs_user_service.pb.dart';
-import 'package:hqs_desktop/home/screens/admin_users/constants/text.dart';
+import 'package:hqs_desktop/home/screens/organization/constants/text.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hqs_desktop/home/widgets/custom_flushbar_error.dart';
 import 'package:hqs_desktop/home/widgets/custom_flushbar_success.dart';
-import 'package:hqs_desktop/service/hqs_user_service.dart';
+import 'package:hqs_desktop/service/hqs_service.dart';
+import 'package:dart_hqs/hqs_privilege_service.pbgrpc.dart' as privilegeService;
+import 'package:hqs_desktop/theme/constants.dart';
 
-class DeleteUserDialog extends StatelessWidget {
+class DeletePrivilegeDialog extends StatelessWidget {
   final HqsService service;
-  final User user;
+  final privilegeService.Privilege privilege;
   final Function onUpdate;
   final BuildContext buildContext;
 
-  DeleteUserDialog(
+  DeletePrivilegeDialog(
       {@required this.service,
-      @required this.user,
+      @required this.privilege,
       @required this.onUpdate,
       @required this.buildContext})
       : assert(service != null),
         assert(onUpdate != null),
         assert(buildContext != null),
-        assert(user != null);
+        assert(privilege != null);
 
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
       title: Text(
-        userSourceDeleteUserDialogTitle(user),
+        "Are you sure you want to delete ${privilege.name}",
         style: GoogleFonts.poppins(
           fontSize: 18,
           fontWeight: FontWeight.w600,
@@ -36,14 +38,21 @@ class DeleteUserDialog extends StatelessWidget {
         child: ListBody(
           children: <Widget>[
             Text(
-              userSourceDeleteUserDialogTextOne,
+              "After deleting a privilege, all users with that",
               style: GoogleFonts.poppins(
                 fontSize: 14,
                 fontWeight: FontWeight.normal,
               ),
             ),
             Text(
-              userSourceDeleteUserDialogTextTwo,
+              "privilege will get the default privilege.",
+              style: GoogleFonts.poppins(
+                fontSize: 14,
+                fontWeight: FontWeight.normal,
+              ),
+            ),
+            Text(
+              "Their privilege can updated afterwards.",
               style: GoogleFonts.poppins(
                 fontSize: 14,
                 fontWeight: FontWeight.normal,
@@ -55,10 +64,11 @@ class DeleteUserDialog extends StatelessWidget {
       actions: <Widget>[
         TextButton(
           child: Text(
-            userSourceDeleteUserDialogCloseBtnText,
+            "Close",
             style: GoogleFonts.poppins(
               fontSize: 14,
               fontWeight: FontWeight.normal,
+              color: dangerColor,
             ),
           ),
           onPressed: () {
@@ -67,7 +77,7 @@ class DeleteUserDialog extends StatelessWidget {
         ),
         TextButton(
           child: Text(
-            userSourceDeleteUserDialogDeleteBtnText,
+            "Delete",
             style: GoogleFonts.poppins(
               fontSize: 14,
               fontWeight: FontWeight.normal,
@@ -76,25 +86,25 @@ class DeleteUserDialog extends StatelessWidget {
           ),
           onPressed: () {
             Navigator.of(context, rootNavigator: true).pop();
-            service.deleteUser(user.id)
-              ..catchError((error) {
-                CustomFlushbarError(
-                        title: userSourceDeleteExceptionTitle,
-                        body: userSourceDeleteExceptionText(user),
-                        context: context)
-                    .getFlushbar()
-                    .show(context);
-              }).then((value) {
-                onUpdate();
-                CustomFlushbarSuccess(
-                        title: userSourceDeleteSuccessTitle(user),
-                        body: userSourceDeleteSuccessText(user),
-                        context: context)
-                    .getFlushbar()
-                    .show(Navigator.of(buildContext, rootNavigator: true)
-                        .context);
-                return value;
-              });
+            service.deletePrivilege(privilege).catchError((error) {
+              CustomFlushbarError(
+                      title: "Could not delete privilege",
+                      body:
+                          "We could not delete the requested privilege. Please try again later.",
+                      context: context)
+                  .getFlushbar()
+                  .show(context);
+            }).then((value) {
+              onUpdate();
+              CustomFlushbarSuccess(
+                      title: "Successfully delete privilege",
+                      body: "We successfully deleted the requested privilege.",
+                      context: context)
+                  .getFlushbar()
+                  .show(
+                      Navigator.of(buildContext, rootNavigator: true).context);
+              return value;
+            });
           },
         ),
       ],

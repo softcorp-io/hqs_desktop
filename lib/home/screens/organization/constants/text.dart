@@ -4,16 +4,10 @@ import 'package:dart_hqs/hqs_user_service.pb.dart';
 const adminUsersTableTitle = "Manage Users";
 const adminUsersGenerateSignupLink = "Generate Signup Link";
 const adminUsersCreateUserButton = "New User";
-const adminUsersImageCol = "Image";
-const adminUsersNameCol = "Name";
-const adminUsersViewAccessCol = "View Access";
-const adminUsersCreateAccessCol = "Create Access";
-const adminUsersPermissionAccessCol = "Permission Access";
-const adminUsersDeleteAccessCol = "Delete Access";
-const adminUsersBlockAccessCol = "Block Access";
-const adminUsersResetAccessCol = "Reset Access";
-const adminUsersBlockedCol = "Blocked";
+const adminUsersProfileCol = "Profile";
 const adminUsersActionsCol = "Actions";
+const adminUsersStatusCol = "Blocked";
+const adminUsersUpdatedAt = "Update At";
 
 // generaet signup link dialog
 const generateSignUpLinkTitle = "Generate Signup Link";

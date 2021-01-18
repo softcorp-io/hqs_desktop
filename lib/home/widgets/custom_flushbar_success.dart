@@ -18,6 +18,7 @@ class CustomFlushbarSuccess {
   Flushbar getFlushbar() {
     return Flushbar(
         maxWidth: 800,
+        backgroundColor: flushbarColor,
         title: title,
         icon: Icon(
           Icons.check_circle_outline,

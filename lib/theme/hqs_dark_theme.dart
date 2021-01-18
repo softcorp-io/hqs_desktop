@@ -10,8 +10,17 @@ class HqsDarkTheme {
     return ThemeData.dark().copyWith(
       textTheme: textTheme,
       accentColor: primaryColor,
-      appBarTheme: AppBarTheme(color: primaryColor),
+      navigationRailTheme: NavigationRailThemeData(
+        unselectedLabelTextStyle: GoogleFonts.poppins(
+          color: Colors.white,
+        ),
+        selectedLabelTextStyle: GoogleFonts.poppins(
+          color: primaryColor,
+        ),
+      ),
+      appBarTheme: AppBarTheme(color: darkAppbarColor),
       primaryColor: primaryColor,
+      errorColor: dangerColor,
       inputDecorationTheme: InputDecorationTheme(
           focusedBorder: OutlineInputBorder(
             borderSide: BorderSide(color: primaryColor, width: 1.0),

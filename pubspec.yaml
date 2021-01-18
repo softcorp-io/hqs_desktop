@@ -31,9 +31,11 @@ dependencies:
       path: dart_hqs
 
   cupertino_icons: ^1.0.0
+  progress_state_button: ^1.0.2
   koukicons: ^2.0.3
   google_fonts: ^1.1.0
   intl: ^0.16.1
+  flutter_icons: ^1.1.0
   get: ^3.24.0 
   #location: ^3.2.1
   async: ^2.4.2

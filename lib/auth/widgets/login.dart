@@ -4,8 +4,10 @@ import 'package:hqs_desktop/auth/constants/text.dart';
 import 'package:hqs_desktop/constants/constants.dart';
 import 'package:hqs_desktop/home/widgets/custom_flushbar_error.dart';
 import 'package:hqs_desktop/home/widgets/custom_text_form_field.dart';
-import 'package:hqs_desktop/service/hqs_user_service.dart';
+import 'package:hqs_desktop/service/hqs_service.dart';
 import 'package:hqs_desktop/theme/constants.dart';
+import 'package:progress_state_button/iconed_button.dart';
+import 'package:progress_state_button/progress_button.dart';
 
 class LogIn extends StatefulWidget {
   final HqsService service;
@@ -29,12 +31,84 @@ class _LogInState extends State<LogIn> {
 
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
+
+  ButtonState loginButtonState = ButtonState.idle;
+  Widget buildLoginButton() {
+    return ProgressButton.icon(
+      iconedButtons: {
+        ButtonState.idle: IconedButton(
+            text: "Login",
+            icon: Icon(Icons.login, color: Colors.white),
+            color: primaryColor),
+        ButtonState.loading: IconedButton(text: "Loading", color: primaryColor),
+        ButtonState.fail: IconedButton(
+            text: "Wrong password or email",
+            icon: Icon(Icons.cancel, color: Colors.white),
+            color: dangerColor),
+        ButtonState.success: IconedButton(
+            text: "Success",
+            icon: Icon(
+              Icons.check_circle,
+              color: Colors.white,
+            ),
+            color: successColor)
+      },
+      onPressed: onPressedLoginButton,
+      state: loginButtonState,
+      maxWidth: 500.0,
+      radius: buttonBorderRadius,
+    );
+  }
+
+  void onPressedLoginButton() {
+    if (_formKey.currentState.validate()) {
+      setState(() {
+        loginButtonState = ButtonState.loading;
+      });
+      service
+          .authenticate(
+              context, _emailController.text, _passwordController.text)
+          .catchError((error) {
+        setState(() {
+          loginButtonState = ButtonState.fail;
+        });
+        Future.delayed(Duration(seconds: 3), () {
+          setState(() {
+            loginButtonState = ButtonState.idle;
+          });
+        });
+        CustomFlushbarError(
+                title: authExceptionResponseTitle,
+                body: authExceptionResponseText,
+                context: context)
+            .getFlushbar()
+              ..show(context);
+        _emailController.text = "";
+        _passwordController.text = "";
+      }).then((token) => {
+                if (token == null || token.token.isEmpty)
+                  {
+                    print("token was empty or null"),
+                    _emailController.text = "",
+                    _passwordController.text = "",
+                  }
+                else
+                  {
+                    setState(() {
+                      loginButtonState = ButtonState.success;
+                    }),
+                    Future.delayed(Duration(milliseconds: 1500), () {
+                      onLogIn();
+                    }),
+                  }
+              });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
-    final _formKey = GlobalKey<FormState>();
-
     return Stack(
       children: [
         Padding(
@@ -105,7 +179,6 @@ class _LogInState extends State<LogIn> {
                                     },
                                     hintText: emailHintText,
                                     labelText: emailLabelText,
-                                    icon: Icons.person,
                                     obscure: false),
                                 Padding(
                                   padding: EdgeInsets.all(10),
@@ -116,7 +189,6 @@ class _LogInState extends State<LogIn> {
                                     maxLines: 1,
                                     keyboardType: TextInputType.text,
                                     controller: _passwordController,
-                                    icon: Icons.lock_outline,
                                     focusNode: FocusNode(),
                                     validator: (value) {
                                       if (value.isEmpty) {
@@ -130,69 +202,9 @@ class _LogInState extends State<LogIn> {
                                 Padding(
                                   padding: EdgeInsets.all(60),
                                 ),
-                                SizedBox(
-                                    child: RaisedButton(
-                                  shape: StadiumBorder(),
-                                  padding: EdgeInsets.all(0.0),
-                                  onPressed: () async => {
-                                    if (_formKey.currentState.validate())
-                                      {
-                                        service
-                                            .authenticate(
-                                                context,
-                                                _emailController.text,
-                                                _passwordController.text)
-                                            .catchError((error) {
-                                          CustomFlushbarError(
-                                                  title:
-                                                      authExceptionResponseTitle,
-                                                  body:
-                                                      authExceptionResponseText,
-                                                  context: context)
-                                              .getFlushbar()
-                                                ..show(context);
-                                          _emailController.text = "";
-                                          _passwordController.text = "";
-                                        }).then((token) => {
-                                                  if (token.token == "")
-                                                    {
-                                                      _emailController.text =
-                                                          "",
-                                                      _passwordController.text =
-                                                          "",
-                                                    }
-                                                  else
-                                                    {
-                                                      // User is allowed to log in
-                                                      onLogIn(),
-                                                    }
-                                                }),
-                                      }
-                                  },
-                                  child: Container(
-                                    width: double.infinity,
-                                    height: 50.0,
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(
-                                          buttonBorderRadius),
-                                      gradient: LinearGradient(
-                                        colors: defaultGradientColor,
-                                      ),
-                                    ),
-                                    child: Align(
-                                      alignment: Alignment.center,
-                                      child: Text(
-                                        submitButtonText,
-                                        style: TextStyle(
-                                          fontSize: 15.0,
-                                          color: Colors.white,
-                                        ),
-                                      ),
-                                    ),
-                                    padding: EdgeInsets.symmetric(
-                                        horizontal: 70.0, vertical: 15.0),
-                                  ),
-                                )),
+                                Center(
+                                  child: buildLoginButton(),
+                                ),
                               ],
                             ),
                           ),

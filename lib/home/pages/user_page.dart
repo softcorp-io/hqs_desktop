@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:hqs_desktop/home/screens/profile/constants/constants.dart';
 import 'package:hqs_desktop/home/screens/profile/widgets/profile_card.dart';
 import 'package:hqs_desktop/home/widgets/home_appbar.dart';
-import 'package:hqs_desktop/service/hqs_user_service.dart';
+import 'package:hqs_desktop/service/hqs_service.dart';
 import 'package:dart_hqs/hqs_user_service.pb.dart';
 
 class UserPage extends StatefulWidget {

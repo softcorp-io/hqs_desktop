@@ -8,7 +8,6 @@ class CustomTextFormField extends StatefulWidget {
   final int maxLines;
   final int maxLength;
   final int minLines;
-  final IconData icon;
   final String hintText;
   final String labelText;
   final bool obscure;
@@ -25,7 +24,6 @@ class CustomTextFormField extends StatefulWidget {
       @required this.minLines,
       @required this.maxLines,
       this.onChange,
-      this.icon,
       @required this.obscure}) {
     assert(controller != null);
     assert(focusNode != null);
@@ -42,7 +40,6 @@ class CustomTextFormField extends StatefulWidget {
       controller: controller,
       validator: validator,
       onChange: onChange,
-      icon: icon,
       hintText: hintText,
       labelText: labelText,
       obscure: obscure,
@@ -63,7 +60,6 @@ class _CustomTextFormFieldState extends State<CustomTextFormField> {
   final int maxLines;
   final int maxLength;
   final int minLines;
-  final IconData icon;
   final String hintText;
   final String labelText;
   final bool obscure;
@@ -80,7 +76,6 @@ class _CustomTextFormFieldState extends State<CustomTextFormField> {
       @required this.minLines,
       @required this.maxLines,
       this.onChange,
-      this.icon,
       @required this.obscure}) {
     assert(controller != null);
     assert(focusNode != null);
@@ -115,12 +110,6 @@ class _CustomTextFormFieldState extends State<CustomTextFormField> {
       decoration: InputDecoration(
         hintText: hintText,
         labelText: labelText,
-        suffixIcon: Icon(
-          icon,
-          color: focusNode.hasFocus
-              ? Theme.of(context).primaryColor
-              : Theme.of(context).iconTheme.color,
-        ),
       ),
       validator: (value) {
         if (this.validator == null) {

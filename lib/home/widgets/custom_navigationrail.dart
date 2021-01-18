@@ -2,14 +2,20 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hqs_desktop/home/constants/text.dart';
 import 'package:hqs_desktop/home/screens/departments/departments_page.dart';
-import 'package:hqs_desktop/home/screens/admin_users/admin_users_page.dart';
+import 'package:hqs_desktop/home/screens/organization/organization_page.dart';
 import 'package:hqs_desktop/home/screens/profile/profile_page.dart';
 import 'package:hqs_desktop/home/screens/settings/settings_page.dart';
 import 'package:hqs_desktop/home/widgets/home_appbar.dart';
-import 'package:hqs_desktop/service/hqs_user_service.dart';
-import 'package:koukicons/department.dart';
-import 'package:koukicons/users2.dart';
+import 'package:hqs_desktop/service/hqs_service.dart';
+import 'package:koukicons/addApp.dart';
 import 'package:koukicons/blueprint.dart';
+import 'package:koukicons/calendar.dart';
+import 'package:koukicons/circuit.dart';
+import 'package:koukicons/collaboration.dart';
+import 'package:koukicons/department.dart';
+import 'package:koukicons/news.dart';
+import 'package:koukicons/newspaper.dart';
+import 'package:koukicons/organization.dart';
 import 'package:koukicons/settings.dart';
 
 class CustomNavigationrail extends StatefulWidget {
@@ -56,116 +62,152 @@ class _CustomNavigationrailState extends State<CustomNavigationrail> {
     _selectedIndex = 0;
   }
 
+  Text getText(String text) {
+    return Text(
+      text,
+      style: showActive
+          ? GoogleFonts.poppins(
+              fontSize: 13,
+              fontWeight: FontWeight.w500,
+            )
+          : GoogleFonts.poppins(
+              fontSize: 13,
+              fontWeight: FontWeight.w500,
+              color: Theme.of(context)
+                  .navigationRailTheme
+                  .unselectedLabelTextStyle
+                  .color),
+    );
+  }
+
   Map<NavigationRailDestination, Widget> buildNavigationRailDests() {
     Map<NavigationRailDestination, Widget> destinations =
         new Map<NavigationRailDestination, Widget>();
     destinations.putIfAbsent(
-        NavigationRailDestination(
-          icon: KoukiconsDepartment(
-            height: 26,
-          ),
-          selectedIcon: KoukiconsDepartment(
-            height: 26,
-          ),
-          label: Text(
-            departmentsNavRailLabel,
-            style: GoogleFonts.poppins(
-              fontSize: 13,
-              fontWeight: FontWeight.w500,
-              color: (_selectedIndex == 0 && showActive)
-                  ? Theme.of(context).primaryColor
-                  : Theme.of(context).textTheme.overline.color,
-            ),
-          ),
+      NavigationRailDestination(
+        icon: KoukiconsNewspaper(
+          height: 26,
         ),
-        () => DepartmentsPage(
-              service: service,
-            ));
+        selectedIcon: KoukiconsNewspaper(
+          height: 26,
+        ),
+        label: getText("News"),
+      ),
+      () => SettingsPage(
+        changeTheme: changeTheme,
+      ),
+    );
     destinations.putIfAbsent(
-        NavigationRailDestination(
-          icon: KoukiconsBlueprint(
-            height: 26,
-          ),
-          selectedIcon: KoukiconsBlueprint(
-            height: 26,
-          ),
-          label: Text(
-            projectsNavRailLabel,
-            style: GoogleFonts.poppins(
-              fontSize: 13,
-              fontWeight: FontWeight.w500,
-              color: (_selectedIndex == 1 && showActive)
-                  ? Theme.of(context).primaryColor
-                  : Theme.of(context).textTheme.overline.color,
-            ),
-          ),
+      NavigationRailDestination(
+        icon: KoukiconsBlueprint(
+          height: 26,
         ),
-        () => AdminUsersPage(
-              navigateToProfile: () {
-                setState(() {
-                  showActive = false;
-                  body = ProfilePage(
-                    service: service,
-                  );
-                });
-              },
-              service: service,
-            ));
-    if (service.curUser.allowView) {
+        selectedIcon: KoukiconsBlueprint(
+          height: 26,
+        ),
+        label: getText("Projects"),
+      ),
+      () => SettingsPage(
+        changeTheme: changeTheme,
+      ),
+    );
+    destinations.putIfAbsent(
+      NavigationRailDestination(
+        icon: KoukiconsDepartment(
+          height: 26,
+        ),
+        selectedIcon: KoukiconsDepartment(
+          height: 26,
+        ),
+        label: getText(departmentsNavRailLabel),
+      ),
+      () => DepartmentsPage(
+        service: service,
+      ),
+    );
+    destinations.putIfAbsent(
+      NavigationRailDestination(
+        icon: KoukiconsCalendar(
+          height: 26,
+        ),
+        selectedIcon: KoukiconsCalendar(
+          height: 26,
+        ),
+        label: getText("Calendar"),
+      ),
+      () => SettingsPage(
+        changeTheme: changeTheme,
+      ),
+    );
+    destinations.putIfAbsent(
+      NavigationRailDestination(
+        icon: KoukiconsCollaboration(
+          height: 26,
+        ),
+        selectedIcon: KoukiconsCollaboration(
+          height: 26,
+        ),
+        label: getText("Groups"),
+      ),
+      () => SettingsPage(
+        changeTheme: changeTheme,
+      ),
+    );
+    destinations.putIfAbsent(
+      NavigationRailDestination(
+        icon: KoukiconsAddApp(
+          height: 26,
+        ),
+        selectedIcon: KoukiconsAddApp(
+          height: 26,
+        ),
+        label: getText("App Store"),
+      ),
+      () => SettingsPage(
+        changeTheme: changeTheme,
+      ),
+    );
+    if (service.curPrivilege.viewAllUsers) {
       destinations.putIfAbsent(
-          NavigationRailDestination(
-            icon: KoukiconsUsers2(
-              height: 26,
-            ),
-            selectedIcon: KoukiconsUsers2(
-              height: 26,
-            ),
-            label: Text(
-              adminUsersNavRailLabel,
-              style: GoogleFonts.poppins(
-                fontSize: 13,
-                fontWeight: FontWeight.w500,
-                color: (_selectedIndex == 2 && showActive)
-                    ? Theme.of(context).primaryColor
-                    : Theme.of(context).textTheme.overline.color,
-              ),
-            ),
+        NavigationRailDestination(
+          icon: KoukiconsOrganization(
+            height: 26,
           ),
-          () => AdminUsersPage(
-                navigateToProfile: () {
-                  setState(() {
-                    showActive = false;
-                    body = ProfilePage(
-                      service: service,
-                    );
-                  });
+          selectedIcon: KoukiconsOrganization(
+            height: 26,
+          ),
+          label: getText(organizationNavRailLabel),
+        ),
+        () => OrganizationPage(
+          navigateToProfile: () {
+            setState(() {
+              showActive = false;
+              body = ProfilePage(
+                onUpdate: () {
+                  setState(() {});
                 },
                 service: service,
-              ));
+              );
+            });
+          },
+          service: service,
+        ),
+      );
     }
     destinations.putIfAbsent(
-        NavigationRailDestination(
-          icon: KoukiconsSettings(
-            height: 26,
-          ),
-          selectedIcon: KoukiconsSettings(
-            height: 26,
-          ),
-          label: Text(
-            SettingsNavRailLabel,
-            style: GoogleFonts.poppins(
-              fontSize: 13,
-              fontWeight: FontWeight.w500,
-              color: ((_selectedIndex == 3 && showActive) ||
-                      (!service.curUser.allowView && _selectedIndex == 2))
-                  ? Theme.of(context).primaryColor
-                  : Theme.of(context).textTheme.overline.color,
-            ),
-          ),
+      NavigationRailDestination(
+        icon: KoukiconsSettings(
+          height: 26,
         ),
-        () => SettingsPage(
-              changeTheme: changeTheme,
-            ));
+        selectedIcon: KoukiconsSettings(
+          height: 26,
+        ),
+        label: getText(SettingsNavRailLabel),
+      ),
+      () => SettingsPage(
+        changeTheme: changeTheme,
+      ),
+    );
     return destinations;
   }
 
@@ -180,6 +222,9 @@ class _CustomNavigationrailState extends State<CustomNavigationrail> {
           setState(() {
             showActive = false;
             body = ProfilePage(
+              onUpdate: () {
+                setState(() {});
+              },
               service: service,
             );
           });

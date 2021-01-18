@@ -10,7 +10,22 @@ class HqsLightTheme {
     return ThemeData.light().copyWith(
       textTheme: textTheme,
       accentColor: primaryColor,
-      appBarTheme: AppBarTheme(color: primaryColor),
+      errorColor: dangerColor,
+      scaffoldBackgroundColor: lightBackgroundColor,
+      appBarTheme: AppBarTheme(
+        color: lightAppbarColor,
+        iconTheme: IconThemeData(
+          color: Colors.black, //change your color here
+        ),
+      ),
+      navigationRailTheme: NavigationRailThemeData(
+        unselectedLabelTextStyle: GoogleFonts.poppins(
+          color: Colors.grey[700],
+        ),
+        selectedLabelTextStyle: GoogleFonts.poppins(
+          color: primaryColor,
+        ),
+      ),
       buttonTheme: ThemeData.light()
           .buttonTheme
           .copyWith(textTheme: ButtonTextTheme.primary),
@@ -21,7 +36,7 @@ class HqsLightTheme {
           ),
           labelStyle: TextStyle(color: ThemeData.light().iconTheme.color),
           enabledBorder: OutlineInputBorder(
-            borderSide: BorderSide(color: darkBorderColor, width: 1.0),
+            borderSide: BorderSide(color: lightBorderColor, width: 1.0),
           ),
           errorBorder: OutlineInputBorder(
             borderSide: BorderSide(color: dangerColor, width: 1.0),

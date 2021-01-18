@@ -5,14 +5,61 @@ import 'package:dart_hqs/hqs_user_service.pb.dart';
 import 'package:hqs_desktop/home/screens/profile/constants/constants.dart';
 import 'package:hqs_desktop/home/screens/profile/constants/text.dart';
 import 'package:hqs_desktop/home/widgets/custom_flushbar_error.dart';
-import 'package:hqs_desktop/home/widgets/custom_flushbar_success.dart';
-import 'package:hqs_desktop/service/hqs_user_service.dart';
+import 'package:hqs_desktop/service/hqs_service.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:country_code_picker/country_code_picker.dart';
 import 'package:hqs_desktop/home/widgets/custom_text_form_field.dart';
+import 'package:hqs_desktop/theme/constants.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
+import 'package:progress_state_button/progress_button.dart';
 
-class ProfileFormCard extends StatelessWidget {
+class ProfileFormCard extends StatefulWidget {
+  // constructor parameters
+  final HqsService service;
+  final Function onUpdate;
+  final User user;
+  final DateTime birthday;
+  final String birthdayString;
+  final Function setBirthday;
+  final Function setGender;
+  final Function setCountry;
+
+  ProfileFormCard({
+    @required this.service,
+    @required this.onUpdate,
+    @required this.user,
+    @required this.birthday,
+    @required this.birthdayString,
+    @required this.setBirthday,
+    @required this.setCountry,
+    @required this.setGender,
+  }) {
+    assert(service != null);
+    assert(onUpdate != null);
+    assert(user != null);
+    assert(birthday != null);
+    assert(setBirthday != null);
+    assert(setGender != null);
+    assert(setCountry != null);
+    assert(birthdayString != null && birthdayString.isNotEmpty);
+  }
+
+  @override
+  State<StatefulWidget> createState() {
+    return _ProfileFormCardState(
+      service: service,
+      onUpdate: onUpdate,
+      user: user,
+      birthday: birthday,
+      birthdayString: birthdayString,
+      setBirthday: setBirthday,
+      setCountry: setCountry,
+      setGender: setGender,
+    );
+  }
+}
+
+class _ProfileFormCardState extends State<ProfileFormCard> {
   // form controllers
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
@@ -31,19 +78,7 @@ class ProfileFormCard extends StatelessWidget {
   final Function setGender;
   final Function setCountry;
 
-  // init gender list
-  final List<DropdownMenuItem<bool>> genderList = [
-    new DropdownMenuItem(
-      child: new Text('Male'),
-      value: male,
-    ),
-    new DropdownMenuItem(
-      child: new Text('Female'),
-      value: female,
-    )
-  ];
-
-  ProfileFormCard({
+  _ProfileFormCardState({
     @required this.service,
     @required this.onUpdate,
     @required this.user,
@@ -68,6 +103,104 @@ class ProfileFormCard extends StatelessWidget {
     _titleController.text = user.title;
   }
 
+  // init gender list
+  final List<DropdownMenuItem<bool>> genderList = [
+    new DropdownMenuItem(
+      child: new Text('Male'),
+      value: male,
+    ),
+    new DropdownMenuItem(
+      child: new Text('Female'),
+      value: female,
+    )
+  ];
+
+  // update button
+  ButtonState updateButtonState = ButtonState.idle;
+  Widget buildUpdateButton() {
+    return ProgressButton(
+      stateWidgets: {
+        ButtonState.idle: Text(
+          "Update",
+          style: TextStyle(color: Colors.white),
+        ),
+        ButtonState.loading: Text(
+          "Loading",
+          style: TextStyle(color: Colors.white),
+        ),
+        ButtonState.fail: Text(
+          "Failed",
+          style: TextStyle(color: Colors.white),
+        ),
+        ButtonState.success: Text(
+          "Profile Updated",
+          style: TextStyle(color: Colors.white),
+        ),
+      },
+      onPressed: onPressedUpdateButton,
+      stateColors: {
+        ButtonState.idle: primaryColor,
+        ButtonState.loading: primaryColor,
+        ButtonState.fail: dangerColor,
+        ButtonState.success: successColor,
+      },
+      state: updateButtonState,
+      progressIndicatorSize: 30.0,
+      padding: EdgeInsets.all(12),
+      maxWidth: 200.0,
+      radius: buttonBorderRadius,
+    );
+  }
+
+  void onPressedUpdateButton() {
+    if (_formKey.currentState.validate()) {
+      setState(() {
+        updateButtonState = ButtonState.loading;
+      });
+      service
+          .updateCurrentUser(
+        context,
+        _nameController.text,
+        _emailController.text,
+        _phoneController.text,
+        user.countryCode,
+        user.dialCode,
+        _titleController.text,
+        user.gender,
+        _descriptionController.text,
+        birthdayString,
+      )
+          .catchError((error) {
+        setState(() {
+          updateButtonState = ButtonState.fail;
+        });
+        Future.delayed(Duration(seconds: 3), () {
+          setState(() {
+            updateButtonState = ButtonState.idle;
+          });
+        });
+        CustomFlushbarError(
+                title: "Something went wrong",
+                body:
+                    "We could not update your profile information. Please try again later.",
+                context: context)
+            .getFlushbar()
+            .show(context);
+      }).then((value) {
+        setState(() {
+          updateButtonState = ButtonState.success;
+        });
+        onUpdate();
+        Future.delayed(Duration(seconds: 2), () {
+          setState(() {
+            updateButtonState = ButtonState.idle;
+          });
+        });
+      });
+    }
+  }
+
+  // calendar
   double calendarHeight = 500;
   double calendarWidth = 500;
   Widget getDateRangePicker() {
@@ -141,7 +274,6 @@ class ProfileFormCard extends StatelessWidget {
                                     }
                                     return null;
                                   },
-                                  icon: Icons.person_outline,
                                   focusNode: FocusNode(),
                                   hintText: editProfileCardNameFieldHint,
                                   labelText: editProfileCardNameFieldText,
@@ -161,7 +293,6 @@ class ProfileFormCard extends StatelessWidget {
                                   hintText: editProfileCardEmailFieldHint,
                                   labelText: editProfileCardEmailFieldText,
                                   obscure: false,
-                                  icon: Icons.mail_outline_rounded,
                                   focusNode: FocusNode(),
                                   validator: (value) {
                                     var validEmail = RegExp(
@@ -193,7 +324,11 @@ class ProfileFormCard extends StatelessWidget {
                                     ),
                                     enabledBorder: OutlineInputBorder(
                                       borderSide: BorderSide(
-                                          color: Theme.of(context).hintColor,
+                                          color: Theme.of(context)
+                                              .inputDecorationTheme
+                                              .enabledBorder
+                                              .borderSide
+                                              .color,
                                           width: 1.0),
                                     ),
                                   ),
@@ -212,16 +347,19 @@ class ProfileFormCard extends StatelessWidget {
                               Flexible(
                                 child: Row(
                                   children: <Widget>[
-                                    CountryCodePicker(
-                                      onChanged: (country) {
-                                        setCountry(country);
-                                      },
-                                      initialSelection: user.dialCode.isEmpty
-                                          ? "US"
-                                          : user.dialCode,
-                                      showCountryOnly: false,
-                                      showOnlyCountryWhenClosed: false,
-                                      alignLeft: false,
+                                    Padding(
+                                      padding: EdgeInsets.only(bottom: 22),
+                                      child: CountryCodePicker(
+                                        onChanged: (country) {
+                                          setCountry(country);
+                                        },
+                                        initialSelection: user.dialCode.isEmpty
+                                            ? "US"
+                                            : user.dialCode,
+                                        showCountryOnly: false,
+                                        showOnlyCountryWhenClosed: false,
+                                        alignLeft: false,
+                                      ),
                                     ),
                                     Padding(
                                       padding:
@@ -272,7 +410,6 @@ class ProfileFormCard extends StatelessWidget {
                                   validator: (value) {
                                     return null;
                                   },
-                                  icon: Icons.badge,
                                   focusNode: FocusNode(),
                                   hintText: "Title",
                                   labelText: "Title",
@@ -348,55 +485,9 @@ class ProfileFormCard extends StatelessWidget {
                             padding: EdgeInsets.all(30),
                           ),
                           Align(
-                              alignment: Alignment.bottomRight,
-                              child: SizedBox(
-                                  width: 200,
-                                  height: 50.0,
-                                  child: RaisedButton(
-                                    color: Theme.of(context).primaryColor,
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(
-                                          buttonBorderRadius),
-                                    ),
-                                    onPressed: () async => {
-                                      if (_formKey.currentState.validate())
-                                        {
-                                          service
-                                              .updateCurrentUser(
-                                            context,
-                                            _nameController.text,
-                                            _emailController.text,
-                                            _phoneController.text,
-                                            user.countryCode,
-                                            user.dialCode,
-                                            _titleController.text,
-                                            user.gender,
-                                            _descriptionController.text,
-                                            birthdayString,
-                                          )
-                                              .catchError((error) {
-                                            CustomFlushbarError(
-                                                    title:
-                                                        "Something went wrong",
-                                                    body:
-                                                        "We could not update your profile information. Please make sure you have a valid wifi connection.",
-                                                    context: context)
-                                                .getFlushbar()
-                                                .show(context);
-                                          }).then((value) {
-                                            CustomFlushbarSuccess(
-                                              title:
-                                                  "Successfully updated your profile",
-                                              body:
-                                                  "Your profile was successfully updated.",
-                                              context: context,
-                                            ).getFlushbar().show(context);
-                                            onUpdate();
-                                          })
-                                        },
-                                    },
-                                    child: Text("Update Profile"),
-                                  ))),
+                            alignment: Alignment.bottomRight,
+                            child: buildUpdateButton(),
+                          ),
                         ],
                       ),
                     ),

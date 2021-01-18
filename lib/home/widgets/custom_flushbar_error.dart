@@ -1,5 +1,6 @@
 import 'package:another_flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
+import 'package:hqs_desktop/theme/constants.dart';
 
 enum FlushSize { Small, Medium, Large }
 
@@ -18,6 +19,7 @@ class CustomFlushbarError {
     return Flushbar(
         maxWidth: 800,
         title: title,
+        backgroundColor: flushbarColor,
         icon: Icon(
           Icons.error_outline,
           size: 28.0,

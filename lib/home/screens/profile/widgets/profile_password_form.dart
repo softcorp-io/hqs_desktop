@@ -4,9 +4,11 @@ import 'package:hqs_desktop/home/screens/profile/constants/constants.dart';
 import 'package:hqs_desktop/home/screens/profile/constants/text.dart';
 import 'package:hqs_desktop/home/widgets/custom_flushbar_error.dart';
 import 'package:hqs_desktop/home/widgets/custom_flushbar_success.dart';
-import 'package:hqs_desktop/service/hqs_user_service.dart';
+import 'package:hqs_desktop/service/hqs_service.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hqs_desktop/home/widgets/custom_text_form_field.dart';
+import 'package:hqs_desktop/theme/constants.dart';
+import 'package:progress_state_button/progress_button.dart';
 
 class ProfilePasswordForm extends StatefulWidget {
   final HqsService service;
@@ -35,6 +37,94 @@ class _ProfilePasswordFormState extends State<ProfilePasswordForm> {
 
   _ProfilePasswordFormState({@required this.service}) {
     assert(service != null);
+  }
+
+  ButtonState updateButtonState = ButtonState.idle;
+  Widget buildUpdateButton() {
+    return ProgressButton(
+      stateWidgets: {
+        ButtonState.idle: Text(
+          "Update",
+          style: TextStyle(color: Colors.white),
+        ),
+        ButtonState.loading: Text(
+          "Loading",
+          style: TextStyle(color: Colors.white),
+        ),
+        ButtonState.fail: Text(
+          "Failed",
+          style: TextStyle(color: Colors.white),
+        ),
+        ButtonState.success: Text(
+          "Password Updated",
+          style: TextStyle(color: Colors.white),
+        ),
+      },
+      onPressed: onPressedUpdateButton,
+      stateColors: {
+        ButtonState.idle: primaryColor,
+        ButtonState.loading: primaryColor,
+        ButtonState.fail: dangerColor,
+        ButtonState.success: successColor,
+      },
+      state: updateButtonState,
+      progressIndicatorSize: 30.0,
+      padding: EdgeInsets.all(12),
+      maxWidth: 200.0,
+      radius: buttonBorderRadius,
+    );
+  }
+
+  void onPressedUpdateButton() {
+    if (_formKey.currentState.validate()) {
+      setState(() {
+        updateButtonState = ButtonState.loading;
+      });
+      service
+          .updateCurrentUserPassword(
+              context, _oldPasswordController.text, _newPasswordController.text)
+          .catchError((error) {
+        setState(() {
+          updateButtonState = ButtonState.fail;
+          _oldPasswordController.text = "";
+          _newPasswordController.text = "";
+          _repeatedPasswordController.text = "";
+          passwordContainsLower = false;
+          passwordContainsNumber = false;
+          passwordContainsUpper = false;
+          passwordLongerThanSix = false;
+        });
+        Future.delayed(Duration(seconds: 3), () {
+          setState(() {
+            updateButtonState = ButtonState.idle;
+          });
+        });
+        CustomFlushbarError(
+                title: passwordFormExceptionTitle,
+                body: passwordFormExceptionText,
+                context: context)
+            .getFlushbar()
+            .show(context);
+      }).then((value) {
+        if (value != null) {
+          setState(() {
+            _oldPasswordController.text = "";
+            _newPasswordController.text = "";
+            _repeatedPasswordController.text = "";
+            updateButtonState = ButtonState.success;
+            passwordContainsLower = false;
+            passwordContainsNumber = false;
+            passwordContainsUpper = false;
+            passwordLongerThanSix = false;
+          });
+          Future.delayed(Duration(seconds: 2), () {
+            setState(() {
+              updateButtonState = ButtonState.idle;
+            });
+          });
+        }
+      });
+    }
   }
 
   @override
@@ -226,63 +316,9 @@ class _ProfilePasswordFormState extends State<ProfilePasswordForm> {
                     height: 16,
                   ),
                   Align(
-                      alignment: Alignment.bottomRight,
-                      child: SizedBox(
-                          width: 200,
-                          height: 50.0,
-                          child: RaisedButton(
-                            color: Theme.of(context).primaryColor,
-                            shape: RoundedRectangleBorder(
-                              borderRadius:
-                                  BorderRadius.circular(cardBorderRadius),
-                            ),
-                            child: Text(passwordFormUpdateBtnText),
-                            onPressed: () async => {
-                              if (_formKey.currentState.validate())
-                                {
-                                  service
-                                      .updateCurrentUserPassword(
-                                          context,
-                                          _oldPasswordController.text,
-                                          _newPasswordController.text)
-                                      .catchError((error) {
-                                    _oldPasswordController.text = "";
-                                    _newPasswordController.text = "";
-                                    _repeatedPasswordController.text = "";
-                                    setState(() {
-                                      passwordContainsLower = false;
-                                      passwordContainsNumber = false;
-                                      passwordContainsUpper = false;
-                                      passwordLongerThanSix = false;
-                                    });
-                                    CustomFlushbarError(
-                                            title: passwordFormExceptionTitle,
-                                            body: passwordFormExceptionText,
-                                            context: context)
-                                        .getFlushbar()
-                                        .show(context);
-                                  }).then((value) {
-                                    if (value != null) {
-                                      _oldPasswordController.text = "";
-                                      _newPasswordController.text = "";
-                                      _repeatedPasswordController.text = "";
-                                      setState(() {
-                                        passwordContainsLower = false;
-                                        passwordContainsNumber = false;
-                                        passwordContainsUpper = false;
-                                        passwordLongerThanSix = false;
-                                      });
-                                      CustomFlushbarSuccess(
-                                              title: passwordFormSuccessTitle,
-                                              body: passwordFormSuccessText,
-                                              context: context)
-                                          .getFlushbar()
-                                          .show(context);
-                                    }
-                                  })
-                                }
-                            },
-                          ))),
+                    alignment: Alignment.bottomRight,
+                    child: buildUpdateButton(),
+                  ),
                 ]),
               ),
             )),

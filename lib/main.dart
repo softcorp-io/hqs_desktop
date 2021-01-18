@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:hqs_desktop/service/hqs_user_service.dart';
+import 'package:hqs_desktop/service/hqs_service.dart';
 import 'package:desktop_window/desktop_window.dart';
 import 'dart:io';
 import 'package:hqs_desktop/auth/auth_page.dart';
@@ -14,7 +14,6 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
     DesktopWindow.setWindowSize(Size(800, 900));
-    DesktopWindow.setMinWindowSize(Size(800, 900));
   }
   runApp(HqsApp());
 }
@@ -34,7 +33,12 @@ class _HqsAppState extends State<HqsApp> {
 
   _HqsAppState() {
     service = new HqsService(
-        addr: "34.77.45.46", port: 9000, onLogin: onLogin, onLogout: onLogout);
+        userServiceAddr: "34.77.45.46",
+        userServicePort: 9000,
+        privilegeServiceAddr: "34.76.170.110",
+        privilegeServicePort: 9000,
+        onLogin: onLogin,
+        onLogout: onLogout);
     platformReady = setupPlatform();
   }
 
@@ -53,26 +57,31 @@ class _HqsAppState extends State<HqsApp> {
   }
 
   Future<void> setupPlatform() async {
-    await service.connect();
-    // setup theme
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    String chosenTheme = prefs.getString('theme');
-    if (chosenTheme == null) {
+    try {
+      await service.connect();
+      // setup theme
+      String chosenTheme = prefs.getString('theme');
+      if (chosenTheme == null) {
+        theme = lightTheme;
+        prefs.setString('theme', 'light');
+      } else {
+        switch (chosenTheme) {
+          case 'light':
+            theme = lightTheme;
+            break;
+          case 'dark':
+            theme = darkTheme;
+            break;
+          default:
+            theme = lightTheme;
+            prefs.setString('theme', 'light');
+            break;
+        }
+      }
+    } catch (e) {
       theme = lightTheme;
       prefs.setString('theme', 'light');
-    } else {
-      switch (chosenTheme) {
-        case 'light':
-          theme = lightTheme;
-          break;
-        case 'dark':
-          theme = darkTheme;
-          break;
-        default:
-          theme = lightTheme;
-          prefs.setString('theme', 'light');
-          break;
-      }
     }
     return;
   }
@@ -110,6 +119,7 @@ class _HqsAppState extends State<HqsApp> {
                         },
                         service: service,
                       ),
+                //Container(),
               );
             default:
               return Align(

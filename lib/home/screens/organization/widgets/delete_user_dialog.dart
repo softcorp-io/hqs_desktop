@@ -1,18 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:dart_hqs/hqs_user_service.pb.dart';
-import 'package:hqs_desktop/home/screens/admin_users/constants/text.dart';
+import 'package:hqs_desktop/home/screens/organization/constants/text.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hqs_desktop/home/widgets/custom_flushbar_error.dart';
 import 'package:hqs_desktop/home/widgets/custom_flushbar_success.dart';
-import 'package:hqs_desktop/service/hqs_user_service.dart';
+import 'package:hqs_desktop/service/hqs_service.dart';
+import 'package:hqs_desktop/theme/constants.dart';
 
-class ResetPasswordDialog extends StatelessWidget {
+class DeleteUserDialog extends StatelessWidget {
   final HqsService service;
   final User user;
   final Function onUpdate;
   final BuildContext buildContext;
 
-  ResetPasswordDialog(
+  DeleteUserDialog(
       {@required this.service,
       @required this.user,
       @required this.onUpdate,
@@ -26,7 +27,7 @@ class ResetPasswordDialog extends StatelessWidget {
   Widget build(BuildContext context) {
     return AlertDialog(
       title: Text(
-        userSourceResetPasswordDialogTitle(user),
+        userSourceDeleteUserDialogTitle(user),
         style: GoogleFonts.poppins(
           fontSize: 18,
           fontWeight: FontWeight.w600,
@@ -36,21 +37,14 @@ class ResetPasswordDialog extends StatelessWidget {
         child: ListBody(
           children: <Widget>[
             Text(
-              userSourceResetPasswordDialogTextOne(user),
+              userSourceDeleteUserDialogTextOne,
               style: GoogleFonts.poppins(
                 fontSize: 14,
                 fontWeight: FontWeight.normal,
               ),
             ),
             Text(
-              userSourceResetPasswordDialogTextTwo(user),
-              style: GoogleFonts.poppins(
-                fontSize: 14,
-                fontWeight: FontWeight.normal,
-              ),
-            ),
-            Text(
-              userSourceResetPasswordDialogTextThree,
+              userSourceDeleteUserDialogTextTwo,
               style: GoogleFonts.poppins(
                 fontSize: 14,
                 fontWeight: FontWeight.normal,
@@ -62,20 +56,20 @@ class ResetPasswordDialog extends StatelessWidget {
       actions: <Widget>[
         TextButton(
           child: Text(
-            userSourceResetPasswordDialogCancelBtnText,
+            "Close",
             style: GoogleFonts.poppins(
               fontSize: 14,
               fontWeight: FontWeight.normal,
-              color: Theme.of(context).errorColor,
+              color: dangerColor,
             ),
           ),
           onPressed: () {
-            Navigator.of(buildContext, rootNavigator: true).pop();
+            Navigator.of(context, rootNavigator: true).pop();
           },
         ),
         TextButton(
           child: Text(
-            userSourceResetPasswordDialogBlockBtnText,
+            "Delete",
             style: GoogleFonts.poppins(
               fontSize: 14,
               fontWeight: FontWeight.normal,
@@ -83,27 +77,25 @@ class ResetPasswordDialog extends StatelessWidget {
             ),
           ),
           onPressed: () {
-            Navigator.of(buildContext, rootNavigator: true).pop();
-            service.sendResetPassordEmail(user)
-              ..catchError((error) {
-                CustomFlushbarError(
-                        title: userSourceResetPasswordDialogExceptionTitle,
-                        body: userSourceResetPasswordDialogExceptionText(
-                            user, error),
-                        context: context)
-                    .getFlushbar()
-                    .show(context);
-              }).then((value) {
-                onUpdate();
-                CustomFlushbarSuccess(
-                        title: userSourceResetPassworDialogSuccessTitle,
-                        body: userSourceResetPasswordDialogSuccessText(user),
-                        context: context)
-                    .getFlushbar()
-                    .show(Navigator.of(buildContext, rootNavigator: true)
-                        .context);
-                return value;
-              });
+            Navigator.of(context, rootNavigator: true).pop();
+            service.deleteUser(user.id).catchError((error) {
+              CustomFlushbarError(
+                      title: userSourceDeleteExceptionTitle,
+                      body: userSourceDeleteExceptionText(user),
+                      context: context)
+                  .getFlushbar()
+                  .show(context);
+            }).then((value) {
+              onUpdate();
+              CustomFlushbarSuccess(
+                      title: userSourceDeleteSuccessTitle(user),
+                      body: userSourceDeleteSuccessText(user),
+                      context: context)
+                  .getFlushbar()
+                  .show(
+                      Navigator.of(buildContext, rootNavigator: true).context);
+              return value;
+            });
           },
         ),
       ],

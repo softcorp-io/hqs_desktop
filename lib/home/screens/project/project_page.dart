@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:hqs_desktop/service/hqs_user_service.dart';
+import 'package:hqs_desktop/service/hqs_service.dart';
 
 class ProjectPage extends StatefulWidget {
   final HqsService service;

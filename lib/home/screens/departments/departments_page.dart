@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:hqs_desktop/home/widgets/custom_navigationrail.dart';
-import 'package:hqs_desktop/service/hqs_user_service.dart';
+import 'package:hqs_desktop/service/hqs_service.dart';
 
 class DepartmentsPage extends StatefulWidget {
   final HqsService service;
